@@ -63,38 +63,6 @@ const App = () => {
               </td>)})}
           </tr>)
           })}
-          {/* <tr>
-            <td>{showData.jeopardy_round[0][1].text}</td>
-            <td>{showData.jeopardy_round[1][1].text}</td>
-            <td>{showData.jeopardy_round[2][1].text}</td>
-            <td>{showData.jeopardy_round[3][1].text}</td>
-            <td>{showData.jeopardy_round[4][1].text}</td>
-            <td>{showData.jeopardy_round[5][1].text}</td>
-          </tr>
-          <tr>
-            <td>{showData.jeopardy_round[0][2].text}</td>
-            <td>{showData.jeopardy_round[1][2].text}</td>
-            <td>{showData.jeopardy_round[2][2].text}</td>
-            <td>{showData.jeopardy_round[3][2].text}</td>
-            <td>{showData.jeopardy_round[4][2].text}</td>
-            <td>{showData.jeopardy_round[5][2].text}</td>
-          </tr>
-          <tr>
-            <td>{showData.jeopardy_round[0][3].text}</td>
-            <td>{showData.jeopardy_round[1][3].text}</td>
-            <td>{showData.jeopardy_round[2][3].text}</td>
-            <td>{showData.jeopardy_round[3][3].text}</td>
-            <td>{showData.jeopardy_round[4][3].text}</td>
-            <td>{showData.jeopardy_round[5][3].text}</td>
-          </tr>
-          <tr>
-            <td>{showData.jeopardy_round[0][4].text}</td>
-            <td>{showData.jeopardy_round[1][4].text}</td>
-            <td>{showData.jeopardy_round[2][4].text}</td>
-            <td>{showData.jeopardy_round[3][4].text}</td>
-            <td>{showData.jeopardy_round[4][4].text}</td>
-            <td>{showData.jeopardy_round[5][4].text}</td>
-          </tr> */}
         </tbody>
       </table>
     </div>
