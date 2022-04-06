@@ -57,7 +57,7 @@ const App = () => {
                 <span>{visible[row][column] && round[row].text}</span>
                 {
                   !visible[row][column] && <button onClick={() => displayClue(row, column)}>
-                  {round[row].value}
+                  ${round[row].value}
                   </button>
                 }
               </td>)})}
