@@ -42,14 +42,11 @@ td {
   border: 0px;
 }
 
-button {
-  background-color: blue;
-  color: white;
-  font-size: 30px;
-  float: right;
-}
-
 .banner {
   display: flex;
   justify-content: center;
+}
+
+.message {
+  size: 50px;
 }

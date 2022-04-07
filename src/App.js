@@ -15,21 +15,25 @@ const App = () => {
     }
   }
   let [visible, setVisible] = useState(visibleMatrix);
+  let [message, setMessage] = useState('');
   let contestants = showData.contestants.filter(
     contestant => contestant !== showData.weakest_contestant
   );
   contestants.push('Alan');
   let scores = {};
   contestants.forEach(contestant => scores[contestant] = 0);
-  setTimeout(() => findClue(1), 11000);  
+  setTimeout(() => findClue(1), 3000);  
 
   function findClue(clueNumber) {
     let visibleCopy = [...visible];
     for (let col = 0; col < 6; col++) {
       for (let row = 0; row < 5; row++) {
         if (showData.jeopardy_round[col][row].number === clueNumber) {
+          const clue = showData.jeopardy_round[col][row];
+          message = clue.category + ' for $' + clue.value;
+          setMessage(message);
           visibleCopy[row][col] = true;
-          setVisible(visibleCopy);
+          setTimeout(() => setVisible(visibleCopy), 2000);
           return;
         }
       }
@@ -48,6 +52,7 @@ const App = () => {
     <div>
       <div className='banner'>
         <h3>
+        <span className='message'>{message}</span>
           <div>${scores[contestants[0]]}<br></br>{contestants[0]}</div>
           <div>${scores[contestants[1]]}<br></br>{contestants[1]}</div>
           <div>${scores[contestants[2]]}<br></br>{contestants[2]}</div>
