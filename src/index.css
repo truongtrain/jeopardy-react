@@ -15,6 +15,9 @@ code {
 h3 div {
   float:right;
   margin: 10px;
+  background-color: blue;
+  color: white;
+  border: 3px solid black;
 }
 
 th {
@@ -31,10 +34,22 @@ td {
   text-align: center;
 }
 
-button {
+.clue-button {
   background-color: blue;
   color: yellow;
   width: 100%;
   font-size: 70px;
   border: 0px;
+}
+
+button {
+  background-color: blue;
+  color: white;
+  font-size: 30px;
+  float: right;
+}
+
+.banner {
+  display: flex;
+  justify-content: center;
 }

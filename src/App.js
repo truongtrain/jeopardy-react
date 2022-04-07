@@ -6,6 +6,7 @@ console.log(showData);
 
 
 const App = () => {
+  const charsPerSecond = 16;
   let visibleMatrix = [];
   for (let row = 0; row < 5; row++) {
     visibleMatrix.push([]);
@@ -20,6 +21,20 @@ const App = () => {
   contestants.push('Alan');
   let scores = {};
   contestants.forEach(contestant => scores[contestant] = 0);
+  setTimeout(() => findClue(1), 11000);  
+
+  function findClue(clueNumber) {
+    let visibleCopy = [...visible];
+    for (let col = 0; col < 6; col++) {
+      for (let row = 0; row < 5; row++) {
+        if (showData.jeopardy_round[col][row].number === clueNumber) {
+          visibleCopy[row][col] = true;
+          setVisible(visibleCopy);
+          return;
+        }
+      }
+    }
+  }
 
   function displayClue(row, column) {
     let visibleCopy = [...visible];
@@ -31,12 +46,13 @@ const App = () => {
 
   return (
     <div>
-      <h3>
-        <div>{contestants[0]}: ${scores[contestants[0]]}</div>
-        <div>{contestants[1]}: ${scores[contestants[1]]}</div>
-        <div>{contestants[2]}: ${scores[contestants[2]]}</div>
-      </h3>
-      <br></br><br></br><br></br>
+      <div className='banner'>
+        <h3>
+          <div>${scores[contestants[0]]}<br></br>{contestants[0]}</div>
+          <div>${scores[contestants[1]]}<br></br>{contestants[1]}</div>
+          <div>${scores[contestants[2]]}<br></br>{contestants[2]}</div>
+        </h3>
+      </div>
       <table>
         <thead>
           <tr>
@@ -56,7 +72,7 @@ const App = () => {
               <td key={column}>
                 <span>{visible[row][column] && round[row].text}</span>
                 {
-                  !visible[row][column] && <button onClick={() => displayClue(row, column)}>
+                  !visible[row][column] && <button className='clue-button' onClick={() => displayClue(row, column)}>
                   ${round[row].value}
                   </button>
                 }
