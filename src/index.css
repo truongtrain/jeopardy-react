@@ -12,6 +12,13 @@ code {
     monospace;
 }
 
+.answer-button-2 {
+  background-color: blue;
+  color: yellow;
+  width: 50%;
+  font-size: 60px;
+}
+
 h3 div {
   float:right;
   margin: 10px;

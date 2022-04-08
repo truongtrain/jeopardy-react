@@ -4,9 +4,7 @@ import showData from './jeopardy.json'
 
 console.log(showData);
 
-
 const App = () => {
-  const charsPerSecond = 16;
   let visibleMatrix = [];
   for (let row = 0; row < 5; row++) {
     visibleMatrix.push([]);
@@ -16,13 +14,15 @@ const App = () => {
   }
   let [visible, setVisible] = useState(visibleMatrix);
   let [message, setMessage] = useState('');
+  let [board, setBoard] = useState(showData.jeopardy_round);
   let contestants = showData.contestants.filter(
     contestant => contestant !== showData.weakest_contestant
   );
   contestants.push('Alan');
   let scores = {};
   contestants.forEach(contestant => scores[contestant] = 0);
-  setTimeout(() => findClue(1), 3000);  
+  let clueNumber = 1;
+  setTimeout(() => findClue(clueNumber), 3000);  
 
   function findClue(clueNumber) {
     let visibleCopy = [...visible];
@@ -33,11 +33,27 @@ const App = () => {
           message = clue.category + ' for $' + clue.value;
           setMessage(message);
           visibleCopy[row][col] = true;
-          setTimeout(() => setVisible(visibleCopy), 2000);
+          setTimeout(() => showClue(visibleCopy, row, col), 2000);
           return;
         }
       }
     }
+  }
+
+  function showClue(visibleCopy, row, col) {
+    setVisible(visibleCopy);
+    const clue = showData.jeopardy_round[col][row];
+    const charsPerSecond = 16;
+    setTimeout(() => clearClue(row, col), 1000*clue.text.length/charsPerSecond);
+  }
+
+  function clearClue(row, col) {
+    let board_copy = [...board];
+    board_copy[col][row].text = '';
+    setBoard(board_copy);
+    // let visibleCopy = [...visible];
+    // visibleCopy[row][col] = false;
+    // setVisible(visibleCopy);
   }
 
   function displayClue(row, column) {
@@ -53,6 +69,8 @@ const App = () => {
       <div className='banner'>
         <h3>
         <span className='message'>{message}</span>
+        <br></br>
+        <button className='answer-button-2' onClick={() => displayClue(0, 0)}>Answer!</button>
           <div>${scores[contestants[0]]}<br></br>{contestants[0]}</div>
           <div>${scores[contestants[1]]}<br></br>{contestants[1]}</div>
           <div>${scores[contestants[2]]}<br></br>{contestants[2]}</div>
@@ -61,18 +79,18 @@ const App = () => {
       <table>
         <thead>
           <tr>
-            <th>{showData.jeopardy_round[0][0].category}</th>
-            <th>{showData.jeopardy_round[1][0].category}</th>
-            <th>{showData.jeopardy_round[2][0].category}</th>
-            <th>{showData.jeopardy_round[3][0].category}</th>
-            <th>{showData.jeopardy_round[4][0].category}</th>
-            <th>{showData.jeopardy_round[5][0].category}</th>
+            <th>{board[0][0].category}</th>
+            <th>{board[1][0].category}</th>
+            <th>{board[2][0].category}</th>
+            <th>{board[3][0].category}</th>
+            <th>{board[4][0].category}</th>
+            <th>{board[5][0].category}</th>
           </tr>
         </thead>
         <tbody>
           {Array.from(Array(5), (arrayElement, row) => {
             return (<tr key={row}>
-            {showData.jeopardy_round.map((round, column) => {
+            {board.map((round, column) => {
               return (
               <td key={column}>
                 <span>{visible[row][column] && round[row].text}</span>
