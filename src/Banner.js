@@ -1,21 +1,59 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import Timer from './Timer';
 
 
 function Banner(props) {
-    let [message, setMessage] = useState('');
+    const [message, setMessage] = useState('');
+    const [clueNumber, setClueNumber] = useState(1);
+    const [isActive, setIsActive] = useState(true);
     let board = props.board;
     let scores = {};
     let contestants = props.contestants;
+
+    //useEffect(() => findClue(clueNumber), [clueNumber]);
+
+    useEffect(() => {
+        let interval = null;
+        if (isActive) {
+            interval = setInterval(() => findClue(clueNumber), 3000);
+        } else if (!isActive) {
+            clearInterval(interval);
+        }   
+        return () => clearInterval(interval);
+      }, [clueNumber]);
     contestants.forEach(contestant => scores[contestant] = 0);
+    // setTimeout(() => setClueNumber(clueNumber+1), 3000);
+
+    function findClue(clueNumber) {
+        console.log(clueNumber);
+        //let visibleCopy = [...visible];
+        for (let col = 0; col < 6; col++) {
+          for (let row = 0; row < 5; row++) {
+            if (board[col][row].number === clueNumber) {
+              const clue = board[col][row];
+              const message = clue.category + ' for $' + clue.value;
+              setMessage(message);
+              setClueNumber(clueNumber+1);
+              //visibleCopy[row][col] = true;
+              //setTimeout(() => showClue(visibleCopy, row, col), 2000);
+              return;
+            }
+          }
+        }
+      }
+
+      function pause() {
+        setIsActive(false);
+      }
 
     function updateMessage() {
+        pause();
         setMessage('Alan');
     }
 
     return (
         <div className='banner'>
-            <Timer message={message} board={board} />
+            <Timer />
             <h3>
             <span className='message'>{message}</span>
             <br></br>
