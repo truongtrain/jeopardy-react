@@ -15,11 +15,6 @@ let contestants = showData.contestants.filter(
   contestant => contestant !== showData.weakest_contestant
 );
 contestants.push('Alan');
-  
-let clueNumber = 1;
-// setTimeout(() => findClue(clueNumber), 3000);  
-
-  
 
 const App = () => {
   
@@ -27,22 +22,6 @@ const App = () => {
   
   let [board, setBoard] = useState(showData.jeopardy_round);
   let [tableStyle, setTableStyle] = useState('table-light-off');
-
-  function findClue(clueNumber) {
-    let visibleCopy = [...visible];
-    for (let col = 0; col < 6; col++) {
-      for (let row = 0; row < 5; row++) {
-        if (showData.jeopardy_round[col][row].number === clueNumber) {
-          const clue = showData.jeopardy_round[col][row];
-          // message = clue.category + ' for $' + clue.value;
-          // setMessage(message);
-          visibleCopy[row][col] = true;
-          setTimeout(() => showClue(visibleCopy, row, col), 2000);
-          return;
-        }
-      }
-    }
-  }
 
   function turnOffLight() {
     setTableStyle('table-light-off');
@@ -72,7 +51,7 @@ const App = () => {
 
   return (
     <div>
-      <Banner contestants={contestants} />
+      <Banner contestants={contestants} board={board} />
       <table className={tableStyle}>
         <thead>
           <tr>

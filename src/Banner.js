@@ -1,7 +1,10 @@
 import React, {useState} from 'react';
+import Timer from './Timer';
+
 
 function Banner(props) {
     let [message, setMessage] = useState('');
+    let board = props.board;
     let scores = {};
     let contestants = props.contestants;
     contestants.forEach(contestant => scores[contestant] = 0);
@@ -12,6 +15,7 @@ function Banner(props) {
 
     return (
         <div className='banner'>
+            <Timer message={message} board={board} />
             <h3>
             <span className='message'>{message}</span>
             <br></br>
@@ -21,6 +25,7 @@ function Banner(props) {
             <div>${scores[contestants[2]]}<br></br>{contestants[2]}</div>
             </h3>
         </div>
+        
       );
   }
 
