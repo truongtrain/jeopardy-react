@@ -11,6 +11,7 @@ function Banner(props) {
     let contestants = props.contestants;
     let interval = null;
     //useEffect(() => findClue(clueNumber), [clueNumber]);
+    document.addEventListener('click', () => answer());
 
     useEffect(() => {
         if (isActive) {
@@ -46,12 +47,7 @@ function Banner(props) {
         }
       }
 
-      function pause() {
-        setIsActive(false);
-        console.log(isActive);
-      }
-
-    function updateMessage() {
+    function answer() {
         setMessage('Alan');
         clearInterval(interval);
         // pause();
@@ -63,7 +59,6 @@ function Banner(props) {
             <h3>
             <span className='message'>{message}</span>
             <br></br>
-            <button type='button' className='answer-button-2' onClick={updateMessage}>Answer!</button>
             <div>${scores[contestants[0]]}<br></br>{contestants[0]}</div>
             <div>${scores[contestants[1]]}<br></br>{contestants[1]}</div>
             <div>${scores[contestants[2]]}<br></br>{contestants[2]}</div>
