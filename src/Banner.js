@@ -9,11 +9,10 @@ function Banner(props) {
     let board = props.board;
     let scores = {};
     let contestants = props.contestants;
-
+    let interval = null;
     //useEffect(() => findClue(clueNumber), [clueNumber]);
 
     useEffect(() => {
-        let interval = null;
         if (isActive) {
             interval = setInterval(() => findClue(clueNumber), 3000);
         } else if (!isActive) {
@@ -21,10 +20,15 @@ function Banner(props) {
         }   
         return () => clearInterval(interval);
       }, [clueNumber]);
+
     contestants.forEach(contestant => scores[contestant] = 0);
     // setTimeout(() => setClueNumber(clueNumber+1), 3000);
 
     function findClue(clueNumber) {
+        console.log(isActive);
+        if (!isActive) {
+            return;
+        }
         console.log(clueNumber);
         //let visibleCopy = [...visible];
         for (let col = 0; col < 6; col++) {
@@ -44,11 +48,13 @@ function Banner(props) {
 
       function pause() {
         setIsActive(false);
+        console.log(isActive);
       }
 
     function updateMessage() {
-        pause();
         setMessage('Alan');
+        clearInterval(interval);
+        // pause();
     }
 
     return (
