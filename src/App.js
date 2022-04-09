@@ -3,7 +3,6 @@ import React, {useState} from 'react';
 import showData from './jeopardy.json'
 
 console.log(showData);
-
 const App = () => {
   let visibleMatrix = [];
   for (let row = 0; row < 5; row++) {
@@ -15,9 +14,12 @@ const App = () => {
   let [visible, setVisible] = useState(visibleMatrix);
   let [message, setMessage] = useState('');
   let [board, setBoard] = useState(showData.jeopardy_round);
+  let [tableStyle, setTableStyle] = useState('table-light-off');
   let contestants = showData.contestants.filter(
     contestant => contestant !== showData.weakest_contestant
   );
+  // useEffect(() => turnOffLight(), [message]);
+
   contestants.push('Alan');
   let scores = {};
   contestants.forEach(contestant => scores[contestant] = 0);
@@ -47,13 +49,16 @@ const App = () => {
     setTimeout(() => clearClue(row, col), 1000*clue.text.length/charsPerSecond);
   }
 
+  function turnOffLight() {
+    setMessage('Alan');
+    setTableStyle('table-light-off');
+  }
+
   function clearClue(row, col) {
     let board_copy = [...board];
     board_copy[col][row].text = '';
     setBoard(board_copy);
-    // let visibleCopy = [...visible];
-    // visibleCopy[row][col] = false;
-    // setVisible(visibleCopy);
+    setTableStyle('table-light-on');
   }
 
   function displayClue(row, column) {
@@ -70,13 +75,13 @@ const App = () => {
         <h3>
         <span className='message'>{message}</span>
         <br></br>
-        <button className='answer-button-2' onClick={() => displayClue(0, 0)}>Answer!</button>
+        <button type='button' className='answer-button-2' onClick={turnOffLight}>Answer!</button>
           <div>${scores[contestants[0]]}<br></br>{contestants[0]}</div>
           <div>${scores[contestants[1]]}<br></br>{contestants[1]}</div>
           <div>${scores[contestants[2]]}<br></br>{contestants[2]}</div>
         </h3>
       </div>
-      <table>
+      <table className={tableStyle}>
         <thead>
           <tr>
             <th>{board[0][0].category}</th>

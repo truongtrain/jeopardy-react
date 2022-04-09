@@ -13,7 +13,7 @@ code {
 }
 
 .answer-button-2 {
-  background-color: blue;
+  background-color: rgb(25, 25, 195);
   color: yellow;
   width: 50%;
   font-size: 60px;
@@ -22,27 +22,35 @@ code {
 h3 div {
   float:right;
   margin: 10px;
-  background-color: blue;
+  background-color: rgb(25, 25, 195);
   color: white;
   border: 3px solid black;
 }
 
+.table-light-on {
+  border: 5px solid blue;
+}
+
+.table-light-off {
+  border: 5px solid white;
+}
+
 th {
   border: 3px solid black;
-  background-color: blue;
+  background-color: rgb(25, 25, 195);
   color: white;
   font-size: 30px;
 }
 
 td {
   border: 3px solid black;
-  background-color: blue;
+  background-color: rgb(25, 25, 195);
   color: white;
   text-align: center;
 }
 
 .clue-button {
-  background-color: blue;
+  background-color: rgb(25, 25, 195);
   color: yellow;
   width: 100%;
   font-size: 70px;
