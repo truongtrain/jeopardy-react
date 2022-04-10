@@ -61,13 +61,24 @@ const App = () => {
   function clearClue(row, col) {
     let board_copy = [...board];
     board_copy[col][row].text = '';
-    const correctContestant = board_copy[col][row].response.correct_contestant;
-    let scores_copy = {...scores};
-    scores_copy[correctContestant] += board_copy[col][row].value;
-    setScores(scores_copy);
     setBoard(board_copy);
     setTableStyle('table-light-on');
+    updateScores(board_copy[col][row]);
     setClueNumber(clueNumber+1);
+  }
+
+  function updateScores(clue) {
+    const incorrectContestants = clue.response.incorrect_contestants;
+    const correctContestant = clue.response.correct_contestant;
+    let scores_copy = {...scores};
+    if (incorrectContestants.length > 0) {
+      incorrectContestants.forEach(
+        incorrectContestant => scores_copy[incorrectContestant] -= clue.value);
+    }
+    if (correctContestant) {
+      scores_copy[correctContestant] += clue.value;
+    }
+    setScores(scores_copy);
   }
 
   function answer() {
