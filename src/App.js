@@ -59,7 +59,7 @@ const App = () => {
     const clue = showData.jeopardy_round[col][row];
     const charsPerSecond = 16;
     if (clue.daily_double_wager > 0) {
-      setMessage('Daily Double!');
+      setMessage('Daily Double! Wager: ' + clue.daily_double_wager);
       setCorrect('');
     }
     setTimeout(() => clearClue(row, col), 1000*clue.text.length/charsPerSecond);
