@@ -42,8 +42,8 @@ const App = () => {
   useEffect(() => {
     if (responseTimerIsActive) {
       responseInterval = setInterval(() => {
-        setSeconds(seconds => seconds + 0.1);
-      }, 100)
+        setSeconds(seconds => seconds + 0.01);
+      }, 10)
     } else {
         clearInterval(responseInterval);
     }   
@@ -69,6 +69,10 @@ const App = () => {
     const probability = getProbability(clue.value, round);
     if (isFastestResponse(seconds, probability)) {
       setMessage('Alan');
+    } else if (clue.response.correct_contestant != weakestContestant) {
+      setMessage(clue.response.correct_contestant);
+    } else {
+      setMessage(clue.response.correct_response);
     }
   }
 
@@ -103,21 +107,24 @@ const App = () => {
 
   function isFastestResponse(seconds, probability) {
     const randomNumber = Math.random();
-    if (seconds <= 0.25) {
+    console.log(seconds);
+    console.log(randomNumber);
+    console.log(probability);
+    if (seconds <= 0.3) {
       return randomNumber < probability;
-    } else if (seconds <= 0.5) {
+    } else if (seconds <= 0.6) {
       return randomNumber <= Math.pow(probability, 2);
-    } else if (seconds <= 0.75) {
+    } else if (seconds <= 0.9) {
       return randomNumber <= Math.pow(probability, 3);
-    } else if (seconds <= 1.0) {
+    } else if (seconds <= 1.2) {
       return randomNumber <= Math.pow(probability, 4);
-    } else if (seconds <= 1.25) {
-      return randomNumber <= Math.pow(probability, 5);
     } else if (seconds <= 1.5) {
+      return randomNumber <= Math.pow(probability, 5);
+    } else if (seconds <= 1.8) {
       return randomNumber <= Math.pow(probability, 6);
-    } else if (seconds <= 1.75) {
+    } else if (seconds <= 2.1) {
       return randomNumber <= Math.pow(probability, 7);
-    } else if (seconds <= 2.0) {
+    } else if (seconds <= 2.4) {
       return randomNumber <= Math.pow(probability, 8);
     }
   }
@@ -204,7 +211,7 @@ const App = () => {
 
   return (
     <div>
-      <div>{seconds.toFixed(1)}</div>
+      <div>{seconds.toFixed(2)}</div>
       <Banner contestants={contestants} correct={correct} message={message} scores={scores} />
       <table className={tableStyle}>
         <thead>
