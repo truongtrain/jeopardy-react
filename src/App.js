@@ -16,16 +16,21 @@ const App = () => {
   const [tableStyle, setTableStyle] = useState('table-light-off');
   const [clueNumber, setClueNumber] = useState(1);
   const [message, setMessage] = useState('');
+  const [isActive, setActive] = useState(true);
   let interval = null;
 
   document.addEventListener('click', () => answer());
 
   useEffect(() => {
-    interval = setInterval(() => findClue(clueNumber), 3000);
+    if (isActive) {
+      interval = setInterval(() => chooseClue(clueNumber), 3000);
+    } else {
+      clearInterval(interval);
+    }
     return () => clearInterval(interval);
   }, [clueNumber]);
 
-  function findClue(clueNumber) {
+  function chooseClue(clueNumber) {
     let visibleCopy = [...visible];
     for (let col = 0; col < 6; col++) {
       for (let row = 0; row < 5; row++) {
@@ -33,7 +38,7 @@ const App = () => {
           const clue = board[col][row];
           const message = clue.category + ' for $' + clue.value;
           setMessage(message);
-          setClueNumber(clueNumber+1);
+          //setClueNumber(clueNumber+1);
           visibleCopy[row][col] = true;
           setTimeout(() => showClue(visibleCopy, row, col), 2000);
           return;
@@ -54,9 +59,11 @@ const App = () => {
     board_copy[col][row].text = '';
     setBoard(board_copy);
     setTableStyle('table-light-on');
+    setClueNumber(clueNumber+1);
   }
 
   function answer() {
+    setActive(false);
     setMessage('Alan');
     clearInterval(interval);
   }
