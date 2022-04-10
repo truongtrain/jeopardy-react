@@ -5,20 +5,21 @@ import Banner from './Banner';
 
 console.log(showData);
 
-const contestants = showData.contestants.filter(
-  contestant => contestant !== showData.weakest_contestant
-);
-contestants.push('Alan');
-const scores = {};
-contestants.forEach(contestant => scores[contestant] = 0);
-
 const App = () => {
+  const contestants = showData.contestants.filter(
+    contestant => contestant !== showData.weakest_contestant
+  );
+  contestants.push('Alan');
+  const initalScores = {};
+  contestants.forEach(contestant => initalScores[contestant] = 0);
+
   const [visible, setVisible] = useState(getDefaultVisible());
   const [board, setBoard] = useState(showData.jeopardy_round);
   const [tableStyle, setTableStyle] = useState('table-light-off');
   const [clueNumber, setClueNumber] = useState(1);
   const [message, setMessage] = useState('');
   const [isActive, setActive] = useState(true);
+  const [scores, setScores] = useState(initalScores);
   let interval = null;
 
   document.addEventListener('click', () => answer());
@@ -47,6 +48,7 @@ const App = () => {
         }
       }
     }
+    clearInterval(interval);
   }
 
   function showClue(visibleCopy, row, col) {
@@ -60,6 +62,9 @@ const App = () => {
     let board_copy = [...board];
     board_copy[col][row].text = '';
     const correctContestant = board_copy[col][row].response.correct_contestant;
+    let scores_copy = {...scores};
+    scores_copy[correctContestant] += board_copy[col][row].value;
+    setScores(scores_copy);
     setBoard(board_copy);
     setTableStyle('table-light-on');
     setClueNumber(clueNumber+1);
