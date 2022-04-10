@@ -5,10 +5,12 @@ import Banner from './Banner';
 
 console.log(showData);
 
-let contestants = showData.contestants.filter(
+const contestants = showData.contestants.filter(
   contestant => contestant !== showData.weakest_contestant
 );
 contestants.push('Alan');
+const scores = {};
+contestants.forEach(contestant => scores[contestant] = 0);
 
 const App = () => {
   const [visible, setVisible] = useState(getDefaultVisible());
@@ -39,7 +41,6 @@ const App = () => {
           const clue = board[col][row];
           const message = clue.category + ' for $' + clue.value;
           setMessage(message);
-          //setClueNumber(clueNumber+1);
           visibleCopy[row][col] = true;
           setTimeout(() => showClue(visibleCopy, row, col), 2000);
           return;
@@ -58,6 +59,7 @@ const App = () => {
   function clearClue(row, col) {
     let board_copy = [...board];
     board_copy[col][row].text = '';
+    const correctContestant = board_copy[col][row].response.correct_contestant;
     setBoard(board_copy);
     setTableStyle('table-light-on');
     setClueNumber(clueNumber+1);
@@ -90,7 +92,7 @@ const App = () => {
 
   return (
     <div>
-      <Banner contestants={contestants} message={message} />
+      <Banner contestants={contestants} message={message} scores={scores} />
       <table className={tableStyle}>
         <thead>
           <tr>

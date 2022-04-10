@@ -1,17 +1,12 @@
 import React from 'react';
-import Timer from './Timer';
-
 
 function Banner(props) {
     const message = props.message;
-    const scores = {};
+    const scores = props.scores;
     const contestants = props.contestants;
-
-    contestants.forEach(contestant => scores[contestant] = 0);
 
     return (
         <div className='banner'>
-            <Timer />
             <h3>
             <span className='message'>{message}</span>
             <br></br>
