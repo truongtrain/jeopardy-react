@@ -1,8 +1,8 @@
 import React, {useState, useEffect} from 'react';
 
-function Timer() {
+function Timer(props) {
     
-    const [seconds, setSeconds] = useState(0);
+    const [seconds, setSeconds] = useState(props.seconds);
     const [isActive, setIsActive] = useState(false);
     
     useEffect(() => {

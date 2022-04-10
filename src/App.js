@@ -14,26 +14,113 @@ const App = () => {
   const initalScores = {};
   contestants.forEach(contestant => initalScores[contestant] = 0);
 
+  const [round, setRound] = useState(1);
   const [visible, setVisible] = useState(getDefaultVisible());
   const [board, setBoard] = useState(showData.jeopardy_round);
   const [tableStyle, setTableStyle] = useState('table-light-off');
   const [clueNumber, setClueNumber] = useState(1);
   const [message, setMessage] = useState('');
   const [correct, setCorrect] = useState('');
-  const [isActive, setActive] = useState(true);
+  const [intervalIsActive, setIntervalIsActive] = useState(true);
   const [scores, setScores] = useState(initalScores);
+  const [seconds, setSeconds] = useState(0.0);
+  const [responseTimerIsActive, setResponseTimerIsActive] = useState(false);
   let interval = null;
+  let responseInterval = null;
 
   document.addEventListener('click', () => answer());
 
   useEffect(() => {
-    if (isActive) {
+    if (intervalIsActive) {
       interval = setInterval(() => chooseClue(clueNumber), 3000);
     } else {
       clearInterval(interval);
     }
     return () => clearInterval(interval);
   }, [clueNumber]);
+
+  useEffect(() => {
+    if (responseTimerIsActive) {
+      responseInterval = setInterval(() => {
+        setSeconds(seconds => seconds + 0.1);
+      }, 100)
+    } else {
+        clearInterval(responseInterval);
+    }   
+    return () => clearInterval(responseInterval);
+  }, [responseTimerIsActive]);
+
+  function getClue(clueNumber) {
+    for (let col = 0; col < 6; col++) {
+      for (let row = 0; row < 5; row++) {
+        if (board[col][row].number === clueNumber) {
+          return board[col][row];
+        }
+      }
+    }
+    return null;
+  }
+
+  function answer() {
+    setIntervalIsActive(false);
+    clearInterval(interval);
+    clearInterval(responseInterval);
+    const clue = getClue(clueNumber);
+    const probability = getProbability(clue.value, round);
+    if (isFastestResponse(seconds, probability)) {
+      setMessage('Alan');
+    }
+  }
+
+  function getProbability(value, round) {
+    if (round === 1) {
+      switch (value) {
+        case 200:
+          return 0.333;
+        case 400:
+          return 0.377;
+        case 600:
+          return 0.383;
+        case 800:
+          return 0.418;
+        case 1000:
+          return 0.500;
+      }
+      switch (value) {
+        case 400:
+          return 0.350;
+        case 800:
+          return 0.412;
+        case 1200:
+          return 0.438;
+        case 1600:
+          return 0.500;
+        case 2000:
+          return 0.500;
+      }
+    }
+  }
+
+  function isFastestResponse(seconds, probability) {
+    const randomNumber = Math.random();
+    if (seconds <= 0.25) {
+      return randomNumber < probability;
+    } else if (seconds <= 0.5) {
+      return randomNumber <= Math.pow(probability, 2);
+    } else if (seconds <= 0.75) {
+      return randomNumber <= Math.pow(probability, 3);
+    } else if (seconds <= 1.0) {
+      return randomNumber <= Math.pow(probability, 4);
+    } else if (seconds <= 1.25) {
+      return randomNumber <= Math.pow(probability, 5);
+    } else if (seconds <= 1.5) {
+      return randomNumber <= Math.pow(probability, 6);
+    } else if (seconds <= 1.75) {
+      return randomNumber <= Math.pow(probability, 7);
+    } else if (seconds <= 2.0) {
+      return randomNumber <= Math.pow(probability, 8);
+    }
+  }
 
   function chooseClue(clueNumber) {
     setTableStyle('table-light-off');
@@ -70,8 +157,10 @@ const App = () => {
     board_copy[col][row].text = '';
     setBoard(board_copy);
     setTableStyle('table-light-on');
-    updateScores(board_copy[col][row]);
-    setClueNumber(clueNumber+1);
+    setResponseTimerIsActive(true);
+
+    //updateScores(board_copy[col][row]);
+    //setClueNumber(clueNumber+1);
   }
 
   function updateScores(clue) {
@@ -92,12 +181,6 @@ const App = () => {
       scores_copy[correctContestant] += scoreChange;
     }
     setScores(scores_copy);
-  }
-
-  function answer() {
-    setActive(false);
-    setMessage('Alan');
-    clearInterval(interval);
   }
 
   function displayClue(row, column) {
@@ -121,6 +204,7 @@ const App = () => {
 
   return (
     <div>
+      <div>{seconds.toFixed(1)}</div>
       <Banner contestants={contestants} correct={correct} message={message} scores={scores} />
       <table className={tableStyle}>
         <thead>
