@@ -31,6 +31,7 @@ const App = () => {
   }, [clueNumber]);
 
   function chooseClue(clueNumber) {
+    setTableStyle('table-light-off');
     let visibleCopy = [...visible];
     for (let col = 0; col < 6; col++) {
       for (let row = 0; row < 5; row++) {
@@ -66,10 +67,6 @@ const App = () => {
     setActive(false);
     setMessage('Alan');
     clearInterval(interval);
-  }
-
-  function turnOffLight() {
-    setTableStyle('table-light-off');
   }
 
   function displayClue(row, column) {
