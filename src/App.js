@@ -6,8 +6,9 @@ import Banner from './Banner';
 console.log(showData);
 
 const App = () => {
+  const weakestContestant = showData.weakest_contestant;
   const contestants = showData.contestants.filter(
-    contestant => contestant !== showData.weakest_contestant
+    contestant => contestant !== weakestContestant
   );
   contestants.push('Alan');
   const initalScores = {};
@@ -18,6 +19,7 @@ const App = () => {
   const [tableStyle, setTableStyle] = useState('table-light-off');
   const [clueNumber, setClueNumber] = useState(1);
   const [message, setMessage] = useState('');
+  const [correct, setCorrect] = useState('');
   const [isActive, setActive] = useState(true);
   const [scores, setScores] = useState(initalScores);
   let interval = null;
@@ -42,6 +44,7 @@ const App = () => {
           const clue = board[col][row];
           const message = clue.category + ' for $' + clue.value;
           setMessage(message);
+          setCorrect('');
           visibleCopy[row][col] = true;
           setTimeout(() => showClue(visibleCopy, row, col), 2000);
           return;
@@ -55,6 +58,10 @@ const App = () => {
     setVisible(visibleCopy);
     const clue = showData.jeopardy_round[col][row];
     const charsPerSecond = 16;
+    if (clue.daily_double_wager > 0) {
+      setMessage('Daily Double!');
+      setCorrect('');
+    }
     setTimeout(() => clearClue(row, col), 1000*clue.text.length/charsPerSecond);
   }
 
@@ -71,12 +78,18 @@ const App = () => {
     const incorrectContestants = clue.response.incorrect_contestants;
     const correctContestant = clue.response.correct_contestant;
     let scores_copy = {...scores};
+    let scoreChange = clue.daily_double_wager > 0 ? clue.daily_double_wager : clue.value;
     if (incorrectContestants.length > 0) {
-      incorrectContestants.forEach(
-        incorrectContestant => scores_copy[incorrectContestant] -= clue.value);
+      for (let i = 0; i < incorrectContestants.length; i++) {
+        setMessage(incorrectContestants[i] + ': What is ' + clue.response.incorrect_responses[i] + '?');
+        setCorrect('Alex: No');
+        scores_copy[incorrectContestants[i]] -= scoreChange;
+      }
     }
-    if (correctContestant) {
-      scores_copy[correctContestant] += clue.value;
+    if (correctContestant && correctContestant != weakestContestant) {
+      setMessage(correctContestant + ': What is ' + clue.response.correct_response + '?');
+      setCorrect('Alex: Yes');
+      scores_copy[correctContestant] += scoreChange;
     }
     setScores(scores_copy);
   }
@@ -108,7 +121,7 @@ const App = () => {
 
   return (
     <div>
-      <Banner contestants={contestants} message={message} scores={scores} />
+      <Banner contestants={contestants} correct={correct} message={message} scores={scores} />
       <table className={tableStyle}>
         <thead>
           <tr>
