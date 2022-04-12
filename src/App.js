@@ -161,23 +161,28 @@ const App = () => {
 
   function isFastestResponse(seconds, probability) {
     const randomNumber = Math.random();
-    if (seconds <= 0.3) {
+    if (seconds <= 0.2) {
       return randomNumber < probability;
-    } else if (seconds <= 0.6) {
+    } else if (seconds <= 0.4) {
       return randomNumber <= Math.pow(probability, 2);
-    } else if (seconds <= 0.9) {
+    } else if (seconds <= 0.6) {
       return randomNumber <= Math.pow(probability, 3);
-    } else if (seconds <= 1.2) {
+    } else if (seconds <= 0.8) {
       return randomNumber <= Math.pow(probability, 4);
-    } else if (seconds <= 1.5) {
+    } else if (seconds <= 1) {
       return randomNumber <= Math.pow(probability, 5);
-    } else if (seconds <= 1.8) {
+    } else if (seconds <= 1.2) {
       return randomNumber <= Math.pow(probability, 6);
-    } else if (seconds <= 2.1) {
+    } else if (seconds <= 1.4) {
       return randomNumber <= Math.pow(probability, 7);
-    } else if (seconds <= 2.4) {
+    } else if (seconds <= 1.6) {
       return randomNumber <= Math.pow(probability, 8);
+    } else if (seconds <= 1.8) {
+      return randomNumber <= Math.pow(probability, 9);
+    } else if (seconds <= 2.0) {
+      return randomNumber <= Math.pow(probability, 10);
     }
+    return false;
   }
 
   function chooseClue(clueNumber) {
