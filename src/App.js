@@ -4,8 +4,11 @@ import showData from './jeopardy.json';
 import Banner from './Banner';
 
 console.log(showData);
+const msg = new SpeechSynthesisUtterance();
+
 
 const App = () => {
+  window.addEventListener('scroll', () => answer(), { once: true });
   const weakestContestant = showData.weakest_contestant;
   const contestants = showData.contestants.filter(
     contestant => contestant !== weakestContestant
@@ -28,16 +31,26 @@ const App = () => {
   let interval = null;
   let responseInterval = null;
 
-  document.addEventListener('click', () => answer());
+  //don't use click since it conflicts with displayClue()
+  //document.addEventListener('click', () => answer());
 
-  useEffect(() => {
-    if (intervalIsActive) {
-      interval = setInterval(() => chooseClue(clueNumber), 3000);
-    } else {
-      clearInterval(interval);
-    }
-    return () => clearInterval(interval);
-  }, [clueNumber]);
+  // useEffect(() => {
+  //   if (intervalIsActive) {
+  //     interval = setInterval(() => chooseClue(clueNumber), 3000);
+  //   } else {
+  //     clearInterval(interval);
+  //   }
+  //   return () => clearInterval(interval);
+  // }, [clueNumber]);
+
+  // useEffect(() => {
+  //   if (intervalIsActive) {
+  //     displayClueByNumber(clueNumber);
+  //   } else {
+  //     clearInterval(interval);
+  //   }
+  //   return () => clearInterval(interval);
+  // }, [clueNumber]);
 
   useEffect(() => {
     if (responseTimerIsActive) {
@@ -49,6 +62,47 @@ const App = () => {
     }   
     return () => clearInterval(responseInterval);
   }, [responseTimerIsActive]);
+
+  function displayClueByNumber(clueNumber) {
+    let visibleCopy = [...visible];
+    for (let col = 0; col < 6; col++) {
+      for (let row = 0; row < 5; row++) {
+        if (board[col][row].number === clueNumber) {
+          visibleCopy[row][col] = true;
+          setVisible(visibleCopy);
+          readClue(row, col);
+        }
+      }
+    }
+  }
+
+  function readClue(row, col) {
+    const clue = showData.jeopardy_round[col][row];
+    msg.text = clue.text;
+    window.speechSynthesis.speak(msg);
+    msg.addEventListener('end', () => clearClue(row, col));
+  }
+
+  function clearClue(row, col) {
+    let board_copy = [...board];
+    board_copy[col][row].text = '';
+    setBoard(board_copy);
+    setTableStyle('table-light-on');
+    setResponseTimerIsActive(true);
+    // const clueNumber = board_copy[col][row].number + 1;
+    //setClueNumber(board_copy[col][row].number + 1);
+    //updateScores(board_copy[col][row]);
+    //displayClueByNumber(clueNumber);
+  }
+
+  function displayClue(row, col) {
+    let visibleCopy = [...visible];
+    if (visibleCopy[row][col] !== undefined) {
+      visibleCopy[row][col] = true;
+      setVisible(visibleCopy);
+      readClue(row, col);
+    }
+  }
 
   function getClue(clueNumber) {
     for (let col = 0; col < 6; col++) {
@@ -107,9 +161,6 @@ const App = () => {
 
   function isFastestResponse(seconds, probability) {
     const randomNumber = Math.random();
-    console.log(seconds);
-    console.log(randomNumber);
-    console.log(probability);
     if (seconds <= 0.3) {
       return randomNumber < probability;
     } else if (seconds <= 0.6) {
@@ -150,24 +201,13 @@ const App = () => {
 
   function showClue(visibleCopy, row, col) {
     setVisible(visibleCopy);
+    readClue(row, col);
     const clue = showData.jeopardy_round[col][row];
-    const charsPerSecond = 16;
     if (clue.daily_double_wager > 0) {
       setMessage('Daily Double! Wager: ' + clue.daily_double_wager);
       setCorrect('');
     }
-    setTimeout(() => clearClue(row, col), 1000*clue.text.length/charsPerSecond);
-  }
-
-  function clearClue(row, col) {
-    let board_copy = [...board];
-    board_copy[col][row].text = '';
-    setBoard(board_copy);
-    setTableStyle('table-light-on');
-    setResponseTimerIsActive(true);
-
-    //updateScores(board_copy[col][row]);
-    //setClueNumber(clueNumber+1);
+    //setTimeout(() => clearClue(row, col), 1000*clue.text.length/charsPerSecond);
   }
 
   function updateScores(clue) {
@@ -182,20 +222,12 @@ const App = () => {
         scores_copy[incorrectContestants[i]] -= scoreChange;
       }
     }
-    if (correctContestant && correctContestant != weakestContestant) {
+    if (correctContestant && correctContestant !== weakestContestant) {
       setMessage(correctContestant + ': What is ' + clue.response.correct_response + '?');
       setCorrect('Alex: Yes');
       scores_copy[correctContestant] += scoreChange;
     }
     setScores(scores_copy);
-  }
-
-  function displayClue(row, column) {
-    let visibleCopy = [...visible];
-    if (visibleCopy[row][column] !== undefined) {
-      visibleCopy[row][column] = true;
-      setVisible(visibleCopy);
-    }
   }
 
   function getDefaultVisible() {
