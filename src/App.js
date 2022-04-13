@@ -3,9 +3,7 @@ import React, {useState, useEffect} from 'react';
 import showData from './jeopardy.json';
 import Banner from './Banner';
 
-console.log(showData);
 const msg = new SpeechSynthesisUtterance();
-
 
 const App = () => {
   window.addEventListener('scroll', () => answer(), { once: true });
@@ -16,6 +14,7 @@ const App = () => {
   contestants.push('Alan');
   const initalScores = {};
   contestants.forEach(contestant => initalScores[contestant] = 0);
+  initalScores['Alan'] = 0;
 
   const [round, setRound] = useState(1);
   const [visible, setVisible] = useState(getDefaultVisible());
@@ -24,34 +23,17 @@ const App = () => {
   const [clueNumber, setClueNumber] = useState(1);
   const [message, setMessage] = useState('');
   const [correct, setCorrect] = useState('');
-  const [intervalIsActive, setIntervalIsActive] = useState(true);
   const [scores, setScores] = useState(initalScores);
   const [seconds, setSeconds] = useState(0.0);
   const [responseTimerIsActive, setResponseTimerIsActive] = useState(false);
-  let interval = null;
+  const [responseCountdown, setResponseCountdown] = useState(5);
+  const [responseCountdownIsActive, setResponseCountdownIsActive] = useState(false);
+  const [correctResponse, setCorrectResponse] = useState('');
+  const [selectedClue, setSelectedClue] = useState(null);
   let responseInterval = null;
+  let responseCountdownInterval = null;
 
-  //don't use click since it conflicts with displayClue()
-  //document.addEventListener('click', () => answer());
-
-  // useEffect(() => {
-  //   if (intervalIsActive) {
-  //     interval = setInterval(() => chooseClue(clueNumber), 3000);
-  //   } else {
-  //     clearInterval(interval);
-  //   }
-  //   return () => clearInterval(interval);
-  // }, [clueNumber]);
-
-  // useEffect(() => {
-  //   if (intervalIsActive) {
-  //     displayClueByNumber(clueNumber);
-  //   } else {
-  //     clearInterval(interval);
-  //   }
-  //   return () => clearInterval(interval);
-  // }, [clueNumber]);
-
+  // displays how fast I click
   useEffect(() => {
     if (responseTimerIsActive) {
       responseInterval = setInterval(() => {
@@ -63,12 +45,65 @@ const App = () => {
     return () => clearInterval(responseInterval);
   }, [responseTimerIsActive]);
 
+  useEffect(() => {
+    if (responseCountdownIsActive) {
+      document.addEventListener('keypress', e => {
+        if (e.key === 'a') { // press 'a' to answer
+          setResponseCountdownIsActive(false);
+          setCorrect(correctResponse);
+        }
+      });
+      responseCountdownInterval = setInterval(() => {
+        setResponseCountdown(responseCountdown => responseCountdown - 0.1);
+      }, 100);
+    } else {
+        clearInterval(responseCountdownInterval);
+    }   
+    return () => clearInterval(responseCountdownInterval);
+  }, [responseCountdownIsActive]);
+
+  // press 's' to start the game
+  useEffect(() => {
+    document.addEventListener('keypress', e => {
+      if (e.key === 's') {
+        displayClueByNumber(1);
+      }
+    });
+  }, [])
+
+  // press 'c' for correct response
+  // press 'w' for wrong response
+  document.addEventListener('keypress', e => {
+    let scores_copy = {...scores};
+    if (e.key === 'c') {
+      scores_copy['Alan'] += selectedClue.value;
+    } else if (e.key === 'w') {
+      scores_copy['Alan'] -= selectedClue.value;
+    }
+    setScores(scores_copy);
+  });
+
+  function answer() {
+    setResponseTimerIsActive(false);
+    const probability = getProbability(selectedClue.value, round);
+    if (isFastestResponse(seconds, probability)) {
+      setMessage('Alan');
+      setResponseCountdownIsActive(true);
+    } else if (selectedClue.response.correct_contestant != weakestContestant) {
+      setMessage(selectedClue.response.correct_contestant);
+    } else {
+      setMessage(selectedClue.response.correct_response);
+    }
+  }
+
   function displayClueByNumber(clueNumber) {
     let visibleCopy = [...visible];
     for (let col = 0; col < 6; col++) {
       for (let row = 0; row < 5; row++) {
         if (board[col][row].number === clueNumber) {
           visibleCopy[row][col] = true;
+          console.log(board[col][row]);
+          setSelectedClue(board[col][row]);
           setVisible(visibleCopy);
           readClue(row, col);
         }
@@ -78,6 +113,7 @@ const App = () => {
 
   function readClue(row, col) {
     const clue = showData.jeopardy_round[col][row];
+    setCorrectResponse(clue.response.correct_response);
     msg.text = clue.text;
     window.speechSynthesis.speak(msg);
     msg.addEventListener('end', () => clearClue(row, col));
@@ -89,10 +125,6 @@ const App = () => {
     setBoard(board_copy);
     setTableStyle('table-light-on');
     setResponseTimerIsActive(true);
-    // const clueNumber = board_copy[col][row].number + 1;
-    //setClueNumber(board_copy[col][row].number + 1);
-    //updateScores(board_copy[col][row]);
-    //displayClueByNumber(clueNumber);
   }
 
   function displayClue(row, col) {
@@ -101,32 +133,6 @@ const App = () => {
       visibleCopy[row][col] = true;
       setVisible(visibleCopy);
       readClue(row, col);
-    }
-  }
-
-  function getClue(clueNumber) {
-    for (let col = 0; col < 6; col++) {
-      for (let row = 0; row < 5; row++) {
-        if (board[col][row].number === clueNumber) {
-          return board[col][row];
-        }
-      }
-    }
-    return null;
-  }
-
-  function answer() {
-    setIntervalIsActive(false);
-    clearInterval(interval);
-    clearInterval(responseInterval);
-    const clue = getClue(clueNumber);
-    const probability = getProbability(clue.value, round);
-    if (isFastestResponse(seconds, probability)) {
-      setMessage('Alan');
-    } else if (clue.response.correct_contestant != weakestContestant) {
-      setMessage(clue.response.correct_contestant);
-    } else {
-      setMessage(clue.response.correct_response);
     }
   }
 
@@ -160,6 +166,7 @@ const App = () => {
   }
 
   function isFastestResponse(seconds, probability) {
+    return true;
     const randomNumber = Math.random();
     if (seconds <= 0.2) {
       return randomNumber < probability;
@@ -201,7 +208,6 @@ const App = () => {
         }
       }
     }
-    clearInterval(interval);
   }
 
   function showClue(visibleCopy, row, col) {
@@ -212,10 +218,9 @@ const App = () => {
       setMessage('Daily Double! Wager: ' + clue.daily_double_wager);
       setCorrect('');
     }
-    //setTimeout(() => clearClue(row, col), 1000*clue.text.length/charsPerSecond);
   }
 
-  function updateScores(clue) {
+  function updateOpponentScores(clue) {
     const incorrectContestants = clue.response.incorrect_contestants;
     const correctContestant = clue.response.correct_contestant;
     let scores_copy = {...scores};
@@ -249,6 +254,7 @@ const App = () => {
   return (
     <div>
       <div>{seconds.toFixed(2)}</div>
+      <div>{responseCountdown.toFixed(1)}</div>
       <Banner contestants={contestants} correct={correct} message={message} scores={scores} />
       <table className={tableStyle}>
         <thead>
