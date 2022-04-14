@@ -73,6 +73,7 @@ const App = () => {
     });
   }, []);
 
+  // call this when buzzing in
   function answer() {
     setResponseTimerIsActive(false);
     const probability = getProbability(selectedClue.value, round);
@@ -100,6 +101,7 @@ const App = () => {
     return clueNumberCopy;
   }
 
+  // opponent chooses clue
   function chooseClue(clueNumber) {
     turnOffLight();
     let visibleCopy = [...visible];
@@ -263,7 +265,6 @@ const App = () => {
   }
 
   function concede() {
-    console.log(selectedClue);
     updateOpponentScores(selectedClue);
   }
 
@@ -310,10 +311,6 @@ const App = () => {
 
   function turnOnLight() {
     setTableStyle('table-light-on');
-  }
-
-  function range(start, end) {
-    return Array(end - start + 1).fill().map((_, idx) => start + idx)
   }
 
   return (
