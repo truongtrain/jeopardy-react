@@ -20,7 +20,6 @@ const App = () => {
   const [board, setBoard] = useState(showData.jeopardy_round);
   const [tableStyle, setTableStyle] = useState('table-light-off');
   const [clueNumber, setClueNumber] = useState(1);
-  const [clueNumbers, setClueNumbers] = useState(range(1, 30));
   const [message, setMessage] = useState('');
   const [correct, setCorrect] = useState('');
   const [scores, setScores] = useState(initalScores);
@@ -84,9 +83,40 @@ const App = () => {
       readText(selectedClue.response.correct_contestant);
       updateOpponentScores(selectedClue);
       const nextClueNumber = getNextClueNumber();
+      setClueNumber(nextClueNumber);
       chooseClue(nextClueNumber);
     } else {
       setMessage(selectedClue.response.correct_response);
+    }
+  }
+
+  function getNextClueNumber() {
+    let clueNumberCopy = clueNumber + 1;
+    let clue = getClue(clueNumberCopy);
+    while (clue.text === '') {
+      clueNumberCopy += 1;
+      clue = getClue(clueNumberCopy);
+    }
+    return clueNumberCopy;
+  }
+
+  function chooseClue(clueNumber) {
+    turnOffLight();
+    let visibleCopy = [...visible];
+    for (let col = 0; col < 6; col++) {
+      for (let row = 0; row < 5; row++) {
+        if (board[col][row].number === clueNumber) {
+          const clue = board[col][row];
+          const message = clue.category + ' for $' + clue.value;
+          // readText(message);
+          setCorrect('');
+          //visibleCopy[row][col] = true;
+          readClue(row, col, message);
+          //showClue(visibleCopy, row, col);
+          //setTimeout(() => showClue(visibleCopy, row, col), 2000);
+          return;
+        }
+      }
     }
   }
 
@@ -102,12 +132,11 @@ const App = () => {
     if (visibleCopy[row][col] !== undefined) {
       visibleCopy[row][col] = true;
       setVisible(visibleCopy);
-      readClue(row, col);
+      readClue(row, col, '');
     }
   }
 
   function displayClueByNumber(clueNumber) {
-    setClueNumbers(clueNumbers.filter(number => number !== clueNumber));
     turnOffLight();
     let visibleCopy = [...visible];
     for (let col = 0; col < 6; col++) {
@@ -115,7 +144,7 @@ const App = () => {
         if (board[col][row].number === clueNumber) {
           visibleCopy[row][col] = true;
           setVisible(visibleCopy);
-          readClue(row, col);
+          readClue(row, col, '');
         }
       }
     }
@@ -132,9 +161,9 @@ const App = () => {
     return null;
   }
 
-  function readClue(row, col) {
+  function readClue(row, col, topic) {
     const clue = showData.jeopardy_round[col][row];
-    msg.text = clue.text;
+    msg.text = topic + clue.text;
     window.speechSynthesis.speak(msg);
     msg.addEventListener('end', () => clearClue(row, col));
   }
@@ -202,29 +231,8 @@ const App = () => {
     return false;
   }
 
-  function chooseClue(clueNumber) {
-    turnOffLight();
-    let visibleCopy = [...visible];
-    for (let col = 0; col < 6; col++) {
-      for (let row = 0; row < 5; row++) {
-        if (board[col][row].number === clueNumber) {
-          const clue = board[col][row];
-          const message = clue.category + ' for $' + clue.value;
-          readText(message);
-          setCorrect('');
-          visibleCopy[row][col] = true;
-          readClue(row, col);
-          //showClue(visibleCopy, row, col);
-          //setTimeout(() => showClue(visibleCopy, row, col), 2000);
-          return;
-        }
-      }
-    }
-  }
-
   function showClue(visibleCopy, row, col) {
     setVisible(visibleCopy);
-    readClue(row, col);
     const clue = showData.jeopardy_round[col][row];
     if (clue.daily_double_wager > 0) {
       setMessage('Daily Double! Wager: ' + clue.daily_double_wager);
@@ -277,14 +285,6 @@ const App = () => {
       scores_copy[correctContestant] += scoreChange;
     }
     setScores(scores_copy);
-  }
-
-  function getNextClueNumber() {
-    const clue = getClue(clueNumbers[0]);
-    if (clue.text === '') {
-      setMessage('End of round');
-    }
-    return clueNumbers[0];
   }
 
   function readText(text) {
