@@ -6,7 +6,6 @@ import Banner from './Banner';
 const msg = new SpeechSynthesisUtterance();
 
 const App = () => {
-  window.addEventListener('scroll', () => answer(), { once: true });
   const weakestContestant = showData.weakest_contestant;
   const contestants = showData.contestants.filter(
     contestant => contestant !== weakestContestant
@@ -31,6 +30,12 @@ const App = () => {
   const [selectedClue, setSelectedClue] = useState(getClue(1));
   let responseInterval = null;
   let responseCountdownInterval = null;
+
+  window.addEventListener('scroll', () => {
+    if (responseTimerIsActive) {
+      answer();
+    }
+  }, { once: true });
 
   // displays how fast I click after the clue is read
   useEffect(() => {
@@ -66,8 +71,17 @@ const App = () => {
     });
   }, []);
 
+  function turnOffLight() {
+    setTableStyle('table-light-off');
+  }
+
+  function turnOnLight() {
+    setTableStyle('table-light-on');
+  }
+
   function answer() {
     setResponseTimerIsActive(false);
+    turnOffLight();
     const probability = getProbability(selectedClue.value, round);
     if (isFastestResponse(seconds, probability)) {
       setMessage('Alan');
@@ -116,11 +130,13 @@ const App = () => {
     let board_copy = [...board];
     board_copy[col][row].text = '';
     setBoard(board_copy);
-    setTableStyle('table-light-on');
+    turnOnLight();
     setResponseTimerIsActive(true);
   }
 
   function displayClue(row, col) {
+    setMessage('');
+    setCorrect('');
     setSeconds(0);
     setResponseCountdown(5);
     setSelectedClue(board[col][row]);
@@ -190,7 +206,7 @@ const App = () => {
   }
 
   function chooseClue(clueNumber) {
-    setTableStyle('table-light-off');
+    turnOffLight();
     let visibleCopy = [...visible];
     for (let col = 0; col < 6; col++) {
       for (let row = 0; row < 5; row++) {
@@ -218,6 +234,7 @@ const App = () => {
   }
 
   function showAnswer() {
+    setResponseTimerIsActive(false);
     setResponseCountdownIsActive(false);
     setCorrect(selectedClue.response.correct_response);
   }
@@ -267,13 +284,14 @@ const App = () => {
 
   return (
     <div>
-      
       <Banner contestants={contestants} correct={correct} message={message} scores={scores} />
-      <div>{seconds.toFixed(2)}</div>
-      <div>{responseCountdown.toFixed(1)}</div>
-      <button onClick={() => showAnswer()}>Show Answer</button>
-      <button onClick={() => incrementScore()}>Correct</button>
-      <button onClick={() => deductScore()}>Incorrect</button>
+      <div className='banner'>
+        <div>{seconds.toFixed(2)}</div>
+        <button onClick={() => showAnswer()}>Show Answer</button>
+        <button onClick={() => incrementScore()}>Correct</button>
+        <button onClick={() => deductScore()}>Incorrect</button>
+        <div>{responseCountdown.toFixed(1)}</div>
+      </div>
       <table className={tableStyle}>
         <thead>
           <tr>
