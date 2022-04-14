@@ -84,8 +84,13 @@ const App = () => {
       readText(selectedClue.response.correct_contestant);
       updateOpponentScores(selectedClue);
       const nextClueNumber = getNextClueNumber();
-      setClueNumber(nextClueNumber);
-      chooseClue(nextClueNumber);
+      if (nextClueNumber === 30 && getClue(30).text === '') {
+        setRound(round+1);
+        setMessage('End of round');
+      } else {
+        setClueNumber(nextClueNumber);
+        chooseClue(nextClueNumber);
+      }
     } else {
       setMessage(selectedClue.response.correct_response);
     }
@@ -94,7 +99,7 @@ const App = () => {
   function getNextClueNumber() {
     let clueNumberCopy = clueNumber + 1;
     let clue = getClue(clueNumberCopy);
-    while (clue.text === '') {
+    while (clue.text === '' && clueNumberCopy < 30) {
       clueNumberCopy += 1;
       clue = getClue(clueNumberCopy);
     }
