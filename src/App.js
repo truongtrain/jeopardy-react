@@ -6,6 +6,14 @@ import Banner from './Banner';
 const msg = new SpeechSynthesisUtterance();
 
 const App = () => {
+  let round = 1;
+  let clueNumber = 1;
+  let responseTimerIsActive = false;
+  let responseCountdownIsActive = false;
+  let responseInterval = null;
+  let responseCountdownInterval = null;
+  let availableClueNumbers = initializeAvailableClueNumbers();
+
   const weakestContestant = showData.weakest_contestant;
   const contestants = showData.contestants.filter(
     contestant => contestant !== weakestContestant
@@ -15,22 +23,16 @@ const App = () => {
   contestants.forEach(contestant => initalScores[contestant] = 0);
   initalScores['Alan'] = 0;
 
-  const [round, setRound] = useState(1);
   const [visible, setVisible] = useState(getDefaultVisible());
   const [board, setBoard] = useState(showData.jeopardy_round);
   const [tableStyle, setTableStyle] = useState('table-light-off');
-  const [clueNumber, setClueNumber] = useState(1);
   const [message, setMessage] = useState('');
   const [correct, setCorrect] = useState('');
   const [scores, setScores] = useState(initalScores);
   const [seconds, setSeconds] = useState(0.0);
-  const [responseTimerIsActive, setResponseTimerIsActive] = useState(false);
   const [responseCountdown, setResponseCountdown] = useState(5);
-  const [responseCountdownIsActive, setResponseCountdownIsActive] = useState(false);
-  const [selectedClue, setSelectedClue] = useState(getClue(1));
-  let responseInterval = null;
-  let responseCountdownInterval = null;
-
+  let selectedClue = getClue(1);
+  
   // I buzz in by clicking scroll up or down
   useEffect(() => {
     document.addEventListener('scroll', () => {
@@ -75,40 +77,34 @@ const App = () => {
 
   // call this when buzzing in
   function answer() {
-    setResponseTimerIsActive(false);
+    responseTimerIsActive = false;
     const probability = getProbability(selectedClue.value, round);
     if (isFastestResponse(seconds, probability)) {
       readText('Alan');
-      setResponseCountdownIsActive(true);
+      responseCountdownIsActive = true;
     } else if (selectedClue.response.correct_contestant != weakestContestant) {
       readText(selectedClue.response.correct_contestant);
       updateOpponentScores(selectedClue);
       const nextClueNumber = getNextClueNumber();
-      if (nextClueNumber === 30 && getClue(30).text === '') {
-        setRound(round+1);
-        setMessage('End of round');
-      } else {
-        setClueNumber(nextClueNumber);
-        chooseClue(nextClueNumber);
-      }
+      chooseClue(nextClueNumber);
     } else {
       setMessage(selectedClue.response.correct_response);
     }
   }
 
   function getNextClueNumber() {
-    let clueNumberCopy = clueNumber + 1;
-    let clue = getClue(clueNumberCopy);
-    while (clue.text === '' && clueNumberCopy < 30) {
-      clueNumberCopy += 1;
-      clue = getClue(clueNumberCopy);
+    for (let i = 1; i <= 30; i++) {
+      if (availableClueNumbers[i]) {
+        return i;
+      }
     }
-    return clueNumberCopy;
+    return -1;
   }
 
   // opponent chooses clue
   function chooseClue(clueNumber) {
     turnOffLight();
+    availableClueNumbers[clueNumber] = false;
     let visibleCopy = [...visible];
     for (let col = 0; col < 6; col++) {
       for (let row = 0; row < 5; row++) {
@@ -133,8 +129,8 @@ const App = () => {
     setCorrect('');
     setSeconds(0);
     setResponseCountdown(5);
-    setSelectedClue(board[col][row]);
-    setClueNumber(board[col][row].number);
+    selectedClue = board[col][row];
+    availableClueNumbers[board[col][row].number] = false;
     let visibleCopy = [...visible];
     if (visibleCopy[row][col] !== undefined) {
       visibleCopy[row][col] = true;
@@ -145,6 +141,7 @@ const App = () => {
 
   function displayClueByNumber(clueNumber) {
     turnOffLight();
+    availableClueNumbers[clueNumber] = false;
     let visibleCopy = [...visible];
     for (let col = 0; col < 6; col++) {
       for (let row = 0; row < 5; row++) {
@@ -180,7 +177,7 @@ const App = () => {
     board_copy[col][row].text = '';
     setBoard(board_copy);
     turnOnLight();
-    setResponseTimerIsActive(true);
+    responseTimerIsActive = true;
   }
 
   function getProbability(value, round) {
@@ -248,8 +245,8 @@ const App = () => {
   }
 
   function showAnswer() {
-    setResponseTimerIsActive(false);
-    setResponseCountdownIsActive(false);
+    responseTimerIsActive = false;
+    responseCountdownIsActive = false;
     setCorrect(selectedClue.response.correct_response);
   }
 
@@ -308,6 +305,14 @@ const App = () => {
       }
     }
     return visibleMatrix;
+  }
+
+  function initializeAvailableClueNumbers() {
+    const numbers = [];
+    for (let i = 1; i <= 30; i++) {
+      numbers[i] = true;
+    }
+    return numbers;
   }
 
   function turnOffLight() {
