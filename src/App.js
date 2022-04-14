@@ -1,5 +1,5 @@
 import './App.css';
-import React, {useState, useEffect, useRef} from 'react';
+import React, {useState, useEffect} from 'react';
 import showData from './jeopardy.json';
 import Banner from './Banner';
 
@@ -20,6 +20,7 @@ const App = () => {
   const [board, setBoard] = useState(showData.jeopardy_round);
   const [tableStyle, setTableStyle] = useState('table-light-off');
   const [clueNumber, setClueNumber] = useState(1);
+  const [clueNumbers, setClueNumbers] = useState(range(1, 30));
   const [message, setMessage] = useState('');
   const [correct, setCorrect] = useState('');
   const [scores, setScores] = useState(initalScores);
@@ -31,13 +32,16 @@ const App = () => {
   let responseInterval = null;
   let responseCountdownInterval = null;
 
-  window.addEventListener('scroll', () => {
-    if (responseTimerIsActive) {
-      answer();
-    }
-  }, { once: true });
-
-  // displays how fast I click after the clue is read
+  // I buzz in by clicking scroll up or down
+  useEffect(() => {
+    document.addEventListener('scroll', () => {
+      if (responseTimerIsActive) {
+        answer();
+      }
+    }, { once: true });
+  }, [responseTimerIsActive]);
+  
+  // determines how fast I click after the clue is read
   useEffect(() => {
     if (responseTimerIsActive) {
       responseInterval = setInterval(() => {
@@ -61,9 +65,8 @@ const App = () => {
     return () => clearInterval(responseCountdownInterval);
   }, [responseCountdownIsActive]);
 
-
+  // press 's' to start the game
   useEffect(() => {
-    // press 's' to start the game
     document.addEventListener('keypress', e => {
       if (clueNumber === 1 && e.key === 's') {
         displayClueByNumber(1);
@@ -71,35 +74,46 @@ const App = () => {
     });
   }, []);
 
-  function turnOffLight() {
-    setTableStyle('table-light-off');
-  }
-
-  function turnOnLight() {
-    setTableStyle('table-light-on');
-  }
-
   function answer() {
     setResponseTimerIsActive(false);
-    turnOffLight();
     const probability = getProbability(selectedClue.value, round);
     if (isFastestResponse(seconds, probability)) {
-      setMessage('Alan');
+      readText('Alan');
       setResponseCountdownIsActive(true);
     } else if (selectedClue.response.correct_contestant != weakestContestant) {
-      setMessage(selectedClue.response.correct_contestant);
+      readText(selectedClue.response.correct_contestant);
+      updateOpponentScores(selectedClue);
+      const nextClueNumber = getNextClueNumber();
+      chooseClue(nextClueNumber);
     } else {
       setMessage(selectedClue.response.correct_response);
     }
   }
 
+  function displayClue(row, col) {
+    turnOffLight();
+    setMessage('');
+    setCorrect('');
+    setSeconds(0);
+    setResponseCountdown(5);
+    setSelectedClue(board[col][row]);
+    setClueNumber(board[col][row].number);
+    let visibleCopy = [...visible];
+    if (visibleCopy[row][col] !== undefined) {
+      visibleCopy[row][col] = true;
+      setVisible(visibleCopy);
+      readClue(row, col);
+    }
+  }
+
   function displayClueByNumber(clueNumber) {
+    setClueNumbers(clueNumbers.filter(number => number !== clueNumber));
+    turnOffLight();
     let visibleCopy = [...visible];
     for (let col = 0; col < 6; col++) {
       for (let row = 0; row < 5; row++) {
         if (board[col][row].number === clueNumber) {
           visibleCopy[row][col] = true;
-          //setSelectedClue(board[col][row]);
           setVisible(visibleCopy);
           readClue(row, col);
         }
@@ -118,7 +132,6 @@ const App = () => {
     return null;
   }
 
-
   function readClue(row, col) {
     const clue = showData.jeopardy_round[col][row];
     msg.text = clue.text;
@@ -132,21 +145,6 @@ const App = () => {
     setBoard(board_copy);
     turnOnLight();
     setResponseTimerIsActive(true);
-  }
-
-  function displayClue(row, col) {
-    setMessage('');
-    setCorrect('');
-    setSeconds(0);
-    setResponseCountdown(5);
-    setSelectedClue(board[col][row]);
-    setClueNumber(board[col][row].number);
-    let visibleCopy = [...visible];
-    if (visibleCopy[row][col] !== undefined) {
-      visibleCopy[row][col] = true;
-      setVisible(visibleCopy);
-      readClue(row, col);
-    }
   }
 
   function getProbability(value, round) {
@@ -179,7 +177,6 @@ const App = () => {
   }
 
   function isFastestResponse(seconds, probability) {
-    return true;
     const randomNumber = Math.random();
     if (seconds <= 0.2) {
       return randomNumber < probability;
@@ -213,10 +210,12 @@ const App = () => {
         if (board[col][row].number === clueNumber) {
           const clue = board[col][row];
           const message = clue.category + ' for $' + clue.value;
-          setMessage(message);
+          readText(message);
           setCorrect('');
           visibleCopy[row][col] = true;
-          setTimeout(() => showClue(visibleCopy, row, col), 2000);
+          readClue(row, col);
+          //showClue(visibleCopy, row, col);
+          //setTimeout(() => showClue(visibleCopy, row, col), 2000);
           return;
         }
       }
@@ -240,15 +239,24 @@ const App = () => {
   }
 
   function incrementScore() {
+    msg.text = 'Correct';
+    window.speechSynthesis.speak(msg);
     let scores_copy = {...scores};
     scores_copy['Alan'] += selectedClue.value;
     setScores(scores_copy);
   }
 
   function deductScore() {
+    msg.text = 'No';
+    window.speechSynthesis.speak(msg);
     let scores_copy = {...scores};
     scores_copy['Alan'] -= selectedClue.value;
     setScores(scores_copy);
+  }
+
+  function concede() {
+    console.log(selectedClue);
+    updateOpponentScores(selectedClue);
   }
 
   function updateOpponentScores(clue) {
@@ -271,6 +279,20 @@ const App = () => {
     setScores(scores_copy);
   }
 
+  function getNextClueNumber() {
+    const clue = getClue(clueNumbers[0]);
+    if (clue.text === '') {
+      setMessage('End of round');
+    }
+    return clueNumbers[0];
+  }
+
+  function readText(text) {
+    setMessage(text);
+    msg.text = text;
+    window.speechSynthesis.speak(msg);
+  }
+
   function getDefaultVisible() {
     let visibleMatrix = [];
     for (let row = 0; row < 5; row++) {
@@ -282,16 +304,31 @@ const App = () => {
     return visibleMatrix;
   }
 
+  function turnOffLight() {
+    setTableStyle('table-light-off');
+  }
+
+  function turnOnLight() {
+    setTableStyle('table-light-on');
+  }
+
+  function range(start, end) {
+    return Array(end - start + 1).fill().map((_, idx) => start + idx)
+  }
+
   return (
     <div>
       <Banner contestants={contestants} correct={correct} message={message} scores={scores} />
+      
       <div className='banner'>
         <div>{seconds.toFixed(2)}</div>
+        <button onClick={() => concede()}>Concede</button>
         <button onClick={() => showAnswer()}>Show Answer</button>
         <button onClick={() => incrementScore()}>Correct</button>
         <button onClick={() => deductScore()}>Incorrect</button>
         <div>{responseCountdown.toFixed(1)}</div>
       </div>
+      
       <table className={tableStyle}>
         <thead>
           <tr>
