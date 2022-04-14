@@ -1,5 +1,5 @@
 import './App.css';
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import showData from './jeopardy.json';
 import Banner from './Banner';
 
@@ -28,12 +28,11 @@ const App = () => {
   const [responseTimerIsActive, setResponseTimerIsActive] = useState(false);
   const [responseCountdown, setResponseCountdown] = useState(5);
   const [responseCountdownIsActive, setResponseCountdownIsActive] = useState(false);
-  const [correctResponse, setCorrectResponse] = useState('');
-  const [selectedClue, setSelectedClue] = useState(null);
+  const [selectedClue, setSelectedClue] = useState(getClue(1));
   let responseInterval = null;
   let responseCountdownInterval = null;
 
-  // displays how fast I click
+  // displays how fast I click after the clue is read
   useEffect(() => {
     if (responseTimerIsActive) {
       responseInterval = setInterval(() => {
@@ -45,14 +44,9 @@ const App = () => {
     return () => clearInterval(responseInterval);
   }, [responseTimerIsActive]);
 
+  // 5 second timer to respond after my name is called
   useEffect(() => {
     if (responseCountdownIsActive) {
-      document.addEventListener('keypress', e => {
-        if (e.key === 'a') { // press 'a' to answer
-          setResponseCountdownIsActive(false);
-          setCorrect(correctResponse);
-        }
-      });
       responseCountdownInterval = setInterval(() => {
         setResponseCountdown(responseCountdown => responseCountdown - 0.1);
       }, 100);
@@ -62,26 +56,15 @@ const App = () => {
     return () => clearInterval(responseCountdownInterval);
   }, [responseCountdownIsActive]);
 
-  // press 's' to start the game
+
   useEffect(() => {
+    // press 's' to start the game
     document.addEventListener('keypress', e => {
-      if (e.key === 's') {
+      if (clueNumber === 1 && e.key === 's') {
         displayClueByNumber(1);
       }
     });
-  }, [])
-
-  // press 'c' for correct response
-  // press 'w' for wrong response
-  document.addEventListener('keypress', e => {
-    let scores_copy = {...scores};
-    if (e.key === 'c') {
-      scores_copy['Alan'] += selectedClue.value;
-    } else if (e.key === 'w') {
-      scores_copy['Alan'] -= selectedClue.value;
-    }
-    setScores(scores_copy);
-  });
+  }, []);
 
   function answer() {
     setResponseTimerIsActive(false);
@@ -102,8 +85,7 @@ const App = () => {
       for (let row = 0; row < 5; row++) {
         if (board[col][row].number === clueNumber) {
           visibleCopy[row][col] = true;
-          console.log(board[col][row]);
-          setSelectedClue(board[col][row]);
+          //setSelectedClue(board[col][row]);
           setVisible(visibleCopy);
           readClue(row, col);
         }
@@ -111,9 +93,20 @@ const App = () => {
     }
   }
 
+  function getClue(clueNumber) {
+    for (let col = 0; col < 6; col++) {
+      for (let row = 0; row < 5; row++) {
+        if (board[col][row].number === clueNumber) {
+          return board[col][row];
+        }
+      }
+    }
+    return null;
+  }
+
+
   function readClue(row, col) {
     const clue = showData.jeopardy_round[col][row];
-    setCorrectResponse(clue.response.correct_response);
     msg.text = clue.text;
     window.speechSynthesis.speak(msg);
     msg.addEventListener('end', () => clearClue(row, col));
@@ -128,6 +121,10 @@ const App = () => {
   }
 
   function displayClue(row, col) {
+    setSeconds(0);
+    setResponseCountdown(5);
+    setSelectedClue(board[col][row]);
+    setClueNumber(board[col][row].number);
     let visibleCopy = [...visible];
     if (visibleCopy[row][col] !== undefined) {
       visibleCopy[row][col] = true;
@@ -220,6 +217,23 @@ const App = () => {
     }
   }
 
+  function showAnswer() {
+    setResponseCountdownIsActive(false);
+    setCorrect(selectedClue.response.correct_response);
+  }
+
+  function incrementScore() {
+    let scores_copy = {...scores};
+    scores_copy['Alan'] += selectedClue.value;
+    setScores(scores_copy);
+  }
+
+  function deductScore() {
+    let scores_copy = {...scores};
+    scores_copy['Alan'] -= selectedClue.value;
+    setScores(scores_copy);
+  }
+
   function updateOpponentScores(clue) {
     const incorrectContestants = clue.response.incorrect_contestants;
     const correctContestant = clue.response.correct_contestant;
@@ -253,9 +267,13 @@ const App = () => {
 
   return (
     <div>
+      
+      <Banner contestants={contestants} correct={correct} message={message} scores={scores} />
       <div>{seconds.toFixed(2)}</div>
       <div>{responseCountdown.toFixed(1)}</div>
-      <Banner contestants={contestants} correct={correct} message={message} scores={scores} />
+      <button onClick={() => showAnswer()}>Show Answer</button>
+      <button onClick={() => incrementScore()}>Correct</button>
+      <button onClick={() => deductScore()}>Incorrect</button>
       <table className={tableStyle}>
         <thead>
           <tr>
