@@ -366,7 +366,7 @@ const App = () => {
         <div>{seconds.toFixed(2)}</div>
         <button onClick={() => concede()}>Concede</button>
         <button onClick={() => answer()}>Answer</button>
-        <button onClick={() => showAnswer()}>Show Answer</button>
+        <button onClick={() => showAnswer()}>Show Correct</button>
         <button onClick={() => incrementScore()}>Correct</button>
         <button onClick={() => deductScore()}>Incorrect</button>
         <div>{responseCountdown.toFixed(1)}</div>
