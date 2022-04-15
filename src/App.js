@@ -112,6 +112,7 @@ const App = () => {
     }
     // handle correct response
     if (correctContestant && correctContestant !== weakestContestant) {
+      setLastCorrectContestant(correctContestant);
       scores_copy[correctContestant] += scoreChange;
       setScores(scores_copy);
       setMessage(correctContestant + ': What is ' + clue.response.correct_response + '?');
@@ -277,6 +278,7 @@ const App = () => {
 
   function incrementScore() {
     setResponseTimerIsActive(false);
+    setLastCorrectContestant(playerName);
     msg.text = 'Correct';
     window.speechSynthesis.speak(msg);
     let scores_copy = {...scores};
