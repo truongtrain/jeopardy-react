@@ -90,46 +90,43 @@ const App = () => {
       readText(selectedClue.response.correct_contestant);
       updateOpponentScores(selectedClue);
       const nextClueNumber = getNextClueNumber();
-      chooseClue(nextClueNumber);
+      displayClueByNumber(nextClueNumber);
+      //chooseClue(nextClueNumber);
     } else {
       setMessage(selectedClue.response.correct_response);
     }
   }
 
-  function getNextClueNumber() {
-    for (let i = 1; i <= 30; i++) {
-      if (availableClueNumbers[i] === true) {
-        return i;
+  function updateOpponentScores(clue) {
+    const incorrectContestants = clue.response.incorrect_contestants;
+    const correctContestant = clue.response.correct_contestant;
+    let scores_copy = {...scores};
+    let scoreChange = clue.daily_double_wager > 0 ? clue.daily_double_wager : clue.value;
+    // handle triple stumpers
+    if (!correctContestant || correctContestant === weakestContestant) {
+      setMessage('');
+      setCorrect(hostName + ': ' + clue.response.correct_response);
+      if (lastCorrectContestant !== playerName) {
+        displayNextClue();
+      }
+      return;
+    }
+    if (incorrectContestants.length > 0) {
+      for (let i = 0; i < incorrectContestants.length; i++) {
+        setMessage(incorrectContestants[i] + ': What is ' + clue.response.incorrect_responses[i] + '?');
+        setCorrect(hostName + ': No');
+        scores_copy[incorrectContestants[i]] -= scoreChange;
+        setScores(scores_copy);
       }
     }
-    return -1;
-  }
-
-  function updateAvailableClueNumbers(clueNumber) {
-    let availableClueNumbersCopy = [...availableClueNumbers];
-    availableClueNumbersCopy[clueNumber] = false;
-    setAvailableClueNumbers(availableClueNumbersCopy);
-  }
-
-  // opponent chooses clue
-  function chooseClue(clueNumber) {
-    turnOffLight();
-    updateAvailableClueNumbers(clueNumber);
-    let visibleCopy = [...visible];
-    for (let col = 0; col < 6; col++) {
-      for (let row = 0; row < 5; row++) {
-        if (board[col][row].number === clueNumber) {
-          const clue = board[col][row];
-          const message = clue.category + ' for $' + clue.value;
-          // readText(message);
-          setCorrect('');
-          //visibleCopy[row][col] = true;
-          readClue(row, col, message);
-          //showClue(visibleCopy, row, col);
-          //setTimeout(() => showClue(visibleCopy, row, col), 2000);
-          return;
-        }
-      }
+    if (correctContestant && correctContestant !== weakestContestant) {
+      setMessage(correctContestant + ': What is ' + clue.response.correct_response + '?');
+      setCorrect(hostName + ': Yes');
+      scores_copy[correctContestant] += scoreChange;
+      setScores(scores_copy);
+      const message = clue.category + ' for $' + clue.value;
+      readText(message);
+      displayNextClue();
     }
   }
 
@@ -165,6 +162,21 @@ const App = () => {
         }
       }
     }
+  }
+
+  function getNextClueNumber() {
+    for (let i = 1; i <= 30; i++) {
+      if (availableClueNumbers[i] === true) {
+        return i;
+      }
+    }
+    return -1;
+  }
+
+  function updateAvailableClueNumbers(clueNumber) {
+    let availableClueNumbersCopy = [...availableClueNumbers];
+    availableClueNumbersCopy[clueNumber] = false;
+    setAvailableClueNumbers(availableClueNumbersCopy);
   }
 
   function getClue(clueNumber) {
@@ -248,15 +260,6 @@ const App = () => {
     return false;
   }
 
-  function showClue(visibleCopy, row, col) {
-    setVisible(visibleCopy);
-    const clue = showData.jeopardy_round[col][row];
-    if (clue.daily_double_wager > 0) {
-      setMessage('Daily Double! Wager: ' + clue.daily_double_wager);
-      setCorrect('');
-    }
-  }
-
   function showAnswer() {
     setResponseTimerIsActive(false);
     responseCountdownIsActive = false;
@@ -282,37 +285,6 @@ const App = () => {
   function concede() {
     setResponseTimerIsActive(false);
     updateOpponentScores(selectedClue);
-  }
-
-  function updateOpponentScores(clue) {
-    const incorrectContestants = clue.response.incorrect_contestants;
-    const correctContestant = clue.response.correct_contestant;
-    let scores_copy = {...scores};
-    let scoreChange = clue.daily_double_wager > 0 ? clue.daily_double_wager : clue.value;
-    // handle triple stumpers
-    if (!correctContestant || correctContestant === weakestContestant) {
-      setMessage('');
-      setCorrect(hostName + ': ' + clue.response.correct_response);
-      if (lastCorrectContestant !== playerName) {
-        displayNextClue();
-      }
-      return;
-    }
-    if (incorrectContestants.length > 0) {
-      for (let i = 0; i < incorrectContestants.length; i++) {
-        setMessage(incorrectContestants[i] + ': What is ' + clue.response.incorrect_responses[i] + '?');
-        setCorrect(hostName + ': No');
-        scores_copy[incorrectContestants[i]] -= scoreChange;
-        setScores(scores_copy);
-      }
-    }
-    if (correctContestant && correctContestant !== weakestContestant) {
-      setMessage(correctContestant + ': What is ' + clue.response.correct_response + '?');
-      setCorrect(hostName + ': Yes');
-      scores_copy[correctContestant] += scoreChange;
-      setScores(scores_copy);
-      displayNextClue();
-    }
   }
 
   function displayNextClue() {
