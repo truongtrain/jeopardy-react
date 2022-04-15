@@ -95,24 +95,6 @@ const App = () => {
     });
   }, []);
 
-  // call this when buzzing in
-  function answer() {
-    setResponseTimerIsActive(false);
-    const probability = getProbability(selectedClue.value, round);
-    if (isFastestResponse(seconds, probability)) {
-      readText(playerName);
-      responseCountdownIsActive = true;
-    } else if (selectedClue.response.correct_contestant != weakestContestant) {
-      readText(selectedClue.response.correct_contestant);
-      updateOpponentScores(selectedClue);
-      const nextClueNumber = getNextClueNumber();
-      displayClueByNumber(nextClueNumber);
-      //chooseClue(nextClueNumber);
-    } else {
-      setMessage(selectedClue.response.correct_response);
-    }
-  }
-
   function updateOpponentScores(clue) {
     const incorrectContestants = clue.response.incorrect_contestants;
     const correctContestant = clue.response.correct_contestant;
