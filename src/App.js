@@ -8,8 +8,6 @@ const playerName = 'Alan';
 const hostName = 'Trebek';
 
 const App = () => {
-  let round = 1;
-  let clueNumber = 1;
   let responseInterval = null;
   let responseCountdownInterval = null;
 
@@ -35,7 +33,8 @@ const App = () => {
   const [availableClueNumbers, setAvailableClueNumbers] = useState(initializeAvailableClueNumbers());
   const [selectedClue, setSelectedClue] = useState(getClue(1));
   const [lastCorrectContestant, setLastCorrectContestant] = useState(playerName);
-  
+  const [round, setRound] = useState(1);
+
   // I buzz in by clicking scroll up or down
   useEffect(() => {
     document.addEventListener('scroll', () => {
@@ -88,7 +87,7 @@ const App = () => {
   // press 's' to start the game
   useEffect(() => {
     document.addEventListener('keypress', e => {
-      if (clueNumber === 1 && e.key === 's') {
+      if (e.key === 's') {
         setLastCorrectContestant(contestants[0]);
         displayClueByNumber(1);
       }
