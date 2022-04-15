@@ -10,7 +10,6 @@ const hostName = 'Trebek';
 const App = () => {
   let round = 1;
   let clueNumber = 1;
-  let responseCountdownIsActive = false;
   let responseInterval = null;
   let responseCountdownInterval = null;
 
@@ -31,6 +30,7 @@ const App = () => {
   const [scores, setScores] = useState(initalScores);
   const [seconds, setSeconds] = useState(0.0);
   const [responseCountdown, setResponseCountdown] = useState(5);
+  const [responseCountdownIsActive, setResponseCountdownIsActive] = useState(false);
   const [responseTimerIsActive, setResponseTimerIsActive] = useState(false);
   const [availableClueNumbers, setAvailableClueNumbers] = useState(initializeAvailableClueNumbers());
   const [selectedClue, setSelectedClue] = useState(getClue(1));
@@ -45,8 +45,8 @@ const App = () => {
           const probability = getProbability(selectedClue.value, round);
           if (isFastestResponse(seconds, probability)) {
             readText(playerName);
-            responseCountdownIsActive = true;
-          } else if (selectedClue.response.correct_contestant != weakestContestant) {
+            setResponseCountdownIsActive(true);
+          } else if (selectedClue.response.correct_contestant !== weakestContestant) {
             readText(selectedClue.response.correct_contestant);
             updateOpponentScores(selectedClue);
             const nextClueNumber = getNextClueNumber();
@@ -216,7 +216,10 @@ const App = () => {
           return 0.418;
         case 1000:
           return 0.500;
+        default:
+          return 0;
       }
+    } else if (round === 2) {
       switch (value) {
         case 400:
           return 0.350;
@@ -228,6 +231,8 @@ const App = () => {
           return 0.500;
         case 2000:
           return 0.500;
+        default:
+          return 0;
       }
     }
   }
@@ -260,7 +265,7 @@ const App = () => {
 
   function showAnswer() {
     setResponseTimerIsActive(false);
-    responseCountdownIsActive = false;
+    setResponseCountdownIsActive(false);
     setCorrect(selectedClue.response.correct_response);
   }
 
