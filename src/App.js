@@ -4,7 +4,7 @@ import showData from './jeopardy.json';
 import Banner from './Banner';
 
 const msg = new SpeechSynthesisUtterance();
-const msg2 = new SpeechSynthesisUtterance();
+//const msg2 = new SpeechSynthesisUtterance();
 const playerName = 'Alan';
 const hostName = 'Trebek';
 
@@ -109,6 +109,7 @@ const App = () => {
       setCorrect(hostName + ': ' + clue.response.correct_response);
       if (lastCorrectContestant !== playerName) {
         console.log('triple stumper');
+        //msg2.removeEventListener('end', () => displayClueByNumber(nextClueNumber));
         displayNextClue(message);
       }
       return;
@@ -134,9 +135,11 @@ const App = () => {
     console.log('displayNextClue');
     const nextClueNumber = getNextClueNumber();
     if (nextClueNumber > 0) {
-      msg2.text = message;
-      msg2.addEventListener('end', () => displayClueByNumber(nextClueNumber));
-      window.speechSynthesis.speak(msg2);
+      //msg2.text = message;
+      console.log(nextClueNumber);
+      //msg2.addEventListener('end', () => displayClueByNumber(nextClueNumber));
+      displayClueByNumber(nextClueNumber);
+      //window.speechSynthesis.speak(msg2);
     } else {
       setMessage('End of round');
     }
@@ -159,6 +162,7 @@ const App = () => {
   }
 
   function displayClueByNumber(clueNumber) {
+    //msg2.removeEventListener('end', () => displayClueByNumber(clueNumber));
     console.log('displayClueByNumber ' + clueNumber);
     turnOffLight();
     updateAvailableClueNumbers(clueNumber);
@@ -207,6 +211,7 @@ const App = () => {
     msg.text = clue.text;
     window.speechSynthesis.speak(msg);
     msg.addEventListener('end', () => clearClue(row, col));
+    msg.removeEventListener('end', () => clearClue(row, col));
   }
 
   function clearClue(row, col) {
