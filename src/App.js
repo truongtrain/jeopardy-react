@@ -4,24 +4,24 @@ import showData from './jeopardy.json';
 import Banner from './Banner';
 
 const msg = new SpeechSynthesisUtterance();
+const playerName = 'Alan';
+const hostName = 'Trebek';
 
 const App = () => {
   let round = 1;
   let clueNumber = 1;
-  let responseTimerIsActive = false;
   let responseCountdownIsActive = false;
   let responseInterval = null;
   let responseCountdownInterval = null;
-  let availableClueNumbers = initializeAvailableClueNumbers();
 
   const weakestContestant = showData.weakest_contestant;
   const contestants = showData.contestants.filter(
     contestant => contestant !== weakestContestant
   );
-  contestants.push('Alan');
+  contestants.push(playerName);
   const initalScores = {};
   contestants.forEach(contestant => initalScores[contestant] = 0);
-  initalScores['Alan'] = 0;
+  initalScores[playerName] = 0;
 
   const [visible, setVisible] = useState(getDefaultVisible());
   const [board, setBoard] = useState(showData.jeopardy_round);
@@ -31,7 +31,10 @@ const App = () => {
   const [scores, setScores] = useState(initalScores);
   const [seconds, setSeconds] = useState(0.0);
   const [responseCountdown, setResponseCountdown] = useState(5);
-  let selectedClue = getClue(1);
+  const [responseTimerIsActive, setResponseTimerIsActive] = useState(false);
+  const [availableClueNumbers, setAvailableClueNumbers] = useState(initializeAvailableClueNumbers());
+  const [selectedClue, setSelectedClue] = useState(getClue(1));
+  const [lastCorrectContestant, setLastCorrectContestant] = useState(playerName);
   
   // I buzz in by clicking scroll up or down
   useEffect(() => {
@@ -70,6 +73,7 @@ const App = () => {
   useEffect(() => {
     document.addEventListener('keypress', e => {
       if (clueNumber === 1 && e.key === 's') {
+        setLastCorrectContestant(contestants[0]);
         displayClueByNumber(1);
       }
     });
@@ -77,10 +81,10 @@ const App = () => {
 
   // call this when buzzing in
   function answer() {
-    responseTimerIsActive = false;
+    setResponseTimerIsActive(false);
     const probability = getProbability(selectedClue.value, round);
     if (isFastestResponse(seconds, probability)) {
-      readText('Alan');
+      readText(playerName);
       responseCountdownIsActive = true;
     } else if (selectedClue.response.correct_contestant != weakestContestant) {
       readText(selectedClue.response.correct_contestant);
@@ -94,17 +98,23 @@ const App = () => {
 
   function getNextClueNumber() {
     for (let i = 1; i <= 30; i++) {
-      if (availableClueNumbers[i]) {
+      if (availableClueNumbers[i] === true) {
         return i;
       }
     }
     return -1;
   }
 
+  function updateAvailableClueNumbers(clueNumber) {
+    let availableClueNumbersCopy = [...availableClueNumbers];
+    availableClueNumbersCopy[clueNumber] = false;
+    setAvailableClueNumbers(availableClueNumbersCopy);
+  }
+
   // opponent chooses clue
   function chooseClue(clueNumber) {
     turnOffLight();
-    availableClueNumbers[clueNumber] = false;
+    updateAvailableClueNumbers(clueNumber);
     let visibleCopy = [...visible];
     for (let col = 0; col < 6; col++) {
       for (let row = 0; row < 5; row++) {
@@ -129,8 +139,8 @@ const App = () => {
     setCorrect('');
     setSeconds(0);
     setResponseCountdown(5);
-    selectedClue = board[col][row];
-    availableClueNumbers[board[col][row].number] = false;
+    setSelectedClue(board[col][row]);
+    updateAvailableClueNumbers(selectedClue.number);
     let visibleCopy = [...visible];
     if (visibleCopy[row][col] !== undefined) {
       visibleCopy[row][col] = true;
@@ -141,7 +151,10 @@ const App = () => {
 
   function displayClueByNumber(clueNumber) {
     turnOffLight();
-    availableClueNumbers[clueNumber] = false;
+    updateAvailableClueNumbers(clueNumber);
+    const clue = getClue(clueNumber);
+    console.log(clue);
+    setSelectedClue(clue);
     let visibleCopy = [...visible];
     for (let col = 0; col < 6; col++) {
       for (let row = 0; row < 5; row++) {
@@ -177,7 +190,7 @@ const App = () => {
     board_copy[col][row].text = '';
     setBoard(board_copy);
     turnOnLight();
-    responseTimerIsActive = true;
+    setResponseTimerIsActive(true);
   }
 
   function getProbability(value, round) {
@@ -245,7 +258,7 @@ const App = () => {
   }
 
   function showAnswer() {
-    responseTimerIsActive = false;
+    setResponseTimerIsActive(false);
     responseCountdownIsActive = false;
     setCorrect(selectedClue.response.correct_response);
   }
@@ -254,7 +267,7 @@ const App = () => {
     msg.text = 'Correct';
     window.speechSynthesis.speak(msg);
     let scores_copy = {...scores};
-    scores_copy['Alan'] += selectedClue.value;
+    scores_copy[playerName] += selectedClue.value;
     setScores(scores_copy);
   }
 
@@ -262,11 +275,12 @@ const App = () => {
     msg.text = 'No';
     window.speechSynthesis.speak(msg);
     let scores_copy = {...scores};
-    scores_copy['Alan'] -= selectedClue.value;
+    scores_copy[playerName] -= selectedClue.value;
     setScores(scores_copy);
   }
 
   function concede() {
+    setResponseTimerIsActive(false);
     updateOpponentScores(selectedClue);
   }
 
@@ -275,19 +289,39 @@ const App = () => {
     const correctContestant = clue.response.correct_contestant;
     let scores_copy = {...scores};
     let scoreChange = clue.daily_double_wager > 0 ? clue.daily_double_wager : clue.value;
+    // handle triple stumpers
+    if (!correctContestant || correctContestant === weakestContestant) {
+      setMessage('');
+      setCorrect(hostName + ': ' + clue.response.correct_response);
+      if (lastCorrectContestant !== playerName) {
+        displayNextClue();
+      }
+      return;
+    }
     if (incorrectContestants.length > 0) {
       for (let i = 0; i < incorrectContestants.length; i++) {
         setMessage(incorrectContestants[i] + ': What is ' + clue.response.incorrect_responses[i] + '?');
-        setCorrect('Alex: No');
+        setCorrect(hostName + ': No');
         scores_copy[incorrectContestants[i]] -= scoreChange;
+        setScores(scores_copy);
       }
     }
     if (correctContestant && correctContestant !== weakestContestant) {
       setMessage(correctContestant + ': What is ' + clue.response.correct_response + '?');
-      setCorrect('Alex: Yes');
+      setCorrect(hostName + ': Yes');
       scores_copy[correctContestant] += scoreChange;
+      setScores(scores_copy);
+      displayNextClue();
     }
-    setScores(scores_copy);
+  }
+
+  function displayNextClue() {
+    const nextClueNumber = getNextClueNumber();
+      if (nextClueNumber > 0) {
+        displayClueByNumber(nextClueNumber);
+      } else {
+        setMessage('End of round');
+      }
   }
 
   function readText(text) {
