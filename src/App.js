@@ -34,31 +34,6 @@ const App = () => {
   const [selectedClue, setSelectedClue] = useState(getClue(1));
   const [lastCorrectContestant, setLastCorrectContestant] = useState(playerName);
   const [round, setRound] = useState(1);
-
-  // I buzz in by clicking scroll up or down
-  // useEffect(() => {
-  //   document.addEventListener('scroll', () => {
-  //     if (responseTimerIsActive) {
-  //       const answer = () => {
-  //         setResponseTimerIsActive(false);
-  //         const probability = getProbability(selectedClue.value, round);
-  //         if (isFastestResponse(seconds, probability) || selectedClue.response.correct_contestant.length === 0) {
-  //           readText(playerName);
-  //           setResponseCountdownIsActive(true);
-  //         } else if (selectedClue.response.correct_contestant !== weakestContestant) {
-  //           readText(selectedClue.response.correct_contestant);
-  //           updateOpponentScores(selectedClue);
-  //           const nextClueNumber = getNextClueNumber();
-  //           console.log('buzz');
-  //           displayClueByNumber(nextClueNumber);
-  //         } else {
-  //           setMessage(selectedClue.response.correct_response);
-  //         }
-  //       };
-  //       answer();
-  //     }
-  //   }, { once: true });
-  // }, [responseTimerIsActive]);
   
   // determines how fast I click after the clue is read
   useEffect(() => {
@@ -103,9 +78,6 @@ const App = () => {
     } else if (selectedClue.response.correct_contestant !== weakestContestant) {
       readText(selectedClue.response.correct_contestant);
       updateOpponentScores(selectedClue);
-      const nextClueNumber = getNextClueNumber();
-      console.log('buzz');
-      displayClueByNumber(nextClueNumber);
     } else {
       setMessage(selectedClue.response.correct_response);
     }
