@@ -97,7 +97,7 @@ const App = () => {
   function answer() {
     setResponseTimerIsActive(false);
     const probability = getProbability(selectedClue.value, round);
-    if (isFastestResponse(seconds, probability) || selectedClue.response.correct_contestant.length === 0) {
+    if (isFastestResponse(seconds, probability) || isTripleStumper()) {
       readText(playerName);
       setResponseCountdownIsActive(true);
     } else if (selectedClue.response.correct_contestant !== weakestContestant) {
@@ -329,6 +329,11 @@ const App = () => {
   function readText(text) {
     msg.text = text;
     window.speechSynthesis.speak(msg);
+  }
+
+  function isTripleStumper() {
+    const correctContestant = selectedClue.response.correct_contestant;
+    return correctContestant.length === 0 || correctContestant === weakestContestant;
   }
 
   function getDefaultVisible() {
