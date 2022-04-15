@@ -4,6 +4,7 @@ import showData from './jeopardy.json';
 import Banner from './Banner';
 
 const msg = new SpeechSynthesisUtterance();
+const msg2 = new SpeechSynthesisUtterance();
 const playerName = 'Alan';
 const hostName = 'Trebek';
 
@@ -49,8 +50,8 @@ const App = () => {
             readText(selectedClue.response.correct_contestant);
             updateOpponentScores(selectedClue);
             const nextClueNumber = getNextClueNumber();
+            console.log('buzz');
             displayClueByNumber(nextClueNumber);
-            //chooseClue(nextClueNumber);
           } else {
             setMessage(selectedClue.response.correct_response);
           }
@@ -95,6 +96,9 @@ const App = () => {
   }, []);
 
   function updateOpponentScores(clue) {
+    const nextClueNumber = getNextClueNumber();
+    const nextClue = getClue(nextClueNumber);
+    const message = nextClue.category + ' for $' + nextClue.value;
     const incorrectContestants = clue.response.incorrect_contestants;
     const correctContestant = clue.response.correct_contestant;
     let scores_copy = {...scores};
@@ -104,10 +108,12 @@ const App = () => {
       setMessage('');
       setCorrect(hostName + ': ' + clue.response.correct_response);
       if (lastCorrectContestant !== playerName) {
-        displayNextClue();
+        console.log('triple stumper');
+        displayNextClue(message);
       }
       return;
     }
+    // handle incorrect responses
     if (incorrectContestants.length > 0) {
       for (let i = 0; i < incorrectContestants.length; i++) {
         setMessage(incorrectContestants[i] + ': What is ' + clue.response.incorrect_responses[i] + '?');
@@ -116,14 +122,23 @@ const App = () => {
         setScores(scores_copy);
       }
     }
+    // handle correct response
     if (correctContestant && correctContestant !== weakestContestant) {
-      setMessage(correctContestant + ': What is ' + clue.response.correct_response + '?');
-      setCorrect(hostName + ': Yes');
       scores_copy[correctContestant] += scoreChange;
       setScores(scores_copy);
-      const message = clue.category + ' for $' + clue.value;
-      readText(message);
-      displayNextClue();
+      displayNextClue(correctContestant + ' What is ' + clue.response.correct_response + '? Yes ' + message);
+    }
+  }
+
+  function displayNextClue(message) {
+    console.log('displayNextClue');
+    const nextClueNumber = getNextClueNumber();
+    if (nextClueNumber > 0) {
+      msg2.text = message;
+      msg2.addEventListener('end', () => displayClueByNumber(nextClueNumber));
+      window.speechSynthesis.speak(msg2);
+    } else {
+      setMessage('End of round');
     }
   }
 
@@ -139,23 +154,23 @@ const App = () => {
     if (visibleCopy[row][col] !== undefined) {
       visibleCopy[row][col] = true;
       setVisible(visibleCopy);
-      readClue(row, col, '');
+      readClue(row, col);
     }
   }
 
   function displayClueByNumber(clueNumber) {
+    console.log('displayClueByNumber ' + clueNumber);
     turnOffLight();
     updateAvailableClueNumbers(clueNumber);
-    const clue = getClue(clueNumber);
-    console.log(clue);
-    setSelectedClue(clue);
     let visibleCopy = [...visible];
     for (let col = 0; col < 6; col++) {
       for (let row = 0; row < 5; row++) {
         if (board[col][row].number === clueNumber) {
           visibleCopy[row][col] = true;
           setVisible(visibleCopy);
-          readClue(row, col, '');
+          readClue(row, col);
+          const clue = getClue(clueNumber);
+          setSelectedClue(clue);
         }
       }
     }
@@ -187,9 +202,9 @@ const App = () => {
     return null;
   }
 
-  function readClue(row, col, topic) {
+  function readClue(row, col) {
     const clue = showData.jeopardy_round[col][row];
-    msg.text = topic + clue.text;
+    msg.text = clue.text;
     window.speechSynthesis.speak(msg);
     msg.addEventListener('end', () => clearClue(row, col));
   }
@@ -269,6 +284,7 @@ const App = () => {
   }
 
   function incrementScore() {
+    setResponseTimerIsActive(false);
     msg.text = 'Correct';
     window.speechSynthesis.speak(msg);
     let scores_copy = {...scores};
@@ -277,6 +293,7 @@ const App = () => {
   }
 
   function deductScore() {
+    setResponseCountdownIsActive(false);
     msg.text = 'No';
     window.speechSynthesis.speak(msg);
     let scores_copy = {...scores};
@@ -289,17 +306,7 @@ const App = () => {
     updateOpponentScores(selectedClue);
   }
 
-  function displayNextClue() {
-    const nextClueNumber = getNextClueNumber();
-      if (nextClueNumber > 0) {
-        displayClueByNumber(nextClueNumber);
-      } else {
-        setMessage('End of round');
-      }
-  }
-
   function readText(text) {
-    setMessage(text);
     msg.text = text;
     window.speechSynthesis.speak(msg);
   }
