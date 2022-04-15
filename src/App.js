@@ -4,7 +4,6 @@ import showData from './jeopardy.json';
 import Banner from './Banner';
 
 const msg = new SpeechSynthesisUtterance();
-//const msg2 = new SpeechSynthesisUtterance();
 const playerName = 'Alan';
 const hostName = 'Trebek';
 
@@ -105,12 +104,11 @@ const App = () => {
     let scoreChange = clue.daily_double_wager > 0 ? clue.daily_double_wager : clue.value;
     // handle triple stumpers
     if (!correctContestant || correctContestant === weakestContestant) {
-      setMessage('');
       setCorrect(hostName + ': ' + clue.response.correct_response);
       if (lastCorrectContestant !== playerName) {
         console.log('triple stumper');
-        //msg2.removeEventListener('end', () => displayClueByNumber(nextClueNumber));
-        displayNextClue(message);
+        setTimeout(() => setMessage(lastCorrectContestant + ': ' + message), 2000);
+        setTimeout(() => displayNextClue(), 4000);
       }
       return;
     }
@@ -127,19 +125,20 @@ const App = () => {
     if (correctContestant && correctContestant !== weakestContestant) {
       scores_copy[correctContestant] += scoreChange;
       setScores(scores_copy);
-      displayNextClue(correctContestant + ' What is ' + clue.response.correct_response + '? Yes ' + message);
+      setMessage(correctContestant + ': What is ' + clue.response.correct_response + '?');
+      setCorrect(hostName + ': Yes! ' + message);
+      setTimeout(() => displayNextClue(), 3000);
     }
   }
 
-  function displayNextClue(message) {
+  function displayNextClue() {
+    setMessage('');
+    setCorrect('');
     console.log('displayNextClue');
     const nextClueNumber = getNextClueNumber();
     if (nextClueNumber > 0) {
-      //msg2.text = message;
       console.log(nextClueNumber);
-      //msg2.addEventListener('end', () => displayClueByNumber(nextClueNumber));
       displayClueByNumber(nextClueNumber);
-      //window.speechSynthesis.speak(msg2);
     } else {
       setMessage('End of round');
     }
@@ -162,7 +161,6 @@ const App = () => {
   }
 
   function displayClueByNumber(clueNumber) {
-    //msg2.removeEventListener('end', () => displayClueByNumber(clueNumber));
     console.log('displayClueByNumber ' + clueNumber);
     turnOffLight();
     updateAvailableClueNumbers(clueNumber);
