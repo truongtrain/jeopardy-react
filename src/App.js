@@ -17,8 +17,6 @@ const App = () => {
   );
   contestants.push(playerName);
   const initalScores = {};
-  const finalResponses = {};
-  const finalWagers = {};
   contestants.forEach(contestant => {
     initalScores[contestant] = 0;
   });
@@ -40,6 +38,8 @@ const App = () => {
   const [round, setRound] = useState(1);
   const [wager, setWager] = useState(0);
   const [finalResponse, setFinalResponse] = useState('');
+  const [finalResponses, setFinalResponses] = useState({});
+  const [finalWagers, setFinalWagers] = useState({});
 
   // determines how fast I click after the clue is read
   useEffect(() => {
@@ -68,7 +68,7 @@ const App = () => {
   // press 's' to start the game
   useEffect(() => {
     document.addEventListener('keypress', e => {
-      if (e.key === 's' && round !== 3) {
+      if (e.key === 'Enter' && round !== 3) {
         setLastCorrectContestant(contestants[0]);
         displayClueByNumber(1);
       }
@@ -76,12 +76,12 @@ const App = () => {
   }, []);
 
   const handleInputChange = event => {
-    if (isNaN) {
+    if (isNaN(event.target.value)) {
       setFinalResponse(event.target.value);
     } else {
       setWager(event.target.value);
     }
-    
+    console.log(wager);
   }
 
   function answer() {
@@ -417,15 +417,21 @@ const App = () => {
   }
 
   function showFinalJeopardyResults() {
+    let responses = [];
+    let wagers = [];
+    console.log(contestants);
     contestants.forEach(contestant => {
-      initalScores[contestant] = 0;
-      finalResponses[contestant] = showData.final_jeopardy.contestant_responses
-      .filter(response => response.contestant === contestant).response;
-      finalWagers[contestant] = showData.final_jeopardy.contestant_responses
-      .filter(response => response.contestant === contestant).wager;
+      showData.final_jeopardy.contestant_responses.forEach(response => {
+        if (response.contestant === contestant) {
+          responses[contestant] = response.response;
+          wagers[contestant] = response.wager;
+        }
+      });
     });
-    finalResponses[playerName] = finalResponse;
-    finalWagers[playerName] = wager;
+    responses[playerName] = finalResponse;
+    wagers[playerName] = wager;
+    setFinalResponses(responses);
+    setFinalWagers(wagers);
   }
 
   return (
