@@ -143,8 +143,9 @@ const App = () => {
   function displayClue(row, col) {
     turnOffLight();
     const clue = board[col][row];
+    console.log(clue);
     setSelectedClue(clue);
-    if (clue.response.daily_double_wager > 0) {
+    if (clue.daily_double_wager > 0) {
       setMessage('Daily Double! How much will you wager?');
     } else {
       setMessage('');
@@ -295,7 +296,7 @@ const App = () => {
     msg.text = 'Correct';
     window.speechSynthesis.speak(msg);
     let scores_copy = {...scores};
-    if (selectedClue.response.daily_double_wager > 0) {
+    if (selectedClue.daily_double_wager > 0) {
       scores_copy[playerName] += wager;
     } else {
       scores_copy[playerName] += selectedClue.value;
@@ -308,7 +309,7 @@ const App = () => {
     msg.text = 'No';
     window.speechSynthesis.speak(msg);
     let scores_copy = {...scores};
-    if (selectedClue.response.daily_double_wager > 0) {
+    if (selectedClue.daily_double_wager > 0) {
       scores_copy[playerName] -= wager;
     } else {
       scores_copy[playerName] -= selectedClue.value;
