@@ -123,7 +123,11 @@ const App = () => {
       scores_copy[correctContestant] += scoreChange;
       setScores(scores_copy);
       setMessage(correctContestant + ': What is ' + clue.response.correct_response + '?');
-      setMessage2(hostName + ': Yes! ' + message);
+      setMessage2(hostName + ': Yes! ');
+      setTimeout(() => {
+        setMessage(message);
+        setMessage2('');
+      }, 1500);
       setSeconds(0);
       setTimeout(() => displayNextClue(), 3000);
     }
