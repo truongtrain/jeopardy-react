@@ -101,7 +101,6 @@ const App = () => {
     if (!correctContestant || correctContestant === weakestContestant) {
       setMessage(hostName + ': ' + clue.response.correct_response);
       if (lastCorrectContestant !== playerName) {
-        setMessage2(lastCorrectContestant + ': ' + message);
         setTimeout(() => setMessage(lastCorrectContestant + ': ' + message), 2000);
         setTimeout(() => displayNextClue(), 4000);
       }
