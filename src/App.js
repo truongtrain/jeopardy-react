@@ -161,6 +161,7 @@ const App = () => {
 
   function displayClue(row, col) {
     turnOffLight();
+    setLastCorrectContestant(playerName);
     const clue = board[col][row];
     setSelectedClue(clue);
     if (clue.daily_double_wager > 0) {
@@ -396,6 +397,13 @@ const App = () => {
   }
 
   function startDoubleJeopardyRound() {
+    let thirdPlace = scores[playerName]
+    contestants.forEach(contestant => {
+      if (scores[contestant] < thirdPlace) {
+        thirdPlace = scores[contestant];
+      }
+    });
+    setLastCorrectContestant(thirdPlace);
     setBoard(showData.double_jeopardy_round);
     setRound(2);
   }
