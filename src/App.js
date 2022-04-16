@@ -375,12 +375,15 @@ const App = () => {
     displayClueByNumber(selectedClue.number);
   }
 
+  function startDoubleJeopardyRound() {
+    setBoard(showData.double_jeopardy_round);
+  }
+
   return (
     <div>
       <Banner contestants={contestants} correct={message2} message={message} scores={scores} />
 
       <div className='banner'>
-        <div>{seconds.toFixed(2)}</div>
         <button onClick={() => concede()}>Concede</button>
         <button onClick={() => answer()}>Answer</button>
         <button onClick={() => showAnswer()}>Show Correct</button>
@@ -388,6 +391,7 @@ const App = () => {
         <button onClick={() => deductScore()}>Incorrect</button>
         <button onClick={() => submitWager()}>Submit Wager</button>
         <input id="wager" type="number" onChange={handleWagerInputChange} />
+        <button onClick={() => startDoubleJeopardyRound()}>Double Jeopardy</button>
         <div>{responseCountdown.toFixed(1)}</div>
       </div>
 
