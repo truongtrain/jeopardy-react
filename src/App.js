@@ -101,8 +101,8 @@ const App = () => {
     if (!correctContestant || correctContestant === weakestContestant) {
       setMessage(hostName + ': ' + clue.response.correct_response);
       if (lastCorrectContestant !== playerName) {
-        setTimeout(() => setMessage(lastCorrectContestant + ': ' + message), 2000);
-        setTimeout(() => displayNextClue(), 4000);
+        setTimeout(() => setMessage(lastCorrectContestant + ': ' + message), 2500);
+        setTimeout(() => displayNextClue(), 4500);
       }
       return;
     }
@@ -127,9 +127,9 @@ const App = () => {
       setTimeout(() => {
         setMessage(message);
         setMessage2('');
-      }, 1500);
+      }, 2000);
       setSeconds(0);
-      setTimeout(() => displayNextClue(), 3000);
+      setTimeout(() => displayNextClue(), 4000);
     }
   }
 
@@ -167,7 +167,6 @@ const App = () => {
   }
 
   function displayClueByNumber(clueNumber) {
-    console.log('displayClueByNumber ' + clueNumber);
     turnOffLight();
     updateAvailableClueNumbers(clueNumber);
     let visibleCopy = [...visible];
@@ -176,13 +175,14 @@ const App = () => {
         if (board[col][row].number === clueNumber) {
           if (board[col][row].daily_double_wager > 0) {
             setMessage('Answer. Daily Double');
-            setMessage2(lastCorrectContestant + 'I will wager $' + board[col][row].daily_double_wager);
-          } 
+            setMessage2(lastCorrectContestant + ': I will wager $' + board[col][row].daily_double_wager);
+          }
           visibleCopy[row][col] = true;
           setVisible(visibleCopy);
           readClue(row, col);
           const clue = getClue(clueNumber);
           setSelectedClue(clue);
+          return;
         }
       }
     }
