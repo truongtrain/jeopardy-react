@@ -1,5 +1,5 @@
 import './App.css';
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import showData from './jeopardy.json';
 import Banner from './Banner';
 
@@ -35,7 +35,7 @@ const App = () => {
   const [lastCorrectContestant, setLastCorrectContestant] = useState(playerName);
   const [round, setRound] = useState(1);
   const [wager, setWager] = useState(0);
-  
+
   // determines how fast I click after the clue is read
   useEffect(() => {
     if (responseTimerIsActive) {
@@ -43,8 +43,8 @@ const App = () => {
         setSeconds(seconds => seconds + 0.01);
       }, 10)
     } else {
-        clearInterval(responseInterval);
-    }   
+      clearInterval(responseInterval);
+    }
     return () => clearInterval(responseInterval);
   }, [responseTimerIsActive]);
 
@@ -55,8 +55,8 @@ const App = () => {
         setResponseCountdown(responseCountdown => responseCountdown - 0.1);
       }, 100);
     } else {
-        clearInterval(responseCountdownInterval);
-    }   
+      clearInterval(responseCountdownInterval);
+    }
     return () => clearInterval(responseCountdownInterval);
   }, [responseCountdownIsActive]);
 
@@ -91,17 +91,20 @@ const App = () => {
 
   function updateOpponentScores(clue) {
     const nextClueNumber = getNextClueNumber();
-    const nextClue = getClue(nextClueNumber);
-    const message = nextClue.category + ' for $' + nextClue.value;
+    let message;
+    if (nextClueNumber > 0) {
+      const nextClue = getClue(nextClueNumber);
+      message = lastCorrectContestant + ': ' + nextClue.category + ' for $' + nextClue.value;
+    }
     const incorrectContestants = clue.response.incorrect_contestants;
     const correctContestant = clue.response.correct_contestant;
-    let scores_copy = {...scores};
+    let scores_copy = { ...scores };
     let scoreChange = clue.daily_double_wager > 0 ? clue.daily_double_wager : clue.value;
     // handle triple stumpers
     if (!correctContestant || correctContestant === weakestContestant) {
       setMessage(hostName + ': ' + clue.response.correct_response);
-      if (lastCorrectContestant !== playerName) {
-        setTimeout(() => setMessage(lastCorrectContestant + ': ' + message), 2500);
+      if (nextClueNumber > 0 && lastCorrectContestant !== playerName) {
+        setTimeout(() => setMessage(message), 2500);
         setTimeout(() => displayNextClue(), 4500);
       }
       return;
@@ -124,12 +127,14 @@ const App = () => {
       setScores(scores_copy);
       setMessage(correctContestant + ': What is ' + clue.response.correct_response + '?');
       setMessage2(hostName + ': Yes! ');
-      setTimeout(() => {
-        setMessage(message);
-        setMessage2('');
-      }, 2000);
-      setSeconds(0);
-      setTimeout(() => displayNextClue(), 4000);
+      if (nextClueNumber > 0) {
+        setTimeout(() => {
+          setMessage(message);
+          setMessage2('');
+        }, 2000);
+        setSeconds(0);
+        setTimeout(() => displayNextClue(), 4000);
+      }
     }
   }
 
@@ -302,7 +307,7 @@ const App = () => {
     setLastCorrectContestant(playerName);
     msg.text = 'Correct';
     window.speechSynthesis.speak(msg);
-    let scores_copy = {...scores};
+    let scores_copy = { ...scores };
     if (selectedClue.daily_double_wager > 0) {
       scores_copy[playerName] += +wager;
     } else {
@@ -315,7 +320,7 @@ const App = () => {
     setResponseCountdownIsActive(false);
     msg.text = 'No';
     window.speechSynthesis.speak(msg);
-    let scores_copy = {...scores};
+    let scores_copy = { ...scores };
     if (selectedClue.daily_double_wager > 0) {
       scores_copy[playerName] -= wager;
     } else {
@@ -373,7 +378,7 @@ const App = () => {
   return (
     <div>
       <Banner contestants={contestants} correct={message2} message={message} scores={scores} />
-      
+
       <div className='banner'>
         <div>{seconds.toFixed(2)}</div>
         <button onClick={() => concede()}>Concede</button>
@@ -385,7 +390,7 @@ const App = () => {
         <input id="wager" type="number" onChange={handleWagerInputChange} />
         <div>{responseCountdown.toFixed(1)}</div>
       </div>
-      
+
       <table className={tableStyle}>
         <thead>
           <tr>
@@ -400,17 +405,18 @@ const App = () => {
         <tbody>
           {Array.from(Array(5), (arrayElement, row) => {
             return (<tr key={row}>
-            {board.map((round, column) => {
-              return (
-              <td key={column}>
-                <span>{visible[row][column] && round[row].text}</span>
-                {
-                  !visible[row][column] && <button className='clue-button' onClick={() => displayClue(row, column)}>
-                  ${round[row].value}
-                  </button>
-                }
-              </td>)})}
-          </tr>)
+              {board.map((round, column) => {
+                return (
+                  <td key={column}>
+                    <span>{visible[row][column] && round[row].text}</span>
+                    {
+                      !visible[row][column] && <button className='clue-button' onClick={() => displayClue(row, column)}>
+                        ${round[row].value}
+                      </button>
+                    }
+                  </td>)
+              })}
+            </tr>)
           })}
         </tbody>
       </table>
