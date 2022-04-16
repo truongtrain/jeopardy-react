@@ -68,7 +68,7 @@ const App = () => {
   // press 's' to start the game
   useEffect(() => {
     document.addEventListener('keypress', e => {
-      if (e.key === 's') {
+      if (e.key === 's' && round !== 3) {
         setLastCorrectContestant(contestants[0]);
         displayClueByNumber(1);
       }
@@ -387,6 +387,7 @@ const App = () => {
 
   function submit() {
     if (round === 3) {
+      setResponseCountdownIsActive(false);
       finalResponses[playerName] = finalResponse;
       finalWagers[playerName] = wager;
     } else {
@@ -400,14 +401,19 @@ const App = () => {
   }
 
   function showFinalJeopardyCategory() {
+    setRound(3);
     setMessage(showData.final_jeopardy.category)
+    setMessage2('Enter your wager');
   }
 
   function showFinalJeopardyClue() {
-    setRound(3);
     setMessage2(showData.final_jeopardy.clue);
-    setResponseCountdown(30);
-    setResponseCountdownIsActive(true);
+    msg.text = showData.final_jeopardy.clue;
+    window.speechSynthesis.speak(msg);
+    msg.addEventListener('end', () => {
+      setResponseCountdown(30);
+      setResponseCountdownIsActive(true);
+    });
   }
 
   function showFinalJeopardyResults() {
