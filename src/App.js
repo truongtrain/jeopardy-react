@@ -24,7 +24,7 @@ const App = () => {
   const [board, setBoard] = useState(showData.jeopardy_round);
   const [tableStyle, setTableStyle] = useState('table-light-off');
   const [message, setMessage] = useState('');
-  const [correct, setCorrect] = useState('');
+  const [message2, setMessage2] = useState('');
   const [scores, setScores] = useState(initalScores);
   const [seconds, setSeconds] = useState(0.0);
   const [responseCountdown, setResponseCountdown] = useState(5);
@@ -99,8 +99,9 @@ const App = () => {
     let scoreChange = clue.daily_double_wager > 0 ? clue.daily_double_wager : clue.value;
     // handle triple stumpers
     if (!correctContestant || correctContestant === weakestContestant) {
-      setCorrect(hostName + ': ' + clue.response.correct_response);
+      setMessage(hostName + ': ' + clue.response.correct_response);
       if (lastCorrectContestant !== playerName) {
+        setMessage2(lastCorrectContestant + ': ' + message);
         setTimeout(() => setMessage(lastCorrectContestant + ': ' + message), 2000);
         setTimeout(() => displayNextClue(), 4000);
       }
@@ -114,7 +115,7 @@ const App = () => {
         scores_copy[incorrectContestants[i]] -= scoreChange;
       }
       setMessage(incorrectMessage);
-      setCorrect(hostName + ': No');
+      setMessage2(hostName + ': No');
       setScores(scores_copy);
     }
     // handle correct response
@@ -123,7 +124,7 @@ const App = () => {
       scores_copy[correctContestant] += scoreChange;
       setScores(scores_copy);
       setMessage(correctContestant + ': What is ' + clue.response.correct_response + '?');
-      setCorrect(hostName + ': Yes! ' + message);
+      setMessage2(hostName + ': Yes! ' + message);
       setSeconds(0);
       setTimeout(() => displayNextClue(), 3000);
     }
@@ -131,7 +132,7 @@ const App = () => {
 
   function displayNextClue() {
     setMessage('');
-    setCorrect('');
+    setMessage2('');
     const nextClueNumber = getNextClueNumber();
     if (nextClueNumber > 0) {
       displayClueByNumber(nextClueNumber);
@@ -143,13 +144,13 @@ const App = () => {
   function displayClue(row, col) {
     turnOffLight();
     const clue = board[col][row];
-    console.log(clue);
     setSelectedClue(clue);
     if (clue.daily_double_wager > 0) {
-      setMessage('Daily Double! How much will you wager?');
+      readText('Answer. Daily double. How much will you wager');
+      setMessage('Daily Double!');
     } else {
       setMessage('');
-      setCorrect('');
+      setMessage2('');
       setSeconds(0);
       setResponseCountdown(5);
       updateAvailableClueNumbers(clue.number);
@@ -170,6 +171,10 @@ const App = () => {
     for (let col = 0; col < 6; col++) {
       for (let row = 0; row < 5; row++) {
         if (board[col][row].number === clueNumber) {
+          if (board[col][row].daily_double_wager > 0) {
+            setMessage('Answer. Daily Double');
+            setMessage2(lastCorrectContestant + 'I will wager $' + board[col][row].daily_double_wager);
+          } 
           visibleCopy[row][col] = true;
           setVisible(visibleCopy);
           readClue(row, col);
@@ -287,7 +292,7 @@ const App = () => {
   function showAnswer() {
     setResponseTimerIsActive(false);
     setResponseCountdownIsActive(false);
-    setCorrect(selectedClue.response.correct_response);
+    setMessage2(selectedClue.response.correct_response);
   }
 
   function incrementScore() {
@@ -297,7 +302,7 @@ const App = () => {
     window.speechSynthesis.speak(msg);
     let scores_copy = {...scores};
     if (selectedClue.daily_double_wager > 0) {
-      scores_copy[playerName] += wager;
+      scores_copy[playerName] += +wager;
     } else {
       scores_copy[playerName] += selectedClue.value;
     }
@@ -365,7 +370,7 @@ const App = () => {
 
   return (
     <div>
-      <Banner contestants={contestants} correct={correct} message={message} scores={scores} />
+      <Banner contestants={contestants} correct={message2} message={message} scores={scores} />
       
       <div className='banner'>
         <div>{seconds.toFixed(2)}</div>
