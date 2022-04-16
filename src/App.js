@@ -142,19 +142,23 @@ const App = () => {
 
   function displayClue(row, col) {
     turnOffLight();
-    setMessage('');
-    setCorrect('');
-    setSeconds(0);
-    setResponseCountdown(5);
-    setSelectedClue(board[col][row]);
-    updateAvailableClueNumbers(board[col][row].number);
-    let visibleCopy = [...visible];
-    if (visibleCopy[row][col] !== undefined) {
-      visibleCopy[row][col] = true;
-      setVisible(visibleCopy);
-      readClue(row, col);
+    const clue = board[col][row];
+    setSelectedClue(clue);
+    if (clue.response.daily_double_wager > 0) {
+      setMessage('Daily Double! How much will you wager?');
+    } else {
+      setMessage('');
+      setCorrect('');
+      setSeconds(0);
+      setResponseCountdown(5);
+      updateAvailableClueNumbers(clue.number);
+      let visibleCopy = [...visible];
+      if (visibleCopy[row][col] !== undefined) {
+        visibleCopy[row][col] = true;
+        setVisible(visibleCopy);
+        readClue(row, col);
+      }
     }
-    console.log(availableClueNumbers);
   }
 
   function displayClueByNumber(clueNumber) {
@@ -291,7 +295,11 @@ const App = () => {
     msg.text = 'Correct';
     window.speechSynthesis.speak(msg);
     let scores_copy = {...scores};
-    scores_copy[playerName] += selectedClue.value;
+    if (selectedClue.response.daily_double_wager > 0) {
+      scores_copy[playerName] += wager;
+    } else {
+      scores_copy[playerName] += selectedClue.value;
+    }
     setScores(scores_copy);
   }
 
@@ -300,7 +308,11 @@ const App = () => {
     msg.text = 'No';
     window.speechSynthesis.speak(msg);
     let scores_copy = {...scores};
-    scores_copy[playerName] -= selectedClue.value;
+    if (selectedClue.response.daily_double_wager > 0) {
+      scores_copy[playerName] -= wager;
+    } else {
+      scores_copy[playerName] -= selectedClue.value;
+    }
     setScores(scores_copy);
   }
 
