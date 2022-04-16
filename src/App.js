@@ -344,6 +344,10 @@ const App = () => {
     setTableStyle('table-light-on');
   }
 
+  function submitWager() {
+    displayClueByNumber(selectedClue.number);
+  }
+
   return (
     <div>
       <Banner contestants={contestants} correct={correct} message={message} scores={scores} />
@@ -355,6 +359,7 @@ const App = () => {
         <button onClick={() => showAnswer()}>Show Correct</button>
         <button onClick={() => incrementScore()}>Correct</button>
         <button onClick={() => deductScore()}>Incorrect</button>
+        <button onClick={() => submitWager()}>Submit Wager</button>
         <input id="wager" type="number" onChange={handleWagerInputChange} />
         <div>{responseCountdown.toFixed(1)}</div>
       </div>
