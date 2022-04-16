@@ -34,6 +34,7 @@ const App = () => {
   const [selectedClue, setSelectedClue] = useState(getClue(1));
   const [lastCorrectContestant, setLastCorrectContestant] = useState(playerName);
   const [round, setRound] = useState(1);
+  const [wager, setWager] = useState(0);
   
   // determines how fast I click after the clue is read
   useEffect(() => {
@@ -68,6 +69,10 @@ const App = () => {
       }
     });
   }, []);
+
+  const handleWagerInputChange = event => {
+    setWager(event.target.value);
+  }
 
   function answer() {
     setResponseTimerIsActive(false);
@@ -350,6 +355,7 @@ const App = () => {
         <button onClick={() => showAnswer()}>Show Correct</button>
         <button onClick={() => incrementScore()}>Correct</button>
         <button onClick={() => deductScore()}>Incorrect</button>
+        <input id="wager" type="number" onChange={handleWagerInputChange} />
         <div>{responseCountdown.toFixed(1)}</div>
       </div>
       
