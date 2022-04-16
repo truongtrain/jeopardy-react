@@ -86,6 +86,7 @@ const App = () => {
     } else {
       setMessage(selectedClue.response.correct_response);
     }
+    clearInterval(responseInterval);
   }
 
   function updateOpponentScores(clue) {
@@ -124,6 +125,7 @@ const App = () => {
       setScores(scores_copy);
       setMessage(correctContestant + ': What is ' + clue.response.correct_response + '?');
       setCorrect(hostName + ': Yes! ' + message);
+      setSeconds(0);
       setTimeout(() => displayNextClue(), 3000);
     }
   }
@@ -210,6 +212,7 @@ const App = () => {
   }
 
   function clearClue(row, col) {
+    setSeconds(0);
     let board_copy = [...board];
     board_copy[col][row].text = '';
     setBoard(board_copy);
@@ -252,6 +255,7 @@ const App = () => {
   }
 
   function isFastestResponse(seconds, probability) {
+    console.log(seconds);
     const randomNumber = Math.random();
     if (seconds <= 0.2) {
       return randomNumber < probability;
