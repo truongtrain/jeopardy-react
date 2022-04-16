@@ -101,7 +101,6 @@ const App = () => {
     if (!correctContestant || correctContestant === weakestContestant) {
       setCorrect(hostName + ': ' + clue.response.correct_response);
       if (lastCorrectContestant !== playerName) {
-        console.log('triple stumper');
         setTimeout(() => setMessage(lastCorrectContestant + ': ' + message), 2000);
         setTimeout(() => displayNextClue(), 4000);
       }
@@ -133,10 +132,8 @@ const App = () => {
   function displayNextClue() {
     setMessage('');
     setCorrect('');
-    console.log('displayNextClue');
     const nextClueNumber = getNextClueNumber();
     if (nextClueNumber > 0) {
-      console.log(nextClueNumber);
       displayClueByNumber(nextClueNumber);
     } else {
       setMessage('End of round');
@@ -150,13 +147,14 @@ const App = () => {
     setSeconds(0);
     setResponseCountdown(5);
     setSelectedClue(board[col][row]);
-    updateAvailableClueNumbers(selectedClue.number);
+    updateAvailableClueNumbers(board[col][row].number);
     let visibleCopy = [...visible];
     if (visibleCopy[row][col] !== undefined) {
       visibleCopy[row][col] = true;
       setVisible(visibleCopy);
       readClue(row, col);
     }
+    console.log(availableClueNumbers);
   }
 
   function displayClueByNumber(clueNumber) {
@@ -178,6 +176,7 @@ const App = () => {
   }
 
   function getNextClueNumber() {
+    console.log(availableClueNumbers);
     for (let i = 1; i <= 30; i++) {
       if (availableClueNumbers[i] === true) {
         return i;
@@ -255,7 +254,6 @@ const App = () => {
   }
 
   function isFastestResponse(seconds, probability) {
-    console.log(seconds);
     const randomNumber = Math.random();
     if (seconds <= 0.2) {
       return randomNumber < probability;
