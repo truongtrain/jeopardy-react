@@ -103,12 +103,14 @@ const App = () => {
     }
     // handle incorrect responses
     if (incorrectContestants.length > 0) {
+      let incorrectMessage = '';
       for (let i = 0; i < incorrectContestants.length; i++) {
-        setMessage(incorrectContestants[i] + ': What is ' + clue.response.incorrect_responses[i] + '?');
-        setCorrect(hostName + ': No');
+        incorrectMessage += incorrectContestants[i] + ': What is ' + clue.response.incorrect_responses[i] + '? '
         scores_copy[incorrectContestants[i]] -= scoreChange;
-        setScores(scores_copy);
       }
+      setMessage(incorrectMessage);
+      setCorrect(hostName + ': No');
+      setScores(scores_copy);
     }
     // handle correct response
     if (correctContestant && correctContestant !== weakestContestant) {
