@@ -17,9 +17,13 @@ const App = () => {
   );
   contestants.push(playerName);
   const initalScores = {};
-  contestants.forEach(contestant => initalScores[contestant] = 0);
+  const finalResponses = {};
+  const finalWagers = {};
+  contestants.forEach(contestant => {
+    initalScores[contestant] = 0;
+  });
   initalScores[playerName] = 0;
-
+  
   const [visible, setVisible] = useState(getDefaultVisible());
   const [board, setBoard] = useState(showData.jeopardy_round);
   const [tableStyle, setTableStyle] = useState('table-light-off');
@@ -35,6 +39,7 @@ const App = () => {
   const [lastCorrectContestant, setLastCorrectContestant] = useState(playerName);
   const [round, setRound] = useState(1);
   const [wager, setWager] = useState(0);
+  const [finalResponse, setFinalResponse] = useState('');
 
   // determines how fast I click after the clue is read
   useEffect(() => {
@@ -70,8 +75,13 @@ const App = () => {
     });
   }, []);
 
-  const handleWagerInputChange = event => {
-    setWager(event.target.value);
+  const handleInputChange = event => {
+    if (isNaN) {
+      setFinalResponse(event.target.value);
+    } else {
+      setWager(event.target.value);
+    }
+    
   }
 
   function answer() {
@@ -299,7 +309,11 @@ const App = () => {
   function showAnswer() {
     setResponseTimerIsActive(false);
     setResponseCountdownIsActive(false);
-    setMessage2(selectedClue.response.correct_response);
+    if (round === 3) {
+      setMessage2(showData.final_jeopardy.correct_response);
+    } else {
+      setMessage2(selectedClue.response.correct_response);
+    }
   }
 
   function incrementScore() {
@@ -371,28 +385,65 @@ const App = () => {
     setTableStyle('table-light-on');
   }
 
-  function submitWager() {
-    displayClueByNumber(selectedClue.number);
+  function submit() {
+    if (round === 3) {
+      finalResponses[playerName] = finalResponse;
+      finalWagers[playerName] = wager;
+    } else {
+      displayClueByNumber(selectedClue.number);
+    }
   }
 
   function startDoubleJeopardyRound() {
     setBoard(showData.double_jeopardy_round);
+    setRound(2);
+  }
+
+  function showFinalJeopardyCategory() {
+    setMessage(showData.final_jeopardy.category)
+  }
+
+  function showFinalJeopardyClue() {
+    setRound(3);
+    setMessage2(showData.final_jeopardy.clue);
+    setResponseCountdown(30);
+    setResponseCountdownIsActive(true);
+  }
+
+  function showFinalJeopardyResults() {
+    contestants.forEach(contestant => {
+      initalScores[contestant] = 0;
+      finalResponses[contestant] = showData.final_jeopardy.contestant_responses
+      .filter(response => response.contestant === contestant).response;
+      finalWagers[contestant] = showData.final_jeopardy.contestant_responses
+      .filter(response => response.contestant === contestant).wager;
+    });
+    finalResponses[playerName] = finalResponse;
+    finalWagers[playerName] = wager;
   }
 
   return (
     <div>
-      <Banner contestants={contestants} correct={message2} message={message} scores={scores} />
+      <Banner contestants={contestants}
+        correct={message2}
+        message={message}
+        scores={scores}
+        responses={finalResponses}
+        wagers={finalWagers} />
 
       <div className='banner'>
+        <div>{responseCountdown.toFixed(1)}</div>
         <button onClick={() => concede()}>Concede</button>
         <button onClick={() => answer()}>Answer</button>
         <button onClick={() => showAnswer()}>Show Correct</button>
         <button onClick={() => incrementScore()}>Correct</button>
         <button onClick={() => deductScore()}>Incorrect</button>
-        <button onClick={() => submitWager()}>Submit Wager</button>
-        <input id="wager" type="number" onChange={handleWagerInputChange} />
+        <button onClick={() => submit()}>Submit</button>
+        <input id="wager" onChange={handleInputChange} />
         <button onClick={() => startDoubleJeopardyRound()}>Double Jeopardy</button>
-        <div>{responseCountdown.toFixed(1)}</div>
+        <button onClick={() => showFinalJeopardyCategory()}>Final Jeopardy Category</button>
+        <button onClick={() => showFinalJeopardyClue()}>Final Jeopardy Clue</button>
+        <button onClick={() => showFinalJeopardyResults()}>Results</button>
       </div>
 
       <table className={tableStyle}>
