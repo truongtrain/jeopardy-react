@@ -65,11 +65,11 @@ const App = () => {
     return () => clearInterval(responseCountdownInterval);
   }, [responseCountdownIsActive]);
 
-  // press 's' to start the game
+  // press 'Enter' to start the game
   useEffect(() => {
     document.addEventListener('keypress', e => {
       if (e.key === 'Enter' && round !== 3) {
-        setLastCorrectContestant(contestants[0]);
+        setVisible(getDefaultVisible());
         displayClueByNumber(1);
       }
     });
@@ -102,8 +102,9 @@ const App = () => {
   function updateOpponentScores(clue) {
     const nextClueNumber = getNextClueNumber();
     let message;
+    let nextClue;
     if (nextClueNumber > 0) {
-      const nextClue = getClue(nextClueNumber);
+      nextClue = getClue(nextClueNumber);
       message = lastCorrectContestant + ': ' + nextClue.category + ' for $' + nextClue.value;
     }
     const incorrectContestants = clue.response.incorrect_contestants;
@@ -133,13 +134,14 @@ const App = () => {
     // handle correct response
     if (correctContestant && correctContestant !== weakestContestant) {
       setLastCorrectContestant(correctContestant);
+      console.log('new last correct contestant: ' + correctContestant);
       scores_copy[correctContestant] += scoreChange;
       setScores(scores_copy);
       setMessage(correctContestant + ': What is ' + clue.response.correct_response + '?');
       setMessage2(hostName + ': Yes! ');
       if (nextClueNumber > 0) {
         setTimeout(() => {
-          setMessage(message);
+          setMessage(correctContestant + ': ' + nextClue.category + ' for $' + nextClue.value);
           setMessage2('');
         }, 2000);
         setSeconds(0);
@@ -152,6 +154,7 @@ const App = () => {
     setMessage('');
     setMessage2('');
     const nextClueNumber = getNextClueNumber();
+    console.log(nextClueNumber);
     if (nextClueNumber > 0) {
       displayClueByNumber(nextClueNumber);
     } else {
@@ -231,7 +234,12 @@ const App = () => {
   }
 
   function readClue(row, col) {
-    const clue = showData.jeopardy_round[col][row];
+    let clue;
+    if (round === 1) {
+      clue = showData.jeopardy_round[col][row];
+    } else if (round === 2) {
+      clue = showData.double_jeopardy_round[col][row];
+    }
     msg.text = clue.text;
     window.speechSynthesis.speak(msg);
     msg.addEventListener('end', () => clearClue(row, col));
@@ -397,6 +405,7 @@ const App = () => {
   }
 
   function startDoubleJeopardyRound() {
+    setRound(2);
     let thirdPlace = scores[playerName]
     contestants.forEach(contestant => {
       if (scores[contestant] < thirdPlace) {
@@ -405,7 +414,10 @@ const App = () => {
     });
     setLastCorrectContestant(thirdPlace);
     setBoard(showData.double_jeopardy_round);
-    setRound(2);
+    setVisible(getDefaultVisible());
+    setAvailableClueNumbers(initializeAvailableClueNumbers());
+    setMessage('');
+    setMessage2('');
   }
 
   function showFinalJeopardyCategory() {
@@ -440,6 +452,7 @@ const App = () => {
     wagers[playerName] = wager;
     setFinalResponses(responses);
     setFinalWagers(wagers);
+    setMessage(showData.final_jeopardy.correct_response);
   }
 
   return (
