@@ -134,7 +134,6 @@ const App = () => {
     // handle correct response
     if (correctContestant && correctContestant !== weakestContestant) {
       setLastCorrectContestant(correctContestant);
-      console.log('new last correct contestant: ' + correctContestant);
       scores_copy[correctContestant] += scoreChange;
       setScores(scores_copy);
       setMessage(correctContestant + ': What is ' + clue.response.correct_response + '?');
@@ -439,7 +438,6 @@ const App = () => {
   function showFinalJeopardyResults() {
     let responses = [];
     let wagers = [];
-    console.log(contestants);
     contestants.forEach(contestant => {
       showData.final_jeopardy.contestant_responses.forEach(response => {
         if (response.contestant === contestant) {
