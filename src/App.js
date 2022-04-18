@@ -99,39 +99,18 @@ const App = () => {
     clearInterval(responseInterval);
   }
 
-  function updateOpponentScores(clue) {
-    const nextClueNumber = getNextClueNumber();
-    let message;
-    let nextClue;
-    if (nextClueNumber > 0) {
-      nextClue = getClue(nextClueNumber);
-      message = lastCorrectContestant + ': ' + nextClue.category + ' for $' + nextClue.value;
+  function handleIncorrectResponses(incorrectContestants, clue, scores_copy, scoreChange) {
+    let incorrectMessage = '';
+    for (let i = 0; i < incorrectContestants.length; i++) {
+      incorrectMessage += incorrectContestants[i] + ': What is ' + clue.response.incorrect_responses[i] + '? '
+      scores_copy[incorrectContestants[i]] -= scoreChange;
     }
-    const incorrectContestants = clue.response.incorrect_contestants;
-    const correctContestant = clue.response.correct_contestant;
-    let scores_copy = { ...scores };
-    let scoreChange = clue.daily_double_wager > 0 ? clue.daily_double_wager : clue.value;
-    // handle triple stumpers
-    if (!correctContestant || correctContestant === weakestContestant) {
-      setMessage(hostName + ': ' + clue.response.correct_response);
-      if (nextClueNumber > 0 && lastCorrectContestant !== playerName) {
-        setTimeout(() => setMessage(message), 2500);
-        setTimeout(() => displayNextClue(), 4500);
-      }
-      return;
-    }
-    // handle incorrect responses
-    if (incorrectContestants.length > 0) {
-      let incorrectMessage = '';
-      for (let i = 0; i < incorrectContestants.length; i++) {
-        incorrectMessage += incorrectContestants[i] + ': What is ' + clue.response.incorrect_responses[i] + '? '
-        scores_copy[incorrectContestants[i]] -= scoreChange;
-      }
-      setMessage(incorrectMessage);
-      setMessage2(hostName + ': No');
-      setScores(scores_copy);
-    }
-    // handle correct response
+    setMessage(incorrectMessage);
+    setMessage2(hostName + ': No');
+    setScores(scores_copy);   
+  }
+
+  function handleCorrectResponse(correctContestant, scores_copy, scoreChange, clue, nextClueNumber, nextClue) {
     if (correctContestant && correctContestant !== weakestContestant) {
       setLastCorrectContestant(correctContestant);
       scores_copy[correctContestant] += scoreChange;
@@ -146,6 +125,39 @@ const App = () => {
         setSeconds(0);
         setTimeout(() => displayNextClue(), 4000);
       }
+    }
+  }
+
+  function updateOpponentScores(clue) {
+    const nextClueNumber = getNextClueNumber();
+    let message;
+    let nextClue;
+    if (nextClueNumber > 0) {
+      nextClue = getClue(nextClueNumber);
+      message = lastCorrectContestant + ': ' + nextClue.category + ' for $' + nextClue.value;
+    }
+    const incorrectContestants = clue.response.incorrect_contestants;
+    const correctContestant = clue.response.correct_contestant;
+    let scores_copy = { ...scores };
+    let scoreChange = clue.daily_double_wager > 0 ? clue.daily_double_wager : clue.value;
+    // handle triple stumpers
+    if (!correctContestant || correctContestant === weakestContestant) {
+      if (incorrectContestants.length > 0) {
+        handleIncorrectResponses(incorrectContestants, clue, scores_copy, scoreChange);
+      } else {
+        setMessage(hostName + ': ' + clue.response.correct_response);
+      }
+      if (nextClueNumber > 0 && lastCorrectContestant !== playerName) {
+        setTimeout(() => setMessage(message), 2500);
+        setTimeout(() => displayNextClue(), 4500);
+      }
+      return;
+    }
+    if (incorrectContestants.length > 0) {
+      handleIncorrectResponses(incorrectContestants, clue, scores_copy, scoreChange);
+      setTimeout(() => handleCorrectResponse(correctContestant, scores_copy, scoreChange, clue, nextClueNumber, nextClue), 3000);
+    } else {
+      handleCorrectResponse(correctContestant, scores_copy, scoreChange, clue, nextClueNumber, nextClue);
     }
   }
 
