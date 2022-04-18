@@ -3,7 +3,8 @@ import React, { useState, useEffect } from 'react';
 import showData from './jeopardy.json';
 import Banner from './Banner';
 
-const msg = new SpeechSynthesisUtterance();
+let msg = new SpeechSynthesisUtterance();
+msg.rate = 0.9;
 const playerName = 'Alan';
 const hostName = 'Trebek';
 
