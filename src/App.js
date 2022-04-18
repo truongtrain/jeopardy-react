@@ -65,15 +65,10 @@ const App = () => {
     return () => clearInterval(responseCountdownInterval);
   }, [responseCountdownIsActive]);
 
-  // press 'Enter' to start the game
-  useEffect(() => {
-    document.addEventListener('keypress', e => {
-      if (e.key === 'Enter' && round !== 3) {
-        setVisible(getDefaultVisible());
-        displayClueByNumber(1);
-      }
-    });
-  }, []);
+  function startRound() {
+    setVisible(getDefaultVisible());
+    displayClueByNumber(1);
+  }
 
   const handleInputChange = event => {
     if (isNaN(event.target.value)) {
@@ -487,6 +482,7 @@ const App = () => {
         <button onClick={() => showFinalJeopardyCategory()}>Final Jeopardy Category</button>
         <button onClick={() => showFinalJeopardyClue()}>Final Jeopardy Clue</button>
         <button onClick={() => showFinalJeopardyResults()}>Results</button>
+        <button onClick={() => startRound()}>Start Round</button>
       </div>
 
       <table className={tableStyle}>
