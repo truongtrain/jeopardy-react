@@ -125,6 +125,26 @@ const App = () => {
     }
   }
 
+  function getOpponentDailyDoubleWager(clue) {
+    const currentScore = scores[lastCorrectContestant];
+    if (round === 1) {
+      if (clue.daily_double_wager > currentScore) {
+        if (currentScore > 1000) {
+          return currentScore;
+        }
+        return 1000;
+      }
+    } else if (round === 2) {
+      if (clue.daily_double_wager > currentScore) {
+        if (currentScore > 1000) {
+          return currentScore;
+        }
+        return 2000;
+      }
+    }
+    return clue.daily_double_wager;
+  }
+
   function updateOpponentScores(clue) {
     const nextClueNumber = getNextClueNumber();
     let message;
@@ -136,7 +156,7 @@ const App = () => {
     const incorrectContestants = clue.response.incorrect_contestants;
     const correctContestant = clue.response.correct_contestant;
     let scores_copy = { ...scores };
-    let scoreChange = clue.daily_double_wager > 0 ? clue.daily_double_wager : clue.value;
+    let scoreChange = clue.daily_double_wager > 0 ? getOpponentDailyDoubleWager(clue) : clue.value;
     // handle triple stumpers
     if (!correctContestant || correctContestant === weakestContestant) {
       if (incorrectContestants.length > 0) {
