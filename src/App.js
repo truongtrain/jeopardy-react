@@ -77,7 +77,6 @@ const App = () => {
     } else {
       setWager(event.target.value);
     }
-    console.log(wager);
   }
 
   function answer() {
@@ -98,8 +97,10 @@ const App = () => {
   function handleIncorrectResponses(incorrectContestants, clue, scores_copy, scoreChange) {
     let incorrectMessage = '';
     for (let i = 0; i < incorrectContestants.length; i++) {
-      incorrectMessage += incorrectContestants[i] + ': What is ' + clue.response.incorrect_responses[i] + '? '
-      scores_copy[incorrectContestants[i]] -= scoreChange;
+      if (incorrectContestants[i] !== weakestContestant) {
+        incorrectMessage += incorrectContestants[i] + ': What is ' + clue.response.incorrect_responses[i] + '? '
+        scores_copy[incorrectContestants[i]] -= scoreChange;
+      }
     }
     setMessage(incorrectMessage);
     setMessage2(hostName + ': No');
