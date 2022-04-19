@@ -103,7 +103,7 @@ const App = () => {
       }
     }
     setMessage(incorrectMessage);
-    setMessage2(hostName + ': No');
+    setMessage2(hostName + ': No. ' + clue.response.correct_response);
     setScores(scores_copy);   
   }
 
