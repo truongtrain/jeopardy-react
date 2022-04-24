@@ -475,8 +475,8 @@ const App = () => {
         }
       });
     });
-    responses[playerName] = finalResponse;
     wagers[playerName] = wager;
+    responses[playerName] = finalResponse;
     setFinalResponses(responses);
     setFinalWagers(wagers);
     setMessage(showData.final_jeopardy.correct_response);
