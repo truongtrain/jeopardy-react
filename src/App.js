@@ -42,6 +42,7 @@ const App = () => {
   const [finalResponses, setFinalResponses] = useState({});
   const [finalWagers, setFinalWagers] = useState({});
 
+  console.log(board);
   // determines how fast I click after the clue is read
   useEffect(() => {
     if (responseTimerIsActive) {
@@ -168,6 +169,9 @@ const App = () => {
         setTimeout(() => setMessage(message), 2500);
         setTimeout(() => displayNextClue(), 4500);
       }
+      if (nextClueNumber < 0) {
+        setTimeout(() => setMessage(message), 2500);
+      }
       return;
     }
     if (incorrectContestants.length > 0) {
@@ -182,7 +186,6 @@ const App = () => {
     setMessage('');
     setMessage2('');
     const nextClueNumber = getNextClueNumber();
-    console.log(nextClueNumber);
     if (nextClueNumber > 0) {
       displayClueByNumber(nextClueNumber);
     } else {
@@ -287,30 +290,30 @@ const App = () => {
     if (round === 1) {
       switch (value) {
         case 200:
-          return 0.333;
+          return 0.424;
         case 400:
-          return 0.377;
+          return 0.492;
         case 600:
-          return 0.383;
-        case 800:
-          return 0.418;
-        case 1000:
           return 0.500;
+        case 800:
+          return 0.541;
+        case 1000:
+          return 0.636;
         default:
           return 0;
       }
     } else if (round === 2) {
       switch (value) {
         case 400:
-          return 0.350;
+          return 0.452;
         case 800:
-          return 0.412;
+          return 0.535;
         case 1200:
-          return 0.438;
+          return 0.563;
         case 1600:
-          return 0.500;
+          return 0.623;
         case 2000:
-          return 0.500;
+          return 0.704;
         default:
           return 0;
       }
@@ -319,28 +322,31 @@ const App = () => {
 
   function isFastestResponse(seconds, probability) {
     const randomNumber = Math.random();
-    if (seconds <= 0.2) {
-      return randomNumber < probability;
-    } else if (seconds <= 0.4) {
-      return randomNumber <= Math.pow(probability, 2);
-    } else if (seconds <= 0.6) {
-      return randomNumber <= Math.pow(probability, 3);
-    } else if (seconds <= 0.8) {
-      return randomNumber <= Math.pow(probability, 4);
-    } else if (seconds <= 1) {
-      return randomNumber <= Math.pow(probability, 5);
-    } else if (seconds <= 1.2) {
-      return randomNumber <= Math.pow(probability, 6);
-    } else if (seconds <= 1.4) {
-      return randomNumber <= Math.pow(probability, 7);
-    } else if (seconds <= 1.6) {
-      return randomNumber <= Math.pow(probability, 8);
-    } else if (seconds <= 1.8) {
-      return randomNumber <= Math.pow(probability, 9);
-    } else if (seconds <= 2.0) {
-      return randomNumber <= Math.pow(probability, 10);
-    }
-    return false;
+    console.log('randomNumber: ' + randomNumber);
+    console.log('probablility: ' + probability);
+    return randomNumber < probability;
+    // if (seconds <= 0.2) {
+    //   return randomNumber < probability;
+    // } else if (seconds <= 0.4) {
+    //   return randomNumber <= Math.pow(probability, 2);
+    // } else if (seconds <= 0.6) {
+    //   return randomNumber <= Math.pow(probability, 3);
+    // } else if (seconds <= 0.8) {
+    //   return randomNumber <= Math.pow(probability, 4);
+    // } else if (seconds <= 1) {
+    //   return randomNumber <= Math.pow(probability, 5);
+    // } else if (seconds <= 1.2) {
+    //   return randomNumber <= Math.pow(probability, 6);
+    // } else if (seconds <= 1.4) {
+    //   return randomNumber <= Math.pow(probability, 7);
+    // } else if (seconds <= 1.6) {
+    //   return randomNumber <= Math.pow(probability, 8);
+    // } else if (seconds <= 1.8) {
+    //   return randomNumber <= Math.pow(probability, 9);
+    // } else if (seconds <= 2.0) {
+    //   return randomNumber <= Math.pow(probability, 10);
+    // }
+    // return false;
   }
 
   function showAnswer() {
@@ -482,6 +488,14 @@ const App = () => {
     setMessage(showData.final_jeopardy.correct_response);
   }
 
+  function getCategory(column) {
+    let i = 0;
+    while (i < column.length && !column[i].category) {
+      i++;
+    }
+    return column[i].category;
+  }
+
   return (
     <div>
       <Banner contestants={contestants}
@@ -510,12 +524,12 @@ const App = () => {
       <table className={tableStyle}>
         <thead>
           <tr>
-            <th>{board[0][0].category}</th>
-            <th>{board[1][0].category}</th>
-            <th>{board[2][0].category}</th>
-            <th>{board[3][0].category}</th>
-            <th>{board[4][0].category}</th>
-            <th>{board[5][0].category}</th>
+            <th>{getCategory(board[0])}</th>
+            <th>{getCategory(board[1])}</th>
+            <th>{getCategory(board[2])}</th>
+            <th>{getCategory(board[3])}</th>
+            <th>{getCategory(board[4])}</th>
+            <th>{getCategory(board[5])}</th>
           </tr>
         </thead>
         <tbody>
