@@ -168,8 +168,7 @@ const App = () => {
       if (nextClueNumber > 0 && lastCorrectContestant !== playerName) {
         setTimeout(() => setMessage(message), 2500);
         setTimeout(() => displayNextClue(), 4500);
-      }
-      if (nextClueNumber < 0) {
+      } else {
         setTimeout(() => setMessage(message), 2500);
       }
       return;
