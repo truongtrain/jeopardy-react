@@ -42,7 +42,6 @@ const App = () => {
   const [finalResponses, setFinalResponses] = useState({});
   const [finalWagers, setFinalWagers] = useState({});
 
-  console.log(board);
   // determines how fast I click after the clue is read
   useEffect(() => {
     if (responseTimerIsActive) {
@@ -169,7 +168,7 @@ const App = () => {
         setTimeout(() => setMessage(message), 2500);
         setTimeout(() => displayNextClue(), 4500);
       } else {
-        setTimeout(() => setMessage(message), 2500);
+        // setTimeout(() => setMessage(message), 2500);
       }
       return;
     }
@@ -321,31 +320,34 @@ const App = () => {
 
   function isFastestResponse(seconds, probability) {
     const randomNumber = Math.random();
+    seconds %= 5;
+    console.log('seconds: ' + seconds);
     console.log('randomNumber: ' + randomNumber);
     console.log('probablility: ' + probability);
-    return randomNumber < probability;
-    // if (seconds <= 0.2) {
-    //   return randomNumber < probability;
-    // } else if (seconds <= 0.4) {
-    //   return randomNumber <= Math.pow(probability, 2);
-    // } else if (seconds <= 0.6) {
-    //   return randomNumber <= Math.pow(probability, 3);
-    // } else if (seconds <= 0.8) {
-    //   return randomNumber <= Math.pow(probability, 4);
-    // } else if (seconds <= 1) {
-    //   return randomNumber <= Math.pow(probability, 5);
-    // } else if (seconds <= 1.2) {
-    //   return randomNumber <= Math.pow(probability, 6);
-    // } else if (seconds <= 1.4) {
-    //   return randomNumber <= Math.pow(probability, 7);
-    // } else if (seconds <= 1.6) {
-    //   return randomNumber <= Math.pow(probability, 8);
-    // } else if (seconds <= 1.8) {
-    //   return randomNumber <= Math.pow(probability, 9);
-    // } else if (seconds <= 2.0) {
-    //   return randomNumber <= Math.pow(probability, 10);
-    // }
-    // return false;
+    console.log(randomNumber < probability);
+    // return randomNumber < probability;
+    if (seconds <= 0.2) {
+      return randomNumber < probability;
+    } else if (seconds <= 0.4) {
+      return randomNumber <= Math.pow(probability, 2);
+    } else if (seconds <= 0.6) {
+      return randomNumber <= Math.pow(probability, 3);
+    } else if (seconds <= 0.8) {
+      return randomNumber <= Math.pow(probability, 4);
+    } else if (seconds <= 1) {
+      return randomNumber <= Math.pow(probability, 5);
+    } else if (seconds <= 1.2) {
+      return randomNumber <= Math.pow(probability, 6);
+    } else if (seconds <= 1.4) {
+      return randomNumber <= Math.pow(probability, 7);
+    } else if (seconds <= 1.6) {
+      return randomNumber <= Math.pow(probability, 8);
+    } else if (seconds <= 1.8) {
+      return randomNumber <= Math.pow(probability, 9);
+    } else if (seconds <= 2.0) {
+      return randomNumber <= Math.pow(probability, 10);
+    }
+    return false;
   }
 
   function showAnswer() {
@@ -397,6 +399,7 @@ const App = () => {
 
   function isTripleStumper() {
     const correctContestant = selectedClue.response.correct_contestant;
+    console.log('correctContestant: ' + correctContestant);
     return correctContestant.length === 0 || correctContestant === weakestContestant;
   }
 
