@@ -83,7 +83,7 @@ const App = () => {
   function answer() {
     setResponseTimerIsActive(false);
     const probability = getProbability(selectedClue.value, round);
-    if (isFastestResponse(seconds, probability) || isTripleStumper()) {
+    if (isFastestResponse(seconds, probability) || (seconds < 3 && isTripleStumper())) {
       readText(playerName);
       setResponseCountdownIsActive(true);
     } else if (selectedClue.response.correct_contestant !== weakestContestant) {
@@ -345,9 +345,10 @@ const App = () => {
       return randomNumber <= Math.pow(probability, 8);
     } else if (seconds <= 1.8) {
       return randomNumber <= Math.pow(probability, 9);
-    } else {
+    } else if (seconds <= 2) {
       return randomNumber <= Math.pow(probability, 10);
     }
+    return false;
   }
 
   function showAnswer() {
