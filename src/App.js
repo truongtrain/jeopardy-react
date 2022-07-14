@@ -337,15 +337,15 @@ const App = () => {
       return randomNumber <= Math.pow(probability, 4);
     } else if (seconds <= 1) {
       return randomNumber <= Math.pow(probability, 5);
-    } else if (seconds <= 1.2) {
+    } else if (seconds <= 1.25) {
       return randomNumber <= Math.pow(probability, 6);
-    } else if (seconds <= 1.4) {
+    } else if (seconds <= 1.5) {
       return randomNumber <= Math.pow(probability, 7);
-    } else if (seconds <= 1.6) {
+    } else if (seconds <= 1.75) {
       return randomNumber <= Math.pow(probability, 8);
-    } else if (seconds <= 1.8) {
-      return randomNumber <= Math.pow(probability, 9);
     } else if (seconds <= 2) {
+      return randomNumber <= Math.pow(probability, 9);
+    } else if (seconds < 3) {
       return randomNumber <= Math.pow(probability, 10);
     }
     return false;
