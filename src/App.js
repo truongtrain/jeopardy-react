@@ -41,6 +41,7 @@ const App = () => {
   const [finalResponse, setFinalResponse] = useState('');
   const [finalResponses, setFinalResponses] = useState({});
   const [finalWagers, setFinalWagers] = useState({});
+  const [disableAnswer, setDisableAnswer] = useState(true);
 
   // determines how fast I click after the clue is read
   useEffect(() => {
@@ -344,10 +345,9 @@ const App = () => {
       return randomNumber <= Math.pow(probability, 8);
     } else if (seconds <= 1.8) {
       return randomNumber <= Math.pow(probability, 9);
-    } else if (seconds <= 2.0) {
+    } else {
       return randomNumber <= Math.pow(probability, 10);
     }
-    return false;
   }
 
   function showAnswer() {
@@ -423,10 +423,12 @@ const App = () => {
   }
 
   function turnOffLight() {
+    setDisableAnswer(true);
     setTableStyle('table-light-off');
   }
 
   function turnOnLight() {
+    setDisableAnswer(false);
     setTableStyle('table-light-on');
   }
 
@@ -510,7 +512,7 @@ const App = () => {
       <div className='banner'>
         <div>{responseCountdown.toFixed(1)}</div>
         <button onClick={() => concede()}>Concede</button>
-        <button onClick={() => answer()}>Answer</button>
+        <button onClick={() => answer()} disabled={disableAnswer}>Answer</button>
         <button onClick={() => showAnswer()}>Show Correct</button>
         <button onClick={() => incrementScore()}>Correct</button>
         <button onClick={() => deductScore()}>Incorrect</button>
