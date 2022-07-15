@@ -480,7 +480,6 @@ const App = () => {
     let responses = [];
     let wagers = [];
     wagers[playerName] = wager;
-    console.log(wager);
     contestants.forEach(contestant => {
       showData.final_jeopardy.contestant_responses.forEach(response => {
         if (response.contestant === contestant) {
