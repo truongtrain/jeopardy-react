@@ -436,6 +436,7 @@ const App = () => {
   function submit() {
     if (round === 3) {
       setResponseCountdownIsActive(false);
+      setWager(wager);
       finalResponses[playerName] = finalResponse;
       finalWagers[playerName] = wager;
     } else {
@@ -478,6 +479,8 @@ const App = () => {
   function showFinalJeopardyResults() {
     let responses = [];
     let wagers = [];
+    wagers[playerName] = wager;
+    console.log(wager);
     contestants.forEach(contestant => {
       showData.final_jeopardy.contestant_responses.forEach(response => {
         if (response.contestant === contestant) {
@@ -486,7 +489,6 @@ const App = () => {
         }
       });
     });
-    wagers[playerName] = wager;
     responses[playerName] = finalResponse;
     setFinalResponses(responses);
     setFinalWagers(wagers);
