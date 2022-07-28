@@ -152,6 +152,8 @@ const App = () => {
     let nextClue;
     if (nextClueNumber > 0) {
       nextClue = getClue(nextClueNumber);
+    }
+    if (nextClue) {
       message = lastCorrectContestant + ': ' + nextClue.category + ' for $' + nextClue.value;
     }
     const incorrectContestants = clue.response.incorrect_contestants;
@@ -168,8 +170,6 @@ const App = () => {
       if (nextClueNumber > 0 && lastCorrectContestant !== playerName) {
         setTimeout(() => setMessage(message), 2500);
         setTimeout(() => displayNextClue(), 4500);
-      } else {
-        // setTimeout(() => setMessage(message), 2500);
       }
       return;
     }
@@ -224,7 +224,11 @@ const App = () => {
         if (board[col][row].number === clueNumber) {
           if (board[col][row].daily_double_wager > 0) {
             setMessage('Answer. Daily Double');
-            setMessage2(lastCorrectContestant + ': I will wager $' + board[col][row].daily_double_wager);
+            if (lastCorrectContestant !== playerName) {
+              setMessage2(lastCorrectContestant + ': I will wager $' + board[col][row].daily_double_wager);
+            } else {
+              setMessage2(board[col][row].text);
+            }
           }
           visibleCopy[row][col] = true;
           setVisible(visibleCopy);
@@ -322,12 +326,15 @@ const App = () => {
   function isFastestResponse(seconds, probability) {
     const randomNumber = Math.random();
     seconds %= 5;
+    console.log('answer: ' + selectedClue.response.correct_response);
     console.log('seconds: ' + seconds);
     console.log('randomNumber: ' + randomNumber);
     console.log('probablility: ' + probability);
     console.log(randomNumber < probability);
     // return randomNumber < probability;
-    if (seconds <= 0.2) {
+    if (seconds <= 0.1) {
+      return randomNumber <= Math.pow(probability, 0.5);
+    } else if (seconds <= 0.2) {
       return randomNumber < probability;
     } else if (seconds <= 0.4) {
       return randomNumber <= Math.pow(probability, 2);
