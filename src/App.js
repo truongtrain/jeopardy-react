@@ -81,6 +81,7 @@ const App = () => {
   }
 
   function answer() {
+    setDisableAnswer(true);
     setResponseTimerIsActive(false);
     const probability = getProbability(selectedClue.value, round);
     if (isFastestResponse(seconds, probability) || (seconds < 3 && isTripleStumper())) {
