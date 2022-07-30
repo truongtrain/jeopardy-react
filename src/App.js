@@ -329,33 +329,33 @@ const App = () => {
     console.log('answer: ' + selectedClue.response.correct_response);
     console.log('seconds: ' + seconds);
     console.log('randomNumber: ' + randomNumber);
-    console.log('probablility: ' + probability);
-    console.log(randomNumber < probability);
-    // return randomNumber < probability;
+    let adjustedProbability;
     if (seconds <= 0.1) {
-      return randomNumber <= Math.pow(probability, 0.5);
+      adjustedProbability = Math.pow(probability, 0.5);
     } else if (seconds <= 0.2) {
-      return randomNumber < probability;
+      adjustedProbability = probability;
     } else if (seconds <= 0.4) {
-      return randomNumber <= Math.pow(probability, 2);
+      adjustedProbability = Math.pow(probability, 2);
     } else if (seconds <= 0.6) {
-      return randomNumber <= Math.pow(probability, 3);
+      adjustedProbability = Math.pow(probability, 3);
     } else if (seconds <= 0.8) {
-      return randomNumber <= Math.pow(probability, 4);
+      adjustedProbability = Math.pow(probability, 4);
     } else if (seconds <= 1) {
-      return randomNumber <= Math.pow(probability, 5);
+      adjustedProbability = Math.pow(probability, 5);
     } else if (seconds <= 1.25) {
-      return randomNumber <= Math.pow(probability, 6);
+      adjustedProbability = Math.pow(probability, 6);
     } else if (seconds <= 1.5) {
-      return randomNumber <= Math.pow(probability, 7);
+      adjustedProbability = Math.pow(probability, 7);
     } else if (seconds <= 1.75) {
-      return randomNumber <= Math.pow(probability, 8);
+      adjustedProbability = Math.pow(probability, 8);
     } else if (seconds <= 2) {
-      return randomNumber <= Math.pow(probability, 9);
+      adjustedProbability = Math.pow(probability, 9);
     } else if (seconds < 3) {
-      return randomNumber <= Math.pow(probability, 10);
+      adjustedProbability = Math.pow(probability, 10);
     }
-    return false;
+    console.log('adjusted probablility: ' + adjustedProbability);
+    console.log(randomNumber <= adjustedProbability);
+    return randomNumber <= adjustedProbability;
   }
 
   function showAnswer() {
