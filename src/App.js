@@ -42,6 +42,9 @@ const App = () => {
   const [finalResponses, setFinalResponses] = useState({});
   const [finalWagers, setFinalWagers] = useState({});
   const [disableAnswer, setDisableAnswer] = useState(true);
+  const [numCorrect, setNumCorrect] = useState(0);
+  const [coryatScore, setCoryatScore] = useState(0);
+  const [numClues, setNumClues] = useState(0);
 
   // determines how fast I click after the clue is read
   useEffect(() => {
@@ -195,6 +198,7 @@ const App = () => {
 
   function displayClue(row, col) {
     turnOffLight();
+    setNumClues(numClues + 1);
     setLastCorrectContestant(playerName);
     const clue = board[col][row];
     setSelectedClue(clue);
@@ -218,6 +222,7 @@ const App = () => {
 
   function displayClueByNumber(clueNumber) {
     turnOffLight();
+    setNumClues(numClues + 1);
     updateAvailableClueNumbers(clueNumber);
     let visibleCopy = [...visible];
     for (let col = 0; col < 6; col++) {
@@ -381,6 +386,8 @@ const App = () => {
       scores_copy[playerName] += selectedClue.value;
     }
     setScores(scores_copy);
+    setCoryatScore(coryatScore + selectedClue.value);
+    setNumCorrect(numCorrect + 1);
   }
 
   function deductScore() {
@@ -485,6 +492,10 @@ const App = () => {
   }
 
   function showFinalJeopardyResults() {
+    console.log('coryat score: ' + coryatScore);
+    console.log('num correct: ' + numCorrect);
+    console.log('num clues: ' + numClues);
+    console.log('batting average: ' + numCorrect * 1.0 / numClues);
     let responses = [];
     let wagers = [];
     wagers[playerName] = wager;
