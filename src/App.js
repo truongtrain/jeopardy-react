@@ -45,6 +45,7 @@ const App = () => {
   const [numCorrect, setNumCorrect] = useState(0);
   const [coryatScore, setCoryatScore] = useState(0);
   const [numClues, setNumClues] = useState(0);
+  const [isPlayerDailyDouble, setPlayerDailyDouble] = useState(false);
 
   // determines how fast I click after the clue is read
   useEffect(() => {
@@ -113,7 +114,7 @@ const App = () => {
   }
 
   function handleCorrectResponse(correctContestant, scores_copy, scoreChange, clue, nextClueNumber, nextClue) {
-    if (correctContestant && correctContestant !== weakestContestant) {
+    if (correctContestant === clue.response.correct_contestant && correctContestant !== weakestContestant) {
       setLastCorrectContestant(correctContestant);
       scores_copy[correctContestant] += scoreChange;
       setScores(scores_copy);
@@ -151,6 +152,10 @@ const App = () => {
   }
 
   function updateOpponentScores(clue) {
+    // don't update opponent score if this is the player's daily double
+    if (clue.daily_double_wager > 0 && isPlayerDailyDouble) {
+      return;
+    }
     const nextClueNumber = getNextClueNumber();
     let message;
     let nextClue;
@@ -203,6 +208,7 @@ const App = () => {
     const clue = board[col][row];
     setSelectedClue(clue);
     if (clue.daily_double_wager > 0) {
+      setPlayerDailyDouble(true);
       readText('Answer. Daily double. How much will you wager');
       setMessage('Daily Double!');
     } else {
@@ -229,6 +235,7 @@ const App = () => {
       for (let row = 0; row < 5; row++) {
         if (board[col][row].number === clueNumber) {
           if (board[col][row].daily_double_wager > 0) {
+            setPlayerDailyDouble(false);
             setMessage('Answer. Daily Double');
             if (lastCorrectContestant !== playerName) {
               setMessage2(lastCorrectContestant + ': I will wager $' + board[col][row].daily_double_wager);
@@ -399,6 +406,7 @@ const App = () => {
       scores_copy[playerName] -= wager;
     } else {
       scores_copy[playerName] -= selectedClue.value;
+      setCoryatScore(coryatScore - selectedClue.value);
     }
     setScores(scores_copy);
   }
@@ -493,8 +501,6 @@ const App = () => {
 
   function showFinalJeopardyResults() {
     console.log('coryat score: ' + coryatScore);
-    console.log('num correct: ' + numCorrect);
-    console.log('num clues: ' + numClues);
     console.log('batting average: ' + numCorrect * 1.0 / numClues);
     let responses = [];
     let wagers = [];
