@@ -171,7 +171,7 @@ const App = () => {
     let scoreChange = clue.daily_double_wager > 0 ? getOpponentDailyDoubleWager(clue) : clue.value;
     // handle triple stumpers
     if (!correctContestant || correctContestant === weakestContestant) {
-      if (incorrectContestants.length > 0) {
+      if (hasIncorrectContestants(incorrectContestants)) {
         handleIncorrectResponses(incorrectContestants, clue, scores_copy, scoreChange);
       } else {
         setMessage(hostName + ': ' + clue.response.correct_response);
@@ -182,12 +182,19 @@ const App = () => {
       }
       return;
     }
-    if (incorrectContestants.length > 0) {
+    if (hasIncorrectContestants(incorrectContestants)) {
       handleIncorrectResponses(incorrectContestants, clue, scores_copy, scoreChange);
       setTimeout(() => handleCorrectResponse(correctContestant, scores_copy, scoreChange, clue, nextClueNumber, nextClue), 3000);
     } else {
       handleCorrectResponse(correctContestant, scores_copy, scoreChange, clue, nextClueNumber, nextClue);
     }
+  }
+
+  function hasIncorrectContestants(incorrectContestants) {
+    if (incorrectContestants.length === 0) {
+      return false;
+    }
+    return !(incorrectContestants.length === 1 && incorrectContestants.includes(weakestContestant));
   }
 
   function displayNextClue() {
