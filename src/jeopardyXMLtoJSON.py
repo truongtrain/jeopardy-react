@@ -6,6 +6,10 @@ import requests
 import math
 from bs4 import BeautifulSoup
 
+def format_contestant_name(contestant):
+    if ' ' in contestant:
+        return contestant.split()[-1];
+    return contestant
 
 def dollar_to_int(dollar):
     return int(dollar[1:].replace(',', ''))
@@ -56,7 +60,7 @@ def get_clue_response(response, response_string, contestants):
     for contestant in contestants:
         incorrect_response = contestant + ':'
         if incorrect_response in response_string:
-            incorrect_contestants.append(contestant)
+            incorrect_contestants.append(format_contestant_name(contestant))
         elif contestant in response[-1]:
             correct_contestant = contestant  
     parentheses1 = response_string.find('(')   
@@ -135,12 +139,11 @@ def get_contestant_responses(contestant_responses):
     responses = []
     for i in range(0, 6, 2):
         responses.append({
-        'contestant': contestant_responses[i][0],
+        'contestant': format_contestant_name(contestant_responses[i][0]),
         'response': contestant_responses[i][1],
         'wager': int(contestant_responses[i+1][0].replace(',', '')[1:])
     })
     return responses
-
 
 try:
     _create_unverified_https_context = ssl._create_unverified_context
@@ -160,7 +163,7 @@ tables = panda.read_html(responses_url)
 jeopardy_responses = tables[1]
 double_jeopardy_responses = get_board(tables, 90)
 coryats = tables[-1]
-contestants = [coryats.to_dict('records')[0][0], coryats.to_dict('records')[0][1], coryats.to_dict('records')[0][2]]
+contestants = [format_contestant_name(coryats.to_dict('records')[0][0]), format_contestant_name(coryats.to_dict('records')[0][1]), format_contestant_name(coryats.to_dict('records')[0][2])]
 weakest_contestant = get_weakest_contestant(coryats, contestants)
 final_jeopardy_responses = tables[-3]
 fj_correct_response = get_fj_correct_response(responses_url)
