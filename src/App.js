@@ -46,6 +46,8 @@ const App = () => {
   const [coryatScore, setCoryatScore] = useState(0);
   const [numClues, setNumClues] = useState(0);
   const [isPlayerDailyDouble, setPlayerDailyDouble] = useState(false);
+  const [answeredContestants, setAnsweredContestants] = useState([]);
+  const [conceded, setConceded] = useState(false);
 
   // determines how fast I click after the clue is read
   useEffect(() => {
@@ -87,12 +89,22 @@ const App = () => {
   function answer() {
     setDisableAnswer(true);
     setResponseTimerIsActive(false);
-    const probability = getProbability(selectedClue.value, round);
-    if (isFastestResponse(seconds, probability) || (seconds < 3 && isTripleStumper())) {
+    let bonusProbability = 0;
+    if (answeredContestants.length > 0) {
+      bonusProbability = 0.166;
+    }
+    const probability = getProbability(selectedClue.value, round, bonusProbability);
+    if (answeredContestants.length === 2 || isFastestResponse(seconds, probability) || (seconds < 3 && isTripleStumper())) {
       readText(playerName);
       setResponseCountdownIsActive(true);
     } else if (selectedClue.response.correct_contestant !== weakestContestant) {
-      readText(selectedClue.response.correct_contestant);
+      const incorrectContestants = selectedClue.response.incorrect_contestants;
+      if (!hasIncorrectContestants(incorrectContestants)) {
+        readText(selectedClue.response.correct_contestant);
+      } else {
+        const incorrectContestant = getIncorrectContestant(incorrectContestants);
+        readText(incorrectContestant);
+      }
       updateOpponentScores(selectedClue);
     } else {
       setMessage(selectedClue.response.correct_response);
@@ -100,12 +112,24 @@ const App = () => {
     clearInterval(responseInterval);
   }
 
+  function getIncorrectContestant(incorrectContestants) {
+    const filteredContestants = incorrectContestants
+      .filter(contestant => contestant !== weakestContestant);
+    if (answeredContestants.length === 0) {
+       return filteredContestants[0];
+    }
+    return filteredContestants[1];
+  }
+
   function handleIncorrectResponses(incorrectContestants, clue, scores_copy, scoreChange) {
     let incorrectMessage = '';
+    let answered = [];
     for (let i = 0; i < incorrectContestants.length; i++) {
-      if (incorrectContestants[i] !== weakestContestant) {
+      if (incorrectContestants[i] !== weakestContestant && !answered.includes(incorrectContestants[i])) {
         incorrectMessage += incorrectContestants[i] + ': What is ' + clue.response.incorrect_responses[i] + '? '
         scores_copy[incorrectContestants[i]] -= scoreChange;
+        answered.push(incorrectContestants[i]);
+        setAnsweredContestants(answered);
       }
     }
     setMessage(incorrectMessage);
@@ -184,20 +208,22 @@ const App = () => {
     }
     if (hasIncorrectContestants(incorrectContestants)) {
       handleIncorrectResponses(incorrectContestants, clue, scores_copy, scoreChange);
-      setTimeout(() => handleCorrectResponse(correctContestant, scores_copy, scoreChange, clue, nextClueNumber, nextClue), 3000);
+      if (conceded) {
+        setTimeout(() => handleCorrectResponse(correctContestant, scores_copy, scoreChange, clue, nextClueNumber, nextClue), 3000);
+      }
     } else {
       handleCorrectResponse(correctContestant, scores_copy, scoreChange, clue, nextClueNumber, nextClue);
     }
   }
 
   function hasIncorrectContestants(incorrectContestants) {
-    if (incorrectContestants.length === 0) {
-      return false;
-    }
-    return !(incorrectContestants.length === 1 && incorrectContestants.includes(weakestContestant));
+    incorrectContestants = incorrectContestants
+      .filter(contestant => contestant !== weakestContestant);
+    return incorrectContestants.length > 0;
   }
 
   function displayNextClue() {
+    setAnsweredContestants([]);
     setMessage('');
     setMessage2('');
     const nextClueNumber = getNextClueNumber();
@@ -309,34 +335,34 @@ const App = () => {
     setResponseTimerIsActive(true);
   }
 
-  function getProbability(value, round) {
+  function getProbability(value, round, bonusProbability) {
     if (round === 1) {
       switch (value) {
         case 200:
-          return 0.424;
+          return 0.424 + bonusProbability;
         case 400:
-          return 0.492;
+          return 0.492 + bonusProbability;
         case 600:
-          return 0.500;
+          return 0.500 + bonusProbability;
         case 800:
-          return 0.541;
+          return 0.541 + bonusProbability;
         case 1000:
-          return 0.636;
+          return 0.636 + bonusProbability;
         default:
           return 0;
       }
     } else if (round === 2) {
       switch (value) {
         case 400:
-          return 0.452;
+          return 0.452 + bonusProbability;
         case 800:
-          return 0.535;
+          return 0.535 + bonusProbability;
         case 1200:
-          return 0.563;
+          return 0.563 + bonusProbability;
         case 1600:
-          return 0.623;
+          return 0.623 + bonusProbability;
         case 2000:
-          return 0.704;
+          return 0.704 + bonusProbability;
         default:
           return 0;
       }
@@ -420,6 +446,7 @@ const App = () => {
 
   function concede() {
     setResponseTimerIsActive(false);
+    setConceded(true);
     updateOpponentScores(selectedClue);
   }
 
@@ -454,6 +481,7 @@ const App = () => {
   }
 
   function turnOffLight() {
+    setAnsweredContestants([]);
     setDisableAnswer(true);
     setTableStyle('table-light-off');
   }
