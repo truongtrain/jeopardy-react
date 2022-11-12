@@ -92,7 +92,6 @@ const App = () => {
     let bonusProbability = 0;
     let incorrectContestants = selectedClue.response.incorrect_contestants;
     if (answeredContestants.length === 1) {
-      debugger
       incorrectContestants = incorrectContestants
         .filter(contestant => contestant !== answeredContestants[0]);
       bonusProbability = 0.166;
