@@ -90,7 +90,11 @@ const App = () => {
     setDisableAnswer(true);
     setResponseTimerIsActive(false);
     let bonusProbability = 0;
-    if (answeredContestants.length > 0) {
+    let incorrectContestants = selectedClue.response.incorrect_contestants;
+    if (answeredContestants.length === 1) {
+      debugger
+      incorrectContestants = incorrectContestants
+        .filter(contestant => contestant !== answeredContestants[0]);
       bonusProbability = 0.166;
     }
     const probability = getProbability(selectedClue.value, round, bonusProbability);
@@ -98,7 +102,6 @@ const App = () => {
       readText(playerName);
       setResponseCountdownIsActive(true);
     } else if (selectedClue.response.correct_contestant !== weakestContestant) {
-      const incorrectContestants = selectedClue.response.incorrect_contestants;
       if (!hasIncorrectContestants(incorrectContestants)) {
         readText(selectedClue.response.correct_contestant);
       } else {
@@ -189,7 +192,8 @@ const App = () => {
     if (nextClue) {
       message = lastCorrectContestant + ': ' + nextClue.category + ' for $' + nextClue.value;
     }
-    const incorrectContestants = clue.response.incorrect_contestants;
+    const incorrectContestants = clue.response.incorrect_contestants
+      .filter(contestant => !answeredContestants.includes(contestant));
     const correctContestant = clue.response.correct_contestant;
     let scores_copy = { ...scores };
     let scoreChange = clue.daily_double_wager > 0 ? getOpponentDailyDoubleWager(clue) : clue.value;
