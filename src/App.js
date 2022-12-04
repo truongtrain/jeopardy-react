@@ -547,7 +547,11 @@ const App = () => {
       showData.final_jeopardy.contestant_responses.forEach(response => {
         if (response.contestant === contestant) {
           responses[contestant] = response.response;
-          wagers[contestant] = response.wager;
+          if (scores[contestant] >= response.wager) {
+            wagers[contestant] = response.wager;
+          } else {
+            wagers[contestant] = scores[contestant];
+          }
         }
       });
     });
