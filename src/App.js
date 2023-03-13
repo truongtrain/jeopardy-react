@@ -158,6 +158,11 @@ const App = () => {
   }
 
   function getOpponentDailyDoubleWager(clue) {
+    // don't change opponent score if this is not the same opponent who answered
+    // the daily double in the actual broadcast game 
+    if (clue.response.correct_contestant !== lastCorrectContestant) {
+      return 0;
+    }
     const currentScore = scores[lastCorrectContestant];
     if (round === 1) {
       if (clue.daily_double_wager > currentScore) {
