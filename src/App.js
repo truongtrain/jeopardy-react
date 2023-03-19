@@ -1,6 +1,5 @@
 import './App.css';
 import React, { useState, useEffect } from 'react';
-import showData from './jeopardy.json';
 import Banner from './Banner';
 
 let msg = new SpeechSynthesisUtterance();
@@ -12,29 +11,47 @@ const App = () => {
   let responseInterval = null;
   let responseCountdownInterval = null;
 
-  const weakestContestant = showData.weakest_contestant;
-  const contestants = showData.contestants.filter(
-    contestant => contestant !== weakestContestant
-  );
-  contestants.push(playerName);
-  const initalScores = {};
-  contestants.forEach(contestant => {
-    initalScores[contestant] = 0;
-  });
-  initalScores[playerName] = 0;
+  useEffect(() => {
+    fetch('http://localhost:5000/game/6336')
+       .then((res) => res.json())
+       .then((showData) => {
+          setShowData(showData);
+          console.log(showData);
+          setWeakestContestant(showData.weakest_contestant);
+          const contestants = showData.contestants.filter(
+            contestant => contestant !== weakestContestant
+          );
+          contestants.push(playerName);
+          const initialScores = {};
+          contestants.forEach(contestant => {
+            initialScores[contestant] = 0;
+          });
+          setContestants(contestants);
+          initialScores[playerName] = 0;
+          setScores(initialScores);
+          setBoard(showData.jeopardy_round);
+          setSelectedClue(getClue(1));
+      })
+       .catch((err) => {
+          console.log(err.message);
+       });
+ }, []);
   
+  const [showData, setShowData] = useState([]);
+  const [weakestContestant, setWeakestContestant] = useState('');
   const [visible, setVisible] = useState(getDefaultVisible());
-  const [board, setBoard] = useState(showData.jeopardy_round);
+  const [board, setBoard] = useState(null);
   const [tableStyle, setTableStyle] = useState('table-light-off');
   const [message, setMessage] = useState('');
   const [message2, setMessage2] = useState('');
-  const [scores, setScores] = useState(initalScores);
+  const [scores, setScores] = useState([]);
   const [seconds, setSeconds] = useState(0.0);
   const [responseCountdown, setResponseCountdown] = useState(5);
   const [responseCountdownIsActive, setResponseCountdownIsActive] = useState(false);
   const [responseTimerIsActive, setResponseTimerIsActive] = useState(false);
   const [availableClueNumbers, setAvailableClueNumbers] = useState(initializeAvailableClueNumbers());
-  const [selectedClue, setSelectedClue] = useState(getClue(1));
+  const [selectedClue, setSelectedClue] = useState({});
+  const [contestants, setContestants] = useState([]);
   const [lastCorrectContestant, setLastCorrectContestant] = useState(playerName);
   const [round, setRound] = useState(1);
   const [wager, setWager] = useState(0);
@@ -574,6 +591,9 @@ const App = () => {
     return column[i].category;
   }
 
+  if (!board) {
+    return <>Loading game...</>;
+  }
   return (
     <div>
       <Banner contestants={contestants}
