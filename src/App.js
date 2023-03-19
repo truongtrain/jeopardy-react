@@ -16,17 +16,18 @@ const App = () => {
        .then((res) => res.json())
        .then((showData) => {
           setShowData(showData);
-          console.log(showData);
           setWeakestContestant(showData.weakest_contestant);
-          const contestants = showData.contestants.filter(
-            contestant => contestant !== weakestContestant
+          let filteredContestants = showData.contestants.filter(
+            contestant => contestant !== showData.weakest_contestant
           );
-          contestants.push(playerName);
+          filteredContestants.push(playerName);
+          console.log(filteredContestants);
+          setContestants(filteredContestants);
           const initialScores = {};
-          contestants.forEach(contestant => {
+          filteredContestants.forEach(contestant => {
             initialScores[contestant] = 0;
           });
-          setContestants(contestants);
+          
           initialScores[playerName] = 0;
           setScores(initialScores);
           setBoard(showData.jeopardy_round);
