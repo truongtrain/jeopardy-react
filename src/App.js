@@ -6,21 +6,20 @@ let msg = new SpeechSynthesisUtterance();
 msg.rate = 0.9;
 const playerName = 'Alan';
 const hostName = 'Trebek';
-let showData;
+let showData, weakestContestant;
 
 
 const App = () => {
-  let responseInterval = null;
-  let responseCountdownInterval = null;
+  let responseInterval, responseCountdownInterval;
 
   useEffect(() => {
     fetch('http://localhost:5000/game/6336')
        .then((res) => res.json())
        .then((data) => {
           showData = data;
-          setWeakestContestant(showData.weakest_contestant);
+          weakestContestant = showData.weakest_contestant;
           let filteredContestants = showData.contestants.filter(
-            contestant => contestant !== showData.weakest_contestant
+            contestant => contestant !== weakestContestant
           );
           filteredContestants.push(playerName);
           setContestants(filteredContestants);
@@ -39,7 +38,6 @@ const App = () => {
        });
  }, []);
   
-  const [weakestContestant, setWeakestContestant] = useState('');
   const [visible, setVisible] = useState(getDefaultVisible());
   const [board, setBoard] = useState(null);
   const [tableStyle, setTableStyle] = useState('table-light-off');
@@ -342,7 +340,6 @@ const App = () => {
   function readClue(row, col) {
     let clue;
     if (round === 1) {
-      console.log(showData);
       clue = showData.jeopardy_round[col][row];
     } else if (round === 2) {
       clue = showData.double_jeopardy_round[col][row];
