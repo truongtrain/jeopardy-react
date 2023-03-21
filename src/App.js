@@ -38,7 +38,6 @@ const App = () => {
        });
  }, []);
   
-  const [visible, setVisible] = useState(getDefaultVisible());
   const [board, setBoard] = useState(null);
   const [tableStyle, setTableStyle] = useState('table-light-off');
   const [message, setMessage] = useState('');
@@ -90,7 +89,6 @@ const App = () => {
   }, [responseCountdownIsActive]);
 
   function startRound() {
-    setVisible(getDefaultVisible());
     displayClueByNumber(1);
   }
 
@@ -259,9 +257,12 @@ const App = () => {
   }
 
   function displayClue(row, col) {
+    console.log(row);
+    console.log(col);
     turnOffLight();
     setNumClues(numClues + 1);
     setLastCorrectContestant(playerName);
+    console.log(board);
     const clue = board[col][row];
     setSelectedClue(clue);
     if (clue.daily_double_wager > 0) {
@@ -274,12 +275,9 @@ const App = () => {
       setSeconds(0);
       setResponseCountdown(5);
       updateAvailableClueNumbers(clue.number);
-      let visibleCopy = [...visible];
-      if (visibleCopy[row][col] !== undefined) {
-        visibleCopy[row][col] = true;
-        setVisible(visibleCopy);
-        readClue(row, col);
-      }
+      board[col][row].visible = true;
+      setBoard(board);
+      readClue(row, col);
     }
   }
 
@@ -287,7 +285,6 @@ const App = () => {
     turnOffLight();
     setNumClues(numClues + 1);
     updateAvailableClueNumbers(clueNumber);
-    let visibleCopy = [...visible];
     for (let col = 0; col < 6; col++) {
       for (let row = 0; row < 5; row++) {
         if (board[col][row].number === clueNumber) {
@@ -300,8 +297,8 @@ const App = () => {
               setMessage2(board[col][row].text);
             }
           }
-          visibleCopy[row][col] = true;
-          setVisible(visibleCopy);
+          board[col][row].visible = true;
+          setBoard(board);
           readClue(row, col);
           const clue = getClue(clueNumber);
           setSelectedClue(clue);
@@ -485,17 +482,6 @@ const App = () => {
     return correctContestant.length === 0 || correctContestant === weakestContestant;
   }
 
-  function getDefaultVisible() {
-    let visibleMatrix = [];
-    for (let row = 0; row < 5; row++) {
-      visibleMatrix.push([]);
-      for (let col = 0; col < 6; col++) {
-        visibleMatrix[row].push(false);
-      }
-    }
-    return visibleMatrix;
-  }
-
   function initializeAvailableClueNumbers() {
     const numbers = [];
     for (let i = 1; i <= 30; i++) {
@@ -536,7 +522,6 @@ const App = () => {
     });
     setLastCorrectContestant(thirdPlace);
     setBoard(showData.double_jeopardy_round);
-    setVisible(getDefaultVisible());
     setAvailableClueNumbers(initializeAvailableClueNumbers());
     setMessage('');
     setMessage2('');
@@ -635,9 +620,9 @@ const App = () => {
               {board.map((round, column) => {
                 return (
                   <td key={column}>
-                    <span>{visible[row][column] && round[row].text}</span>
+                    <span>{round[row] && round[row].visible && round[row].text}</span>
                     {
-                      !visible[row][column] && <button className='clue-button' onClick={() => displayClue(row, column)}>
+                      !round[row].visible && <button className='clue-button' onClick={() => displayClue(row, column)}>
                         ${round[row].value}
                       </button>
                     }
