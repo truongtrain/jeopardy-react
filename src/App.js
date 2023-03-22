@@ -40,8 +40,7 @@ const App = () => {
   
   const [board, setBoard] = useState(null);
   const [tableStyle, setTableStyle] = useState('table-light-off');
-  const [message, setMessage] = useState('');
-  const [message2, setMessage2] = useState('');
+  const [message, setMessage] = useState({line1: '', line2: ''});
   const [scores, setScores] = useState([]);
   const [seconds, setSeconds] = useState(0.0);
   const [responseCountdown, setResponseCountdown] = useState(5);
@@ -123,9 +122,16 @@ const App = () => {
       }
       updateOpponentScores(selectedClue);
     } else {
-      setMessage(selectedClue.response.correct_response);
+      setMessageLines('', selectedClue.response.correct_response);
     }
     clearInterval(responseInterval);
+  }
+
+  function setMessageLines(text1, text2) {
+    setMessage({
+      line1: text1,
+      line2: text2
+    });
   }
 
   function getIncorrectContestant(incorrectContestants) {
@@ -148,8 +154,7 @@ const App = () => {
         setAnsweredContestants(answered);
       }
     }
-    setMessage(incorrectMessage);
-    setMessage2(hostName + ': No. ' + clue.response.correct_response);
+    setMessageLines(hostName + ': No. ' + clue.response.correct_response, incorrectMessage);
     setScores(scores_copy);   
   }
 
@@ -158,12 +163,10 @@ const App = () => {
       setLastCorrectContestant(correctContestant);
       scores_copy[correctContestant] += scoreChange;
       setScores(scores_copy);
-      setMessage(correctContestant + ': What is ' + clue.response.correct_response + '?');
-      setMessage2(hostName + ': Yes! ');
+      setMessageLines(hostName + ': Yes! ', correctContestant + ': What is ' + clue.response.correct_response + '?');
       if (nextClueNumber > 0) {
         setTimeout(() => {
-          setMessage(correctContestant + ': ' + nextClue.category + ' for $' + nextClue.value);
-          setMessage2('');
+          setMessageLines('', correctContestant + ': ' + nextClue.category + ' for $' + nextClue.value);
         }, 2000);
         setSeconds(0);
         setTimeout(() => displayNextClue(), 4000);
@@ -220,10 +223,10 @@ const App = () => {
       if (hasIncorrectContestants(incorrectContestants)) {
         handleIncorrectResponses(incorrectContestants, clue, scores_copy, scoreChange);
       } else {
-        setMessage(hostName + ': ' + clue.response.correct_response);
+        setMessageLines('', hostName + ': ' + clue.response.correct_response);
       }
       if (nextClueNumber > 0 && lastCorrectContestant !== playerName) {
-        setTimeout(() => setMessage(message), 2500);
+        setTimeout(() => setMessageLines('', message), 2500);
         setTimeout(() => displayNextClue(), 4500);
       }
       return;
@@ -246,13 +249,12 @@ const App = () => {
 
   function displayNextClue() {
     setAnsweredContestants([]);
-    setMessage('');
-    setMessage2('');
+    setMessageLines('', '');
     const nextClueNumber = getNextClueNumber();
     if (nextClueNumber > 0) {
       displayClueByNumber(nextClueNumber);
     } else {
-      setMessage('End of round');
+      setMessageLines('', 'End of round');
     }
   }
 
@@ -268,10 +270,9 @@ const App = () => {
     if (clue.daily_double_wager > 0) {
       setPlayerDailyDouble(true);
       readText('Answer. Daily double. How much will you wager');
-      setMessage('Daily Double!');
+      setMessageLines('', 'Daily Double!');
     } else {
-      setMessage('');
-      setMessage2('');
+      setMessageLines('', '');
       setSeconds(0);
       setResponseCountdown(5);
       updateAvailableClueNumbers(clue.number);
@@ -290,11 +291,11 @@ const App = () => {
         if (board[col][row].number === clueNumber) {
           if (board[col][row].daily_double_wager > 0) {
             setPlayerDailyDouble(false);
-            setMessage('Answer. Daily Double');
+            setMessageLines('', 'Answer. Daily Double');
             if (lastCorrectContestant !== playerName) {
-              setMessage2(lastCorrectContestant + ': I will wager $' + board[col][row].daily_double_wager);
+              setMessageLines('', lastCorrectContestant + ': I will wager $' + board[col][row].daily_double_wager);
             } else {
-              setMessage2(board[col][row].text);
+              setMessageLines('', board[col][row].text);
             }
           }
           board[col][row].visible = true;
@@ -429,9 +430,9 @@ const App = () => {
     setResponseTimerIsActive(false);
     setResponseCountdownIsActive(false);
     if (round === 3) {
-      setMessage2(showData.final_jeopardy.correct_response);
+      setMessageLines('', showData.final_jeopardy.correct_response);
     } else {
-      setMessage2(selectedClue.response.correct_response);
+      setMessageLines('', selectedClue.response.correct_response);
     }
   }
 
@@ -523,18 +524,16 @@ const App = () => {
     setLastCorrectContestant(thirdPlace);
     setBoard(showData.double_jeopardy_round);
     setAvailableClueNumbers(initializeAvailableClueNumbers());
-    setMessage('');
-    setMessage2('');
+    setMessageLines('', '');
   }
 
   function showFinalJeopardyCategory() {
     setRound(3);
-    setMessage(showData.final_jeopardy.category)
-    setMessage2('Enter your wager');
+    setMessageLines('Enter your wager', showData.final_jeopardy.category);
   }
 
   function showFinalJeopardyClue() {
-    setMessage2(showData.final_jeopardy.clue);
+    setMessageLines('', showData.final_jeopardy.clue);
     msg.text = showData.final_jeopardy.clue;
     window.speechSynthesis.speak(msg);
     msg.addEventListener('end', () => {
@@ -564,7 +563,7 @@ const App = () => {
     responses[playerName] = finalResponse;
     setFinalResponses(responses);
     setFinalWagers(wagers);
-    setMessage(showData.final_jeopardy.correct_response);
+    setMessageLines(showData.final_jeopardy.correct_response, showData.final_jeopardy.clue);
   }
 
   function getCategory(column) {
@@ -581,8 +580,8 @@ const App = () => {
   return (
     <div>
       <Banner contestants={contestants}
-        correct={message2}
-        message={message}
+        correct={message.line1}
+        message={message.line2}
         scores={scores}
         responses={finalResponses}
         wagers={finalWagers} />
