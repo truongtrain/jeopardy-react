@@ -9,6 +9,7 @@ const hostName = 'Trebek';
 let showData, weakestContestant;
 let seconds = 0;
 let responseCountdownIsActive = false;
+let responseTimerIsActive = false;
 
 const App = () => {
   let responseInterval, responseCountdownInterval;
@@ -41,7 +42,6 @@ const App = () => {
   const [message, setMessage] = useState({line1: '', line2: ''});
   const [scores, setScores] = useState([]);
   const [responseCountdown, setResponseCountdown] = useState(5);
-  const [responseTimerIsActive, setResponseTimerIsActive] = useState(false);
   const [availableClueNumbers, setAvailableClueNumbers] = useState(initializeAvailableClueNumbers());
   const [selectedClue, setSelectedClue] = useState({});
   const [contestants, setContestants] = useState([]);
@@ -95,7 +95,7 @@ const App = () => {
 
   function answer() {
     setDisableAnswer(true);
-    setResponseTimerIsActive(false);
+    responseTimerIsActive = false;
     let bonusProbability = 0;
     let incorrectContestants = selectedClue.response.incorrect_contestants;
     if (answeredContestants.length === 1) {
@@ -345,7 +345,7 @@ const App = () => {
     board_copy[col][row].text = '';
     setBoard(board_copy);
     turnOnLight();
-    setResponseTimerIsActive(true);
+    responseTimerIsActive = true;
   }
 
   function getProbability(value, round, bonusProbability) {
@@ -418,7 +418,7 @@ const App = () => {
   }
 
   function showAnswer() {
-    setResponseTimerIsActive(false);
+    responseTimerIsActive = false;
     responseCountdownIsActive = false;
     if (round === 3) {
       setMessageLines('', showData.final_jeopardy.correct_response);
@@ -428,7 +428,7 @@ const App = () => {
   }
 
   function incrementScore() {
-    setResponseTimerIsActive(false);
+    responseTimerIsActive = false;
     setLastCorrectContestant(playerName);
     msg.text = 'Correct';
     window.speechSynthesis.speak(msg);
@@ -458,7 +458,7 @@ const App = () => {
   }
 
   function concede() {
-    setResponseTimerIsActive(false);
+    responseTimerIsActive = false;
     setConceded(true);
     updateOpponentScores(selectedClue);
   }
