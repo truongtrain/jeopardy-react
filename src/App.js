@@ -13,6 +13,7 @@ let responseTimerIsActive = false;
 let availableClueNumbers = new Array(30).fill(true);
 let lastCorrectContestant = playerName;
 let round = 1;
+let wager;
 
 const App = () => {
   let responseInterval, responseCountdownInterval;
@@ -47,7 +48,6 @@ const App = () => {
   const [responseCountdown, setResponseCountdown] = useState(5);
   const [selectedClue, setSelectedClue] = useState({});
   const [contestants, setContestants] = useState([]);
-  const [wager, setWager] = useState(0);
   const [finalResponse, setFinalResponse] = useState('');
   const [finalResponses, setFinalResponses] = useState({});
   const [finalWagers, setFinalWagers] = useState({});
@@ -89,7 +89,7 @@ const App = () => {
     if (isNaN(event.target.value)) {
       setFinalResponse(event.target.value);
     } else {
-      setWager(event.target.value);
+      wager = event.target.value;
     }
   }
 
@@ -486,7 +486,6 @@ const App = () => {
   function submit() {
     if (round === 3) {
       responseCountdownIsActive = false;
-      setWager(wager);
       finalResponses[playerName] = finalResponse;
       finalWagers[playerName] = wager;
     } else {
