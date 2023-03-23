@@ -7,7 +7,8 @@ msg.rate = 0.9;
 const playerName = 'Alan';
 const hostName = 'Trebek';
 let showData, weakestContestant;
-let seconds = 0.0;
+let seconds = 0;
+let responseCountdownIsActive = false;
 
 const App = () => {
   let responseInterval, responseCountdownInterval;
@@ -40,7 +41,6 @@ const App = () => {
   const [message, setMessage] = useState({line1: '', line2: ''});
   const [scores, setScores] = useState([]);
   const [responseCountdown, setResponseCountdown] = useState(5);
-  const [responseCountdownIsActive, setResponseCountdownIsActive] = useState(false);
   const [responseTimerIsActive, setResponseTimerIsActive] = useState(false);
   const [availableClueNumbers, setAvailableClueNumbers] = useState(initializeAvailableClueNumbers());
   const [selectedClue, setSelectedClue] = useState({});
@@ -106,7 +106,7 @@ const App = () => {
     const probability = getProbability(selectedClue.value, round, bonusProbability);
     if (answeredContestants.length === 2 || isFastestResponse(seconds, probability) || (seconds < 3 && isTripleStumper())) {
       readText(playerName);
-      setResponseCountdownIsActive(true);
+      responseCountdownIsActive = true;
     } else if (selectedClue.response.correct_contestant !== weakestContestant) {
       if (!hasIncorrectContestants(incorrectContestants)) {
         readText(selectedClue.response.correct_contestant);
@@ -419,7 +419,7 @@ const App = () => {
 
   function showAnswer() {
     setResponseTimerIsActive(false);
-    setResponseCountdownIsActive(false);
+    responseCountdownIsActive = false;
     if (round === 3) {
       setMessageLines('', showData.final_jeopardy.correct_response);
     } else {
@@ -444,7 +444,7 @@ const App = () => {
   }
 
   function deductScore() {
-    setResponseCountdownIsActive(false);
+    responseCountdownIsActive = false;
     msg.text = 'No';
     window.speechSynthesis.speak(msg);
     let scores_copy = { ...scores };
@@ -495,7 +495,7 @@ const App = () => {
 
   function submit() {
     if (round === 3) {
-      setResponseCountdownIsActive(false);
+      responseCountdownIsActive = false;
       setWager(wager);
       finalResponses[playerName] = finalResponse;
       finalWagers[playerName] = wager;
@@ -529,7 +529,7 @@ const App = () => {
     window.speechSynthesis.speak(msg);
     msg.addEventListener('end', () => {
       setResponseCountdown(30);
-      setResponseCountdownIsActive(true);
+      responseCountdownIsActive = true;
     });
   }
 
