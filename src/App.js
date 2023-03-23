@@ -12,6 +12,7 @@ let responseCountdownIsActive = false;
 let responseTimerIsActive = false;
 let availableClueNumbers = new Array(30).fill(true);
 let lastCorrectContestant = playerName;
+let round = 1;
 
 const App = () => {
   let responseInterval, responseCountdownInterval;
@@ -46,7 +47,6 @@ const App = () => {
   const [responseCountdown, setResponseCountdown] = useState(5);
   const [selectedClue, setSelectedClue] = useState({});
   const [contestants, setContestants] = useState([]);
-  const [round, setRound] = useState(1);
   const [wager, setWager] = useState(0);
   const [finalResponse, setFinalResponse] = useState('');
   const [finalResponses, setFinalResponses] = useState({});
@@ -495,7 +495,7 @@ const App = () => {
   }
 
   function startDoubleJeopardyRound() {
-    setRound(2);
+    round = 2;
     let thirdPlace = scores[playerName]
     contestants.forEach(contestant => {
       if (scores[contestant] < thirdPlace) {
@@ -509,7 +509,7 @@ const App = () => {
   }
 
   function showFinalJeopardyCategory() {
-    setRound(3);
+    round = 3;
     setMessageLines('Enter your wager', showData.final_jeopardy.category);
   }
 
