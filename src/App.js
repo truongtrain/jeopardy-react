@@ -33,9 +33,6 @@ const App = () => {
           setBoard(showData.jeopardy_round);
           setSelectedClue(getClue(1));
       })
-       .catch((err) => {
-          console.log(err.message);
-       });
  }, []);
   
   const [board, setBoard] = useState(null);
@@ -321,7 +318,7 @@ const App = () => {
   function getClue(clueNumber) {
     for (let col = 0; col < 6; col++) {
       for (let row = 0; row < 5; row++) {
-        if (board[col][row].number === clueNumber) {
+        if (board && board[col][row].number === clueNumber) {
           return board[col][row];
         }
       }
