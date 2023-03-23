@@ -10,6 +10,7 @@ let showData, weakestContestant;
 let seconds = 0;
 let responseCountdownIsActive = false;
 let responseTimerIsActive = false;
+let availableClueNumbers = new Array(30).fill(true);
 
 const App = () => {
   let responseInterval, responseCountdownInterval;
@@ -42,7 +43,6 @@ const App = () => {
   const [message, setMessage] = useState({line1: '', line2: ''});
   const [scores, setScores] = useState([]);
   const [responseCountdown, setResponseCountdown] = useState(5);
-  const [availableClueNumbers, setAvailableClueNumbers] = useState(initializeAvailableClueNumbers());
   const [selectedClue, setSelectedClue] = useState({});
   const [contestants, setContestants] = useState([]);
   const [lastCorrectContestant, setLastCorrectContestant] = useState(playerName);
@@ -302,7 +302,7 @@ const App = () => {
 
   function getNextClueNumber() {
     for (let i = 1; i <= 30; i++) {
-      if (availableClueNumbers[i] === true) {
+      if (availableClueNumbers[i-1] === true) {
         return i;
       }
     }
@@ -310,9 +310,7 @@ const App = () => {
   }
 
   function updateAvailableClueNumbers(clueNumber) {
-    let availableClueNumbersCopy = [...availableClueNumbers];
-    availableClueNumbersCopy[clueNumber] = false;
-    setAvailableClueNumbers(availableClueNumbersCopy);
+    availableClueNumbers[clueNumber-1] = false;
   }
 
   function getClue(clueNumber) {
@@ -474,14 +472,6 @@ const App = () => {
     return correctContestant.length === 0 || correctContestant === weakestContestant;
   }
 
-  function initializeAvailableClueNumbers() {
-    const numbers = [];
-    for (let i = 1; i <= 30; i++) {
-      numbers[i] = true;
-    }
-    return numbers;
-  }
-
   function turnOffLight() {
     setAnsweredContestants([]);
     setDisableAnswer(true);
@@ -514,7 +504,7 @@ const App = () => {
     });
     setLastCorrectContestant(thirdPlace);
     setBoard(showData.double_jeopardy_round);
-    setAvailableClueNumbers(initializeAvailableClueNumbers());
+    availableClueNumbers = new Array(30).fill(true);
     setMessageLines('', '');
   }
 
