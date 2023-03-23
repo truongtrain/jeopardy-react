@@ -6,7 +6,6 @@ function Banner(props) {
     const scores = props.scores;
     const contestants = props.contestants;
     const responses = props.responses;
-    const wagers = props.wagers;
 
     return (
         <div className='banner'>
@@ -16,24 +15,25 @@ function Banner(props) {
             <div>
                 ${scores[contestants[0]]}<br></br>
                 {contestants[0]}<br></br>
-                {responses[contestants[0]]}<br></br>
-                {wagers[contestants[0]]}
+                {responses[contestants[0]] && responses[contestants[0]].response}<br></br>
+                {responses[contestants[0]] && responses[contestants[0]].wager}
             </div>
             <div>
                 ${scores[contestants[1]]}<br></br>
                 {contestants[1]}<br></br>
-                {responses[contestants[1]]}<br></br>
-                {wagers[contestants[1]]}
+                {responses[contestants[1]] && responses[contestants[1]].response}<br></br>
+                {responses[contestants[1]] && responses[contestants[1]].wager}
             </div>
             <div>
                 ${scores[contestants[2]]}<br></br>
                 {contestants[2]}<br></br>
-                {responses[contestants[2]]}<br></br>
-                {wagers[contestants[2]]}
+                {responses[contestants[2]] && responses[contestants[2]].response}<br></br>
+                {responses[contestants[2]] && responses[contestants[2]].wager}
             </div>
             </h3>
         </div>
-      );
+      );     
+    
   }
 
   export default Banner;

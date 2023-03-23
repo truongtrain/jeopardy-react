@@ -6,14 +6,13 @@ let msg = new SpeechSynthesisUtterance();
 msg.rate = 0.9;
 const playerName = 'Alan';
 const hostName = 'Trebek';
-let showData, weakestContestant;
+let showData, weakestContestant, wager, finalResponse;
 let seconds = 0;
 let responseCountdownIsActive = false;
 let responseTimerIsActive = false;
 let availableClueNumbers = new Array(30).fill(true);
 let lastCorrectContestant = playerName;
 let round = 1;
-let wager;
 
 const App = () => {
   let responseInterval, responseCountdownInterval;
@@ -47,10 +46,8 @@ const App = () => {
   const [scores, setScores] = useState([]);
   const [responseCountdown, setResponseCountdown] = useState(5);
   const [selectedClue, setSelectedClue] = useState({});
-  const [contestants, setContestants] = useState([]);
-  const [finalResponse, setFinalResponse] = useState('');
+  const [contestants, setContestants] = useState(null);
   const [finalResponses, setFinalResponses] = useState({});
-  const [finalWagers, setFinalWagers] = useState({});
   const [disableAnswer, setDisableAnswer] = useState(true);
   const [numCorrect, setNumCorrect] = useState(0);
   const [coryatScore, setCoryatScore] = useState(0);
@@ -74,6 +71,7 @@ const App = () => {
     if (responseCountdownIsActive) {
       responseCountdownInterval = setInterval(() => {
         setResponseCountdown(responseCountdown => responseCountdown - 0.1);
+        console.log(responseCountdown);
       }, 100);
     } else {
       clearInterval(responseCountdownInterval);
@@ -87,9 +85,10 @@ const App = () => {
 
   const handleInputChange = event => {
     if (isNaN(event.target.value)) {
-      setFinalResponse(event.target.value);
+      finalResponse = event.target.value;
     } else {
       wager = event.target.value;
+      console.log(wager);
     }
   }
 
@@ -486,8 +485,7 @@ const App = () => {
   function submit() {
     if (round === 3) {
       responseCountdownIsActive = false;
-      finalResponses[playerName] = finalResponse;
-      finalWagers[playerName] = wager;
+      finalResponses[playerName] = {response: finalResponse, wager: wager};
     } else {
       displayClueByNumber(selectedClue.number);
     }
@@ -525,24 +523,22 @@ const App = () => {
   function showFinalJeopardyResults() {
     console.log('coryat score: ' + coryatScore);
     console.log('batting average: ' + numCorrect * 1.0 / numClues);
-    let responses = [];
-    let wagers = [];
-    wagers[playerName] = wager;
+    let finalResponses = [];
+    finalResponses[playerName] = {response: finalResponse, wager: wager};
     contestants.forEach(contestant => {
       showData.final_jeopardy.contestant_responses.forEach(response => {
         if (response.contestant === contestant) {
-          responses[contestant] = response.response;
+          finalResponses[contestant] = {response: response.response, wager: 0};
           if (scores[contestant] >= response.wager) {
-            wagers[contestant] = response.wager;
+            finalResponses[contestant].wager = response.wager;
           } else {
-            wagers[contestant] = scores[contestant];
+            finalResponses[contestant].wager = scores[contestant];
           }
         }
       });
     });
-    responses[playerName] = finalResponse;
-    setFinalResponses(responses);
-    setFinalWagers(wagers);
+    setFinalResponses(finalResponses);
+    console.log(finalResponses);
     setMessageLines(showData.final_jeopardy.correct_response, showData.final_jeopardy.clue);
   }
 
@@ -563,8 +559,7 @@ const App = () => {
         correct={message.line1}
         message={message.line2}
         scores={scores}
-        responses={finalResponses}
-        wagers={finalWagers} />
+        responses={finalResponses}/>
 
       <div className='banner'>
         <div>{responseCountdown.toFixed(1)}</div>
