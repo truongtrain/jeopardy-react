@@ -7,13 +7,13 @@ msg.rate = 0.9;
 const playerName = 'Alan';
 const hostName = 'Trebek';
 let showData, weakestContestant;
-
+let seconds = 0.0;
 
 const App = () => {
   let responseInterval, responseCountdownInterval;
 
   useEffect(() => {
-    fetch('http://localhost:5000/game/6336')
+    fetch('http://localhost:5000/game/5100')
        .then((res) => res.json())
        .then((data) => {
           showData = data;
@@ -42,7 +42,6 @@ const App = () => {
   const [tableStyle, setTableStyle] = useState('table-light-off');
   const [message, setMessage] = useState({line1: '', line2: ''});
   const [scores, setScores] = useState([]);
-  const [seconds, setSeconds] = useState(0.0);
   const [responseCountdown, setResponseCountdown] = useState(5);
   const [responseCountdownIsActive, setResponseCountdownIsActive] = useState(false);
   const [responseTimerIsActive, setResponseTimerIsActive] = useState(false);
@@ -66,9 +65,7 @@ const App = () => {
   // determines how fast I click after the clue is read
   useEffect(() => {
     if (responseTimerIsActive) {
-      responseInterval = setInterval(() => {
-        setSeconds(seconds => seconds + 0.01);
-      }, 10)
+      responseInterval = setInterval(() => seconds += 0.01, 10);
     } else {
       clearInterval(responseInterval);
     }
@@ -168,7 +165,7 @@ const App = () => {
         setTimeout(() => {
           setMessageLines('', correctContestant + ': ' + nextClue.category + ' for $' + nextClue.value);
         }, 2000);
-        setSeconds(0);
+        seconds = 0;
         setTimeout(() => displayNextClue(), 4000);
       }
     }
@@ -259,12 +256,9 @@ const App = () => {
   }
 
   function displayClue(row, col) {
-    console.log(row);
-    console.log(col);
     turnOffLight();
     setNumClues(numClues + 1);
     setLastCorrectContestant(playerName);
-    console.log(board);
     const clue = board[col][row];
     setSelectedClue(clue);
     if (clue.daily_double_wager > 0) {
@@ -273,7 +267,7 @@ const App = () => {
       setMessageLines('', 'Daily Double!');
     } else {
       setMessageLines('', '');
-      setSeconds(0);
+      seconds = 0;
       setResponseCountdown(5);
       updateAvailableClueNumbers(clue.number);
       board[col][row].visible = true;
@@ -349,7 +343,7 @@ const App = () => {
   }
 
   function clearClue(row, col) {
-    setSeconds(0);
+    seconds = 0;
     let board_copy = [...board];
     board_copy[col][row].text = '';
     setBoard(board_copy);
