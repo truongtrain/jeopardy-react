@@ -11,12 +11,13 @@ let seconds = 0;
 let responseCountdownIsActive = false;
 let responseTimerIsActive = false;
 let availableClueNumbers = new Array(30).fill(true);
+let lastCorrectContestant = playerName;
 
 const App = () => {
   let responseInterval, responseCountdownInterval;
 
   useEffect(() => {
-    fetch('http://localhost:5000/game/5100')
+    fetch('http://localhost:5000/game/6147')
        .then((res) => res.json())
        .then((data) => {
           showData = data;
@@ -45,7 +46,6 @@ const App = () => {
   const [responseCountdown, setResponseCountdown] = useState(5);
   const [selectedClue, setSelectedClue] = useState({});
   const [contestants, setContestants] = useState([]);
-  const [lastCorrectContestant, setLastCorrectContestant] = useState(playerName);
   const [round, setRound] = useState(1);
   const [wager, setWager] = useState(0);
   const [finalResponse, setFinalResponse] = useState('');
@@ -154,7 +154,7 @@ const App = () => {
 
   function handleCorrectResponse(correctContestant, scores_copy, scoreChange, clue, nextClueNumber, nextClue) {
     if (correctContestant === clue.response.correct_contestant && correctContestant !== weakestContestant) {
-      setLastCorrectContestant(correctContestant);
+      lastCorrectContestant = correctContestant;
       scores_copy[correctContestant] += scoreChange;
       setScores(scores_copy);
       setMessageLines(hostName + ': Yes! ', correctContestant + ': What is ' + clue.response.correct_response + '?');
@@ -255,7 +255,7 @@ const App = () => {
   function displayClue(row, col) {
     turnOffLight();
     setNumClues(numClues + 1);
-    setLastCorrectContestant(playerName);
+    lastCorrectContestant = playerName;
     const clue = board[col][row];
     setSelectedClue(clue);
     if (clue.daily_double_wager > 0) {
@@ -427,7 +427,7 @@ const App = () => {
 
   function incrementScore() {
     responseTimerIsActive = false;
-    setLastCorrectContestant(playerName);
+    lastCorrectContestant = playerName;
     msg.text = 'Correct';
     window.speechSynthesis.speak(msg);
     let scores_copy = { ...scores };
@@ -502,7 +502,7 @@ const App = () => {
         thirdPlace = scores[contestant];
       }
     });
-    setLastCorrectContestant(thirdPlace);
+    lastCorrectContestant = thirdPlace;
     setBoard(showData.double_jeopardy_round);
     availableClueNumbers = new Array(30).fill(true);
     setMessageLines('', '');
