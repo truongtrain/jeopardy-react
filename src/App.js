@@ -106,12 +106,12 @@ const App = () => {
       }
       updateOpponentScores(selectedClue);
     } else {
-      setMessageLines('', selectedClue.response.correct_response);
+      setMessageLines(selectedClue.response.correct_response);
     }
     clearInterval(responseInterval);
   }
 
-  function setMessageLines(text1, text2) {
+  function setMessageLines(text1, text2 = '') {
     setMessage({
       line1: text1,
       line2: text2
@@ -138,7 +138,7 @@ const App = () => {
         setAnsweredContestants(answered);
       }
     }
-    setMessageLines(hostName + ': No. ' + clue.response.correct_response, incorrectMessage);
+    setMessageLines(incorrectMessage, hostName + ': No. ' + clue.response.correct_response);
     setContestants(contestants);   
   }
 
@@ -147,10 +147,10 @@ const App = () => {
       lastCorrectContestant = correctContestant;
       contestants[correctContestant].score += scoreChange;
       setContestants(contestants);
-      setMessageLines(hostName + ': Yes! ', correctContestant + ': What is ' + clue.response.correct_response + '?');
+      setMessageLines(correctContestant + ': What is ' + clue.response.correct_response + '?', hostName + ': Yes! ');
       if (nextClueNumber > 0) {
         setTimeout(() => {
-          setMessageLines('', correctContestant + ': ' + nextClue.category + ' for $' + nextClue.value);
+          setMessageLines(correctContestant + ': ' + nextClue.category + ' for $' + nextClue.value);
         }, 2000);
         seconds = 0;
         setTimeout(() => displayNextClue(), 4000);
@@ -206,10 +206,10 @@ const App = () => {
       if (hasIncorrectContestants(incorrectContestants)) {
         handleIncorrectResponses(incorrectContestants, clue, scoreChange);
       } else {
-        setMessageLines('', hostName + ': ' + clue.response.correct_response);
+        setMessageLines(hostName + ': ' + clue.response.correct_response);
       }
       if (nextClueNumber > 0 && lastCorrectContestant !== playerName) {
-        setTimeout(() => setMessageLines('', message), 2500);
+        setTimeout(() => setMessageLines(message), 2500);
         setTimeout(() => displayNextClue(), 4500);
       }
       return;
@@ -232,12 +232,12 @@ const App = () => {
 
   function displayNextClue() {
     setAnsweredContestants([]);
-    setMessageLines('', '');
+    setMessageLines('');
     const nextClueNumber = getNextClueNumber();
     if (nextClueNumber > 0) {
       displayClueByNumber(nextClueNumber);
     } else {
-      setMessageLines('', 'End of round');
+      setMessageLines('End of round');
     }
   }
 
@@ -250,9 +250,9 @@ const App = () => {
     if (clue.daily_double_wager > 0) {
       setPlayerDailyDouble(true);
       readText('Answer. Daily double. How much will you wager');
-      setMessageLines('', 'Daily Double!');
+      setMessageLines('Daily Double!');
     } else {
-      setMessageLines('', '');
+      setMessageLines('');
       seconds = 0;
       setResponseCountdown(5);
       updateAvailableClueNumbers(clue.number);
@@ -271,11 +271,11 @@ const App = () => {
         if (board[col][row].number === clueNumber) {
           if (board[col][row].daily_double_wager > 0) {
             setPlayerDailyDouble(false);
-            setMessageLines('', 'Answer. Daily Double');
+            setMessageLines('Answer. Daily Double');
             if (lastCorrectContestant !== playerName) {
-              setMessageLines('', lastCorrectContestant + ': I will wager $' + board[col][row].daily_double_wager);
+              setMessageLines(lastCorrectContestant + ': I will wager $' + board[col][row].daily_double_wager);
             } else {
-              setMessageLines('', board[col][row].text);
+              setMessageLines(board[col][row].text);
             }
           }
           board[col][row].visible = true;
@@ -408,9 +408,9 @@ const App = () => {
     responseTimerIsActive = false;
     responseCountdownIsActive = false;
     if (round === 3) {
-      setMessageLines('', showData.final_jeopardy.correct_response);
+      setMessageLines(showData.final_jeopardy.correct_response);
     } else {
-      setMessageLines('', selectedClue.response.correct_response);
+      setMessageLines(selectedClue.response.correct_response);
     }
   }
 
@@ -491,7 +491,7 @@ const App = () => {
     lastCorrectContestant = thirdPlace;
     setBoard(showData.double_jeopardy_round);
     availableClueNumbers = new Array(30).fill(true);
-    setMessageLines('', '');
+    setMessageLines('');
   }
 
   function showFinalJeopardyCategory() {
@@ -500,7 +500,7 @@ const App = () => {
   }
 
   function showFinalJeopardyClue() {
-    setMessageLines('', showData.final_jeopardy.clue);
+    setMessageLines(showData.final_jeopardy.clue);
     msg.text = showData.final_jeopardy.clue;
     window.speechSynthesis.speak(msg);
     msg.addEventListener('end', () => {
@@ -542,9 +542,7 @@ const App = () => {
   }
   return (
     <div>
-      <Banner contestants={contestants}
-        correct={message.line1}
-        message={message.line2}/>
+      <Banner contestants={contestants} message={message}/>
 
       <div className='banner'>
         <div>{responseCountdown.toFixed(1)}</div>

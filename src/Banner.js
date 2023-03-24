@@ -2,14 +2,13 @@ import React from 'react';
 
 function Banner(props) {
     const message = props.message;
-    const correct = props.correct;
     const contestants = props.contestants;
     const names = Object.keys(contestants);
 
     return (
         <div className='banner'>
             <h3>
-            <span className='message'>{message} <br /> {correct}</span>
+            <span className='message'>{message.line1} <br /> {message.line2}</span>
             <br></br>
             <div>
                 ${contestants[names[0]] && contestants[names[0]].score}<br></br>
