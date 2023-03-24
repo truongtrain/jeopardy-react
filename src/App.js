@@ -71,7 +71,6 @@ const App = () => {
     if (responseCountdownIsActive) {
       responseCountdownInterval = setInterval(() => {
         setResponseCountdown(responseCountdown => responseCountdown - 0.1);
-        console.log(responseCountdown);
       }, 100);
     } else {
       clearInterval(responseCountdownInterval);
@@ -88,7 +87,6 @@ const App = () => {
       finalResponse = event.target.value;
     } else {
       wager = event.target.value;
-      console.log(wager);
     }
   }
 
@@ -493,13 +491,15 @@ const App = () => {
 
   function startDoubleJeopardyRound() {
     round = 2;
-    let thirdPlace = scores[playerName]
+    console.log(scores);
+    let thirdPlace = playerName;
     contestants.forEach(contestant => {
       if (scores[contestant] < thirdPlace) {
-        thirdPlace = scores[contestant];
+        thirdPlace = contestant;
       }
     });
     lastCorrectContestant = thirdPlace;
+    console.log(lastCorrectContestant);
     setBoard(showData.double_jeopardy_round);
     availableClueNumbers = new Array(30).fill(true);
     setMessageLines('', '');
@@ -538,7 +538,6 @@ const App = () => {
       });
     });
     setFinalResponses(finalResponses);
-    console.log(finalResponses);
     setMessageLines(showData.final_jeopardy.correct_response, showData.final_jeopardy.clue);
   }
 
