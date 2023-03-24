@@ -27,7 +27,9 @@ const App = () => {
             contestant => contestant !== weakestContestant
           );
           filteredContestants.push(playerName);
-          setContestants(filteredContestants);
+          let tempContestants = {};
+          filteredContestants.forEach(contestant => tempContestants[contestant] = {score: 0, response: '', wager: null});
+          setContestants(tempContestants);
           const initialScores = {};
           filteredContestants.forEach(contestant => {
             initialScores[contestant] = 0;
@@ -47,7 +49,6 @@ const App = () => {
   const [responseCountdown, setResponseCountdown] = useState(5);
   const [selectedClue, setSelectedClue] = useState({});
   const [contestants, setContestants] = useState(null);
-  const [finalResponses, setFinalResponses] = useState({});
   const [disableAnswer, setDisableAnswer] = useState(true);
   const [numCorrect, setNumCorrect] = useState(0);
   const [coryatScore, setCoryatScore] = useState(0);
@@ -483,7 +484,8 @@ const App = () => {
   function submit() {
     if (round === 3) {
       responseCountdownIsActive = false;
-      finalResponses[playerName] = {response: finalResponse, wager: wager};
+      contestants[playerName] = {response: finalResponse, wager: wager};
+      setContestants(contestants);
     } else {
       displayClueByNumber(selectedClue.number);
     }
@@ -499,7 +501,6 @@ const App = () => {
       }
     });
     lastCorrectContestant = thirdPlace;
-    console.log(lastCorrectContestant);
     setBoard(showData.double_jeopardy_round);
     availableClueNumbers = new Array(30).fill(true);
     setMessageLines('', '');
@@ -523,21 +524,20 @@ const App = () => {
   function showFinalJeopardyResults() {
     console.log('coryat score: ' + coryatScore);
     console.log('batting average: ' + numCorrect * 1.0 / numClues);
-    let finalResponses = [];
-    finalResponses[playerName] = {response: finalResponse, wager: wager};
-    contestants.forEach(contestant => {
+    contestants[playerName] = {response: finalResponse, wager: wager};
+    Object.keys(contestants).forEach(contestant => {
       showData.final_jeopardy.contestant_responses.forEach(response => {
         if (response.contestant === contestant) {
-          finalResponses[contestant] = {response: response.response, wager: 0};
+          contestants[contestant] = {response: response.response, wager: 0};
           if (scores[contestant] >= response.wager) {
-            finalResponses[contestant].wager = response.wager;
+            contestants[contestant].wager = response.wager;
           } else {
-            finalResponses[contestant].wager = scores[contestant];
+            contestants[contestant].wager = scores[contestant];
           }
         }
       });
     });
-    setFinalResponses(finalResponses);
+    setContestants(contestants);
     setMessageLines(showData.final_jeopardy.correct_response, showData.final_jeopardy.clue);
   }
 
@@ -557,8 +557,7 @@ const App = () => {
       <Banner contestants={contestants}
         correct={message.line1}
         message={message.line2}
-        scores={scores}
-        responses={finalResponses}/>
+        scores={scores}/>
 
       <div className='banner'>
         <div>{responseCountdown.toFixed(1)}</div>
