@@ -30,13 +30,6 @@ const App = () => {
           let tempContestants = {};
           filteredContestants.forEach(contestant => tempContestants[contestant] = {score: 0, response: '', wager: null});
           setContestants(tempContestants);
-          const initialScores = {};
-          filteredContestants.forEach(contestant => {
-            initialScores[contestant] = 0;
-          });
-          
-          initialScores[playerName] = 0;
-          setScores(initialScores);
           setBoard(showData.jeopardy_round);
           setSelectedClue(getClue(1));
       })
@@ -45,7 +38,6 @@ const App = () => {
   const [board, setBoard] = useState(null);
   const [tableStyle, setTableStyle] = useState('table-light-off');
   const [message, setMessage] = useState({line1: '', line2: ''});
-  const [scores, setScores] = useState([]);
   const [responseCountdown, setResponseCountdown] = useState(5);
   const [selectedClue, setSelectedClue] = useState({});
   const [contestants, setContestants] = useState(null);
@@ -135,26 +127,26 @@ const App = () => {
     return filteredContestants[1];
   }
 
-  function handleIncorrectResponses(incorrectContestants, clue, scores_copy, scoreChange) {
+  function handleIncorrectResponses(incorrectContestants, clue, scoreChange) {
     let incorrectMessage = '';
     let answered = [];
     for (let i = 0; i < incorrectContestants.length; i++) {
       if (incorrectContestants[i] !== weakestContestant && !answered.includes(incorrectContestants[i])) {
         incorrectMessage += incorrectContestants[i] + ': What is ' + clue.response.incorrect_responses[i] + '? '
-        scores_copy[incorrectContestants[i]] -= scoreChange;
+        contestants[incorrectContestants[i]].score -= scoreChange;
         answered.push(incorrectContestants[i]);
         setAnsweredContestants(answered);
       }
     }
     setMessageLines(hostName + ': No. ' + clue.response.correct_response, incorrectMessage);
-    setScores(scores_copy);   
+    setContestants(contestants);   
   }
 
-  function handleCorrectResponse(correctContestant, scores_copy, scoreChange, clue, nextClueNumber, nextClue) {
+  function handleCorrectResponse(correctContestant, scoreChange, clue, nextClueNumber, nextClue) {
     if (correctContestant === clue.response.correct_contestant && correctContestant !== weakestContestant) {
       lastCorrectContestant = correctContestant;
-      scores_copy[correctContestant] += scoreChange;
-      setScores(scores_copy);
+      contestants[correctContestant].score += scoreChange;
+      setContestants(contestants);
       setMessageLines(hostName + ': Yes! ', correctContestant + ': What is ' + clue.response.correct_response + '?');
       if (nextClueNumber > 0) {
         setTimeout(() => {
@@ -172,7 +164,7 @@ const App = () => {
     if (clue.response.correct_contestant !== lastCorrectContestant) {
       return 0;
     }
-    const currentScore = scores[lastCorrectContestant];
+    const currentScore = contestants[lastCorrectContestant].score;
     if (round === 1) {
       if (clue.daily_double_wager > currentScore) {
         if (currentScore > 1000) {
@@ -208,12 +200,11 @@ const App = () => {
     const incorrectContestants = clue.response.incorrect_contestants
       .filter(contestant => !answeredContestants.includes(contestant));
     const correctContestant = clue.response.correct_contestant;
-    let scores_copy = { ...scores };
     let scoreChange = clue.daily_double_wager > 0 ? getOpponentDailyDoubleWager(clue) : clue.value;
     // handle triple stumpers
     if (!correctContestant || correctContestant === weakestContestant) {
       if (hasIncorrectContestants(incorrectContestants)) {
-        handleIncorrectResponses(incorrectContestants, clue, scores_copy, scoreChange);
+        handleIncorrectResponses(incorrectContestants, clue, scoreChange);
       } else {
         setMessageLines('', hostName + ': ' + clue.response.correct_response);
       }
@@ -224,12 +215,12 @@ const App = () => {
       return;
     }
     if (hasIncorrectContestants(incorrectContestants)) {
-      handleIncorrectResponses(incorrectContestants, clue, scores_copy, scoreChange);
+      handleIncorrectResponses(incorrectContestants, clue, scoreChange);
       if (conceded) {
-        setTimeout(() => handleCorrectResponse(correctContestant, scores_copy, scoreChange, clue, nextClueNumber, nextClue), 3000);
+        setTimeout(() => handleCorrectResponse(correctContestant, scoreChange, clue, nextClueNumber, nextClue), 3000);
       }
     } else {
-      handleCorrectResponse(correctContestant, scores_copy, scoreChange, clue, nextClueNumber, nextClue);
+      handleCorrectResponse(correctContestant, scoreChange, clue, nextClueNumber, nextClue);
     }
   }
 
@@ -428,13 +419,12 @@ const App = () => {
     lastCorrectContestant = playerName;
     msg.text = 'Correct';
     window.speechSynthesis.speak(msg);
-    let scores_copy = { ...scores };
     if (selectedClue.daily_double_wager > 0) {
-      scores_copy[playerName] += +wager;
+      contestants[playerName].score += +wager;
     } else {
-      scores_copy[playerName] += selectedClue.value;
+      contestants[playerName].score += selectedClue.value;
     }
-    setScores(scores_copy);
+    setContestants(contestants);
     setCoryatScore(coryatScore + selectedClue.value);
     setNumCorrect(numCorrect + 1);
   }
@@ -443,14 +433,13 @@ const App = () => {
     responseCountdownIsActive = false;
     msg.text = 'No';
     window.speechSynthesis.speak(msg);
-    let scores_copy = { ...scores };
     if (selectedClue.daily_double_wager > 0) {
-      scores_copy[playerName] -= wager;
+      contestants[playerName].score -= wager;
     } else {
-      scores_copy[playerName] -= selectedClue.value;
+      contestants[playerName].score -= selectedClue.value;
       setCoryatScore(coryatScore - selectedClue.value);
     }
-    setScores(scores_copy);
+    setContestants(contestants);
   }
 
   function concede() {
@@ -493,10 +482,9 @@ const App = () => {
 
   function startDoubleJeopardyRound() {
     round = 2;
-    console.log(scores);
     let thirdPlace = playerName;
     contestants.forEach(contestant => {
-      if (scores[contestant] < thirdPlace) {
+      if (contestants[contestant].score < thirdPlace) {
         thirdPlace = contestant;
       }
     });
@@ -529,10 +517,10 @@ const App = () => {
       showData.final_jeopardy.contestant_responses.forEach(response => {
         if (response.contestant === contestant) {
           contestants[contestant] = {response: response.response, wager: 0};
-          if (scores[contestant] >= response.wager) {
+          if (contestants[contestant].score >= response.wager) {
             contestants[contestant].wager = response.wager;
           } else {
-            contestants[contestant].wager = scores[contestant];
+            contestants[contestant].wager = contestants[contestant].score;
           }
         }
       });
@@ -556,8 +544,7 @@ const App = () => {
     <div>
       <Banner contestants={contestants}
         correct={message.line1}
-        message={message.line2}
-        scores={scores}/>
+        message={message.line2}/>
 
       <div className='banner'>
         <div>{responseCountdown.toFixed(1)}</div>
