@@ -10,24 +10,14 @@ function Banner(props) {
             <h3>
             <span className='message'>{message.line1} <br /> {message.line2}</span>
             <br></br>
-            <div>
-                ${contestants[names[0]] && contestants[names[0]].score}<br></br>
-                {names[0]}<br></br>
-                {contestants[names[0]] && contestants[names[0]].response}<br></br>
-                {contestants[names[0]] && contestants[names[0]].wager}
+            {names.map(name => 
+            <div key={name}>
+                ${contestants[name] && contestants[name].score}<br></br>
+                {name}<br></br>
+                {contestants[name] && contestants[name].response}<br></br>
+                {contestants[name] && contestants[name].wager}
             </div>
-            <div>
-                ${contestants[names[1]] && contestants[names[1]].score}<br></br>
-                {names[1]}<br></br>
-                {contestants[names[1]] && contestants[names[1]].response}<br></br>
-                {contestants[names[1]] && contestants[names[1]].wager}
-            </div>
-            <div>
-                ${contestants[names[2]] && contestants[names[2]].score}<br></br>
-                {names[2]}<br></br>
-                {contestants[names[2]] && contestants[names[2]].response}<br></br>
-                {contestants[names[2]] && contestants[names[2]].wager}
-            </div>
+            )}
             </h3>
         </div>
       );     

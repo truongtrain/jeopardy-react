@@ -18,7 +18,7 @@ const App = () => {
   let responseInterval, responseCountdownInterval;
 
   useEffect(() => {
-    fetch('http://localhost:5000/game/6147')
+    fetch('http://localhost:5000/example')
        .then((res) => res.json())
        .then((data) => {
           showData = data;
