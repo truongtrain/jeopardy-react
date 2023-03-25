@@ -563,12 +563,9 @@ const App = () => {
       <table className={tableStyle}>
         <thead>
           <tr>
-            <th>{getCategory(board[0])}</th>
-            <th>{getCategory(board[1])}</th>
-            <th>{getCategory(board[2])}</th>
-            <th>{getCategory(board[3])}</th>
-            <th>{getCategory(board[4])}</th>
-            <th>{getCategory(board[5])}</th>
+            {Array.from(Array(6), (_arrayElement, row) => {
+              return (<th key={'header'+row}>{getCategory(board[row])}</th>)
+            })}
           </tr>
         </thead>
         <tbody>

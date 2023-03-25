@@ -21,7 +21,6 @@ function Banner(props) {
             </h3>
         </div>
       );     
-    
   }
 
   export default Banner;
