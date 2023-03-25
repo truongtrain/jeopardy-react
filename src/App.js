@@ -572,15 +572,15 @@ const App = () => {
           </tr>
         </thead>
         <tbody>
-          {Array.from(Array(5), (arrayElement, row) => {
-            return (<tr key={row}>
-              {board.map((round, column) => {
+          {Array.from(Array(5), (_arrayElement, row) => {
+            return (<tr key={'row'+row}>
+              {board.map((category, column) => {
                 return (
-                  <td key={column}>
-                    <span>{round[row] && round[row].visible && round[row].text}</span>
+                  <td key={'column'+column}>
+                    <span>{category[row] && category[row].visible && category[row].text}</span>
                     {
-                      !round[row].visible && <button className='clue-button' onClick={() => displayClue(row, column)}>
-                        ${round[row].value}
+                      !category[row].visible && <button className='clue-button' onClick={() => displayClue(row, column)}>
+                        ${category[row].value}
                       </button>
                     }
                   </td>)
