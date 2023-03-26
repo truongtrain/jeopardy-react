@@ -14,7 +14,7 @@ const App = () => {
   const [selectedClue, setSelectedClue] = useState(null);
   const [contestants, setContestants] = useState(null);
   const [disableAnswer, setDisableAnswer] = useState(true);
-  let showData;
+  let showData = {};
   let weakestContestant = '';
   let wager = 0;
   let finalResponse = '';
@@ -26,8 +26,8 @@ const App = () => {
   let numCorrect = 0;
   let numClues = 0;
   let coryatScore = 0;
-  let responseInterval;
-  let responseCountdownInterval;
+  let responseInterval = {};
+  let responseCountdownInterval = {};
   let isPlayerDailyDouble = false;
   let conceded = false;
   let msg = new SpeechSynthesisUtterance();
