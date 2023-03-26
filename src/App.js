@@ -2,20 +2,36 @@ import './App.css';
 import React, { useState, useEffect } from 'react';
 import Banner from './Banner';
 
-let msg = new SpeechSynthesisUtterance();
-msg.rate = 0.9;
-const playerName = 'Alan';
-const hostName = 'Trebek';
-let showData, weakestContestant, wager, finalResponse;
-let seconds = 0;
-let responseCountdownIsActive = false;
-let responseTimerIsActive = false;
-let availableClueNumbers = new Array(30).fill(true);
-let lastCorrectContestant = playerName;
-let round = 1;
-
 const App = () => {
-  let responseInterval, responseCountdownInterval;
+  const playerName = 'Alan';
+  const hostName = 'Trebek';
+  const availableClueNumbers = new Array(30).fill(true);
+  const answeredContestants = [];
+  const [board, setBoard] = useState(null);
+  const [tableStyle, setTableStyle] = useState('table-light-off');
+  const [message, setMessage] = useState({line1: '', line2: ''});
+  const [responseCountdown, setResponseCountdown] = useState(5);
+  const [selectedClue, setSelectedClue] = useState(null);
+  const [contestants, setContestants] = useState(null);
+  const [disableAnswer, setDisableAnswer] = useState(true);
+  let showData;
+  let weakestContestant;
+  let wager;
+  let finalResponse;
+  let seconds = 0;
+  let responseCountdownIsActive = false;
+  let responseTimerIsActive = false;
+  let lastCorrectContestant = playerName;
+  let round = 1;
+  let numCorrect = 0;
+  let numClues = 0;
+  let coryatScore = 0;
+  let responseInterval;
+  let responseCountdownInterval;
+  let isPlayerDailyDouble = false;
+  let conceded = false;
+  let msg = new SpeechSynthesisUtterance();
+  msg.rate = 0.9;
 
   useEffect(() => {
     fetch('http://localhost:5000/example')
@@ -34,20 +50,6 @@ const App = () => {
           setSelectedClue(getClue(1));
       })
  }, []);
-  
-  const [board, setBoard] = useState(null);
-  const [tableStyle, setTableStyle] = useState('table-light-off');
-  const [message, setMessage] = useState({line1: '', line2: ''});
-  const [responseCountdown, setResponseCountdown] = useState(5);
-  const [selectedClue, setSelectedClue] = useState({});
-  const [contestants, setContestants] = useState(null);
-  const [disableAnswer, setDisableAnswer] = useState(true);
-  const [numCorrect, setNumCorrect] = useState(0);
-  const [coryatScore, setCoryatScore] = useState(0);
-  const [numClues, setNumClues] = useState(0);
-  const [isPlayerDailyDouble, setPlayerDailyDouble] = useState(false);
-  const [answeredContestants, setAnsweredContestants] = useState([]);
-  const [conceded, setConceded] = useState(false);
 
   // determines how fast I click after the clue is read
   useEffect(() => {
@@ -135,7 +137,7 @@ const App = () => {
         incorrectMessage += incorrectContestants[i] + ': What is ' + clue.response.incorrect_responses[i] + '? '
         contestants[incorrectContestants[i]].score -= scoreChange;
         answered.push(incorrectContestants[i]);
-        setAnsweredContestants(answered);
+        answeredContestants = answered;
       }
     }
     setMessageLines(incorrectMessage, hostName + ': No. ' + clue.response.correct_response);
@@ -231,7 +233,7 @@ const App = () => {
   }
 
   function displayNextClue() {
-    setAnsweredContestants([]);
+    answeredContestants = [];
     setMessageLines('');
     const nextClueNumber = getNextClueNumber();
     if (nextClueNumber > 0) {
@@ -243,12 +245,12 @@ const App = () => {
 
   function displayClue(row, col) {
     turnOffLight();
-    setNumClues(numClues + 1);
+    numClues += 1;
     lastCorrectContestant = playerName;
     const clue = board[col][row];
     setSelectedClue(clue);
     if (clue.daily_double_wager > 0) {
-      setPlayerDailyDouble(true);
+      isPlayerDailyDouble = true;
       readText('Answer. Daily double. How much will you wager');
       setMessageLines('Daily Double!');
     } else {
@@ -264,13 +266,13 @@ const App = () => {
 
   function displayClueByNumber(clueNumber) {
     turnOffLight();
-    setNumClues(numClues + 1);
+    numClues += 1;
     updateAvailableClueNumbers(clueNumber);
     for (let col = 0; col < 6; col++) {
       for (let row = 0; row < 5; row++) {
         if (board[col][row].number === clueNumber) {
           if (board[col][row].daily_double_wager > 0) {
-            setPlayerDailyDouble(false);
+            isPlayerDailyDouble = false;
             setMessageLines('Answer. Daily Double');
             if (lastCorrectContestant !== playerName) {
               setMessageLines(lastCorrectContestant + ': I will wager $' + board[col][row].daily_double_wager);
@@ -425,8 +427,8 @@ const App = () => {
       contestants[playerName].score += selectedClue.value;
     }
     setContestants(contestants);
-    setCoryatScore(coryatScore + selectedClue.value);
-    setNumCorrect(numCorrect + 1);
+    coryatScore += selectedClue.value;
+    numCorrect += 1;
   }
 
   function deductScore() {
@@ -437,14 +439,14 @@ const App = () => {
       contestants[playerName].score -= wager;
     } else {
       contestants[playerName].score -= selectedClue.value;
-      setCoryatScore(coryatScore - selectedClue.value);
+      coryatScore -= selectedClue.value;
     }
     setContestants(contestants);
   }
 
   function concede() {
     responseTimerIsActive = false;
-    setConceded(true);
+    conceded = true;
     updateOpponentScores(selectedClue);
   }
 
@@ -460,7 +462,7 @@ const App = () => {
   }
 
   function turnOffLight() {
-    setAnsweredContestants([]);
+    answeredContestants = [];
     setDisableAnswer(true);
     setTableStyle('table-light-off');
   }
