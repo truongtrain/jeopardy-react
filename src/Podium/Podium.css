@@ -1,9 +1,9 @@
 .podiums {
     display: flex;
-    justify-content: center;
     position: fixed;
     top: 50px;
-    left: 43%;
+    left: 50%;
+    transform: translateX(-50%);
 }
 
 .podium {
