@@ -2,52 +2,52 @@ import './App.css';
 import React, { useState, useEffect } from 'react';
 import Banner from './Banner';
 
+const playerName = 'Alan';
+const hostName = 'Trebek';
+const availableClueNumbers = new Array(30).fill(true);
+let showData = {};
+let stats = { numCorrect: 0, numClues: 0, coryatScore: 0, battingAverage: 0 };
+let weakestContestant = '';
+let answeredContestants = [];
+let wager = 0;
+let finalResponse = '';
+let seconds = 0;
+let responseCountdownIsActive = false;
+let responseTimerIsActive = false;
+let lastCorrectContestant = playerName;
+let round = 1;
+let responseInterval = {};
+let responseCountdownInterval = {};
+let isPlayerDailyDouble = false;
+let conceded = false;
+let msg = new SpeechSynthesisUtterance();
+
 const App = () => {
-  const playerName = 'Alan';
-  const hostName = 'Trebek';
-  const availableClueNumbers = new Array(30).fill(true);
-  const answeredContestants = [];
   const [board, setBoard] = useState(null);
   const [tableStyle, setTableStyle] = useState('table-light-off');
-  const [message, setMessage] = useState({line1: '', line2: ''});
+  const [message, setMessage] = useState({ line1: '', line2: '' });
   const [responseCountdown, setResponseCountdown] = useState(5);
   const [selectedClue, setSelectedClue] = useState(null);
   const [contestants, setContestants] = useState(null);
   const [disableAnswer, setDisableAnswer] = useState(true);
-  let showData = {};
-  let weakestContestant = '';
-  let wager = 0;
-  let finalResponse = '';
-  let seconds = 0;
-  let responseCountdownIsActive = false;
-  let responseTimerIsActive = false;
-  let lastCorrectContestant = playerName;
-  let round = 1;
-  let stats = {numCorrect: 0, numClues: 0, coryatScore: 0, battingAverage: 0};
-  let responseInterval = {};
-  let responseCountdownInterval = {};
-  let isPlayerDailyDouble = false;
-  let conceded = false;
-  let msg = new SpeechSynthesisUtterance();
-  msg.rate = 0.9;
 
   useEffect(() => {
     fetch('http://localhost:5000/example')
-       .then((res) => res.json())
-       .then((data) => {
-          showData = data;
-          weakestContestant = showData.weakest_contestant;
-          let filteredContestants = showData.contestants.filter(
-            contestant => contestant !== weakestContestant
-          );
-          filteredContestants.push(playerName);
-          let tempContestants = {};
-          filteredContestants.forEach(contestant => tempContestants[contestant] = {score: 0, response: '', wager: null});
-          setContestants(tempContestants);
-          setBoard(showData.jeopardy_round);
-          setSelectedClue(getClue(1));
+      .then((res) => res.json())
+      .then((data) => {
+        showData = data;
+        weakestContestant = showData.weakest_contestant;
+        let filteredContestants = showData.contestants.filter(
+          contestant => contestant !== weakestContestant
+        );
+        filteredContestants.push(playerName);
+        let tempContestants = {};
+        filteredContestants.forEach(contestant => tempContestants[contestant] = { score: 0, response: '', wager: null });
+        setContestants(tempContestants);
+        setBoard(showData.jeopardy_round);
+        setSelectedClue(getClue(1));
       })
- }, []);
+  }, []);
 
   // determines how fast I click after the clue is read
   useEffect(() => {
@@ -122,7 +122,7 @@ const App = () => {
     const filteredContestants = incorrectContestants
       .filter(contestant => contestant !== weakestContestant);
     if (answeredContestants.length === 0) {
-       return filteredContestants[0];
+      return filteredContestants[0];
     }
     return filteredContestants[1];
   }
@@ -139,7 +139,7 @@ const App = () => {
       }
     }
     setMessageLines(incorrectMessage, hostName + ': No. ' + clue.response.correct_response);
-    setContestants(contestants);   
+    setContestants(contestants);
   }
 
   function handleCorrectResponse(correctContestant, scoreChange, clue, nextClueNumber, nextClue) {
@@ -291,7 +291,7 @@ const App = () => {
 
   function getNextClueNumber() {
     for (let i = 1; i <= 30; i++) {
-      if (availableClueNumbers[i-1] === true) {
+      if (availableClueNumbers[i - 1] === true) {
         return i;
       }
     }
@@ -299,7 +299,7 @@ const App = () => {
   }
 
   function updateAvailableClueNumbers(clueNumber) {
-    availableClueNumbers[clueNumber-1] = false;
+    availableClueNumbers[clueNumber - 1] = false;
   }
 
   function getClue(clueNumber) {
@@ -316,6 +316,9 @@ const App = () => {
   function readClue(row, col) {
     let clue;
     if (round === 1) {
+      console.log(showData);
+      console.log(row);
+      console.log(col);
       clue = showData.jeopardy_round[col][row];
     } else if (round === 2) {
       clue = showData.double_jeopardy_round[col][row];
@@ -473,7 +476,7 @@ const App = () => {
   function submit() {
     if (round === 3) {
       responseCountdownIsActive = false;
-      contestants[playerName] = {response: finalResponse, wager: wager};
+      contestants[playerName] = { response: finalResponse, wager: wager };
       setContestants(contestants);
     } else {
       displayClueByNumber(selectedClue.number);
@@ -512,11 +515,11 @@ const App = () => {
   function showFinalJeopardyResults() {
     stats.battingAverage = stats.numCorrect / stats.numClues * 1.0;
     console.log(stats);
-    contestants[playerName] = {response: finalResponse, wager: wager};
+    contestants[playerName] = { response: finalResponse, wager: wager };
     Object.keys(contestants).forEach(contestant => {
       showData.final_jeopardy.contestant_responses.forEach(response => {
         if (response.contestant === contestant) {
-          contestants[contestant] = {response: response.response, wager: 0};
+          contestants[contestant] = { response: response.response, wager: 0 };
           if (contestants[contestant].score >= response.wager) {
             contestants[contestant].wager = response.wager;
           } else {
@@ -542,7 +545,7 @@ const App = () => {
   }
   return (
     <div>
-      <Banner contestants={contestants} message={message}/>
+      <Banner contestants={contestants} message={message} />
 
       <div className='banner'>
         <div>{responseCountdown.toFixed(1)}</div>
@@ -564,16 +567,16 @@ const App = () => {
         <thead>
           <tr>
             {Array.from(Array(6), (_arrayElement, row) => {
-              return (<th key={'header'+row}>{getCategory(board[row])}</th>)
+              return (<th key={'header' + row}>{getCategory(board[row])}</th>)
             })}
           </tr>
         </thead>
         <tbody>
           {Array.from(Array(5), (_arrayElement, row) => {
-            return (<tr key={'row'+row}>
+            return (<tr key={'row' + row}>
               {board.map((category, column) => {
                 return (
-                  <td key={'column'+column}>
+                  <td key={'column' + column}>
                     <span>{category[row] && category[row].visible && category[row].text}</span>
                     {
                       !category[row].visible && <button className='clue-button' onClick={() => displayClue(row, column)}>
