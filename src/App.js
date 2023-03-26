@@ -23,9 +23,7 @@ const App = () => {
   let responseTimerIsActive = false;
   let lastCorrectContestant = playerName;
   let round = 1;
-  let numCorrect = 0;
-  let numClues = 0;
-  let coryatScore = 0;
+  let stats = {numCorrect: 0, numClues: 0, coryatScore: 0, battingAverage: 0};
   let responseInterval = {};
   let responseCountdownInterval = {};
   let isPlayerDailyDouble = false;
@@ -245,7 +243,7 @@ const App = () => {
 
   function displayClue(row, col) {
     turnOffLight();
-    numClues += 1;
+    stats.numClues += 1;
     lastCorrectContestant = playerName;
     const clue = board[col][row];
     setSelectedClue(clue);
@@ -266,7 +264,7 @@ const App = () => {
 
   function displayClueByNumber(clueNumber) {
     turnOffLight();
-    numClues += 1;
+    stats.numClues += 1;
     updateAvailableClueNumbers(clueNumber);
     for (let col = 0; col < 6; col++) {
       for (let row = 0; row < 5; row++) {
@@ -427,8 +425,8 @@ const App = () => {
       contestants[playerName].score += selectedClue.value;
     }
     setContestants(contestants);
-    coryatScore += selectedClue.value;
-    numCorrect += 1;
+    stats.coryatScore += selectedClue.value;
+    stats.numCorrect += 1;
   }
 
   function deductScore() {
@@ -439,7 +437,7 @@ const App = () => {
       contestants[playerName].score -= wager;
     } else {
       contestants[playerName].score -= selectedClue.value;
-      coryatScore -= selectedClue.value;
+      stats.coryatScore -= selectedClue.value;
     }
     setContestants(contestants);
   }
@@ -512,8 +510,8 @@ const App = () => {
   }
 
   function showFinalJeopardyResults() {
-    console.log('coryat score: ' + coryatScore);
-    console.log('batting average: ' + numCorrect * 1.0 / numClues);
+    stats.battingAverage = stats.numCorrect / stats.numClues * 1.0;
+    console.log(stats);
     contestants[playerName] = {response: finalResponse, wager: wager};
     Object.keys(contestants).forEach(contestant => {
       showData.final_jeopardy.contestant_responses.forEach(response => {
