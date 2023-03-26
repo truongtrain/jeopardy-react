@@ -477,7 +477,8 @@ const App = () => {
   function submit() {
     if (round === 3) {
       responseCountdownIsActive = false;
-      contestants[playerName] = { response: finalResponse, wager: wager };
+      contestants[playerName].response = finalResponse;
+      contestants[playerName].wager = wager;
       setContestants(contestants);
     } else {
       displayClueByNumber(selectedClue.number);
@@ -515,12 +516,15 @@ const App = () => {
 
   function showFinalJeopardyResults() {
     stats.battingAverage = stats.numCorrect / stats.numClues * 1.0;
+    console.log(contestants);
     console.log(stats);
-    contestants[playerName] = { response: finalResponse, wager: wager };
+    contestants[playerName].response = finalResponse;
+    contestants[playerName].wager = wager;
     Object.keys(contestants).forEach(contestant => {
       showData.final_jeopardy.contestant_responses.forEach(response => {
         if (response.contestant === contestant) {
-          contestants[contestant] = { response: response.response, wager: 0 };
+          contestants[contestant].response = response.response;
+          contestants[contestant].wager = 0 ;
           if (contestants[contestant].score >= response.wager) {
             contestants[contestant].wager = response.wager;
           } else {
