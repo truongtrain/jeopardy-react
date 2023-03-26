@@ -523,7 +523,7 @@ const App = () => {
       showData.final_jeopardy.contestant_responses.forEach(response => {
         if (response.contestant === contestant) {
           contestants[contestant].response = response.response;
-          contestants[contestant].wager = 0 ;
+          contestants[contestant].wager = 0;
           if (contestants[contestant].score >= response.wager) {
             contestants[contestant].wager = response.wager;
           } else {
@@ -554,48 +554,44 @@ const App = () => {
         <Podium contestants={contestants} />
       </div>
       <div className='board'>
-      <div className='buttons'>
-        <div>{responseCountdown.toFixed(1)}</div>
-        <button onClick={() => concede()}>Concede</button>
-        <button onClick={() => answer()} disabled={disableAnswer}>Answer</button>
-        <button onClick={() => showAnswer()}>Show Correct</button>
-        <button onClick={() => incrementScore()}>Correct</button>
-        <button onClick={() => deductScore()}>Incorrect</button>
-        <button onClick={() => submit()}>Submit</button>
-        <input id="wager" onChange={handleInputChange} />
-        <button onClick={() => startDoubleJeopardyRound()}>Double Jeopardy</button>
-        <button onClick={() => showFinalJeopardyCategory()}>Final Jeopardy Category</button>
-        <button onClick={() => showFinalJeopardyClue()}>Final Jeopardy Clue</button>
-        <button onClick={() => showFinalJeopardyResults()}>Results</button>
-        <button onClick={() => startRound()}>Start Round</button>
-      </div>
+        <div className='buttons'>
+          <div>{responseCountdown.toFixed(1)}</div>
+          <button onClick={() => concede()}>Concede</button>
+          <button onClick={() => answer()} disabled={disableAnswer}>Answer</button>
+          <button onClick={() => showAnswer()}>Show Correct</button>
+          <button onClick={() => incrementScore()}>Correct</button>
+          <button onClick={() => deductScore()}>Incorrect</button>
+          <button onClick={() => submit()}>Submit</button>
+          <input id="wager" onChange={handleInputChange} />
+          <button onClick={() => startDoubleJeopardyRound()}>Double Jeopardy</button>
+          <button onClick={() => showFinalJeopardyCategory()}>Final Jeopardy Category</button>
+          <button onClick={() => showFinalJeopardyClue()}>Final Jeopardy Clue</button>
+          <button onClick={() => showFinalJeopardyResults()}>Results</button>
+          <button onClick={() => startRound()}>Start Round</button>
+        </div>
 
-      <table className={tableStyle}>
-        <thead>
-          <tr>
-            {Array.from(Array(6), (_arrayElement, row) => {
-              return (<th key={'header' + row}>{getCategory(board[row])}</th>)
-            })}
-          </tr>
-        </thead>
-        <tbody>
-          {Array.from(Array(5), (_arrayElement, row) => {
-            return (<tr key={'row' + row}>
-              {board.map((category, column) => {
-                return (
-                  <td key={'column' + column}>
-                    <span>{category[row] && category[row].visible && category[row].text}</span>
-                    {
-                      !category[row].visible && <button className='clue-button' onClick={() => displayClue(row, column)}>
-                        ${category[row].value}
-                      </button>
-                    }
-                  </td>)
+        <table className={tableStyle}>
+          <thead>
+            <tr>
+              {Array.from(Array(6), (_arrayElement, row) => {
+                return (<th key={'header' + row}>{getCategory(board[row])}</th>)
               })}
-            </tr>)
-          })}
-        </tbody>
-      </table>
+            </tr>
+          </thead>
+          <tbody>
+            {Array.from(Array(5), (_arrayElement, row) => {
+              return (<tr key={'row' + row}>
+                {board.map((category, column) => {
+                  return (
+                    <td key={'column' + column}>
+                      <span>{category[row] && category[row].visible && category[row].text}</span>
+                      {!category[row].visible && <button className='clue-button' onClick={() => displayClue(row, column)}>${category[row].value}</button>}
+                    </td>)
+                })}
+              </tr>)
+            })}
+          </tbody>
+        </table>
       </div>
     </div>
   );
