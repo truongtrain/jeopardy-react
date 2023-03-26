@@ -12,14 +12,6 @@ code {
     monospace;
 }
 
-h3 div {
-  float:right;
-  margin: 10px;
-  background-color: rgb(25, 25, 195);
-  color: white;
-  border: 3px solid black;
-}
-
 .table-light-on {
   border: 5px solid blue;
 }
@@ -48,13 +40,4 @@ td {
   width: 100%;
   font-size: 50px;
   border: 0px;
-}
-
-.banner {
-  display: flex;
-  justify-content: center;
-}
-
-.message {
-  size: 50px;
 }

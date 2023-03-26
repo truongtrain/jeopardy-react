@@ -1,6 +1,7 @@
 import './App.css';
 import React, { useState, useEffect } from 'react';
-import Banner from './Banner';
+import Podium from './Podium/Podium';
+import Message from './Message/Message';
 
 const playerName = 'Alan';
 const hostName = 'Trebek';
@@ -545,7 +546,8 @@ const App = () => {
   }
   return (
     <div>
-      <Banner contestants={contestants} message={message} />
+      <Message message={message} />
+      <Podium contestants={contestants} />
 
       <div className='banner'>
         <div>{responseCountdown.toFixed(1)}</div>
