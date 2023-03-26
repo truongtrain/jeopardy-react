@@ -573,23 +573,22 @@ const App = () => {
         <table className={tableStyle}>
           <thead>
             <tr>
-              {Array.from(Array(6), (_arrayElement, row) => {
-                return (<th key={'header'+row}>{getCategory(board[row])}</th>)
-              })}
+              {Array.from(Array(6), (_arrayElement, row) =>
+                <th key={'header' + row}>{getCategory(board[row])}</th>
+              )}
             </tr>
           </thead>
           <tbody>
-            {Array.from(Array(5), (_arrayElement, row) => {
-              return (<tr key={'row'+row}>
-                {board.map((category, column) => {
-                  return (
-                    <td key={'column'+column}>
-                      <span>{category[row] && category[row].visible && category[row].text}</span>
-                      {!category[row].visible && <button className='clue-button' onClick={() => displayClue(row, column)}>${category[row].value}</button>}
-                    </td>)
-                })}
-              </tr>)
-            })}
+            {Array.from(Array(5), (_arrayElement, row) =>
+              <tr key={'row' + row}>
+                {board.map((category, column) =>
+                  <td key={'column' + column}>
+                    <span>{category[row] && category[row].visible && category[row].text}</span>
+                    {!category[row].visible && <button className='clue-button' onClick={() => displayClue(row, column)}>${category[row].value}</button>}
+                  </td>
+                )}
+              </tr>
+            )}
           </tbody>
         </table>
       </div>
