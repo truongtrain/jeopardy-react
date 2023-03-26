@@ -516,7 +516,6 @@ const App = () => {
 
   function showFinalJeopardyResults() {
     stats.battingAverage = stats.numCorrect / stats.numClues * 1.0;
-    console.log(contestants);
     console.log(stats);
     contestants[playerName].response = finalResponse;
     contestants[playerName].wager = wager;
