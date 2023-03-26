@@ -555,7 +555,6 @@ const App = () => {
       </div>
       <div className='board'>
         <div className='buttons'>
-          <div>{responseCountdown.toFixed(1)}</div>
           <button onClick={() => concede()}>Concede</button>
           <button onClick={() => answer()} disabled={disableAnswer}>Answer</button>
           <button onClick={() => showAnswer()}>Show Correct</button>

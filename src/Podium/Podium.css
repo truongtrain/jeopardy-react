@@ -14,3 +14,17 @@
     font-weight: bold;
     height: 75px;
 }
+
+.ticks {
+    display: flex;
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.tick {
+    height: 5px;
+    width: 7px;
+    background-color: red;
+    margin: 2px;
+}
