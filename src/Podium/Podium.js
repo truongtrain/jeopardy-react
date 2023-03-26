@@ -1,16 +1,33 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import './Podium.css';
 
 function Podium(props) {
     const contestants = props.contestants;
+    const responseCountdownIsActive = props.startTimer;
     const names = Object.keys(contestants);
     const ticks = new Array(9).fill(true);
+    let responseCountdown = 5;
+    let responseCountdownInterval = {};
+
+    // 5 second timer to respond after my name is called
+    useEffect(() => {
+        if (responseCountdownIsActive) {
+            responseCountdownInterval = setInterval(() => {
+                if (responseCountdown === 0) {
+                    clearInterval(responseCountdownInterval);
+                }
+                console.log(responseCountdown);
+                responseCountdown -= 1;
+            }, 1000);
+        }
+        return () => clearInterval(responseCountdownInterval);
+    }, [responseCountdownIsActive]);
 
     return (
         <div className='podiums'>
             <div className='ticks'>
-                {ticks.map(_tick =>
-                    <div className='tick'></div>
+                {ticks.map((_tick, index) =>
+                    <div key={'tick'+index} className='tick'></div>
                 )}
             </div>
             {names.map(name =>

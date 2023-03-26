@@ -13,21 +13,19 @@ let answeredContestants = [];
 let wager = 0;
 let finalResponse = '';
 let seconds = 0;
-let responseCountdownIsActive = false;
 let responseTimerIsActive = false;
 let lastCorrectContestant = playerName;
 let round = 1;
 let responseInterval = {};
-let responseCountdownInterval = {};
 let isPlayerDailyDouble = false;
 let conceded = false;
+let responseCountdownIsActive = false;
 let msg = new SpeechSynthesisUtterance();
 
 const App = () => {
   const [board, setBoard] = useState(null);
   const [tableStyle, setTableStyle] = useState('table-light-off');
   const [message, setMessage] = useState({ line1: '', line2: '' });
-  const [responseCountdown, setResponseCountdown] = useState(5);
   const [selectedClue, setSelectedClue] = useState(null);
   const [contestants, setContestants] = useState(null);
   const [disableAnswer, setDisableAnswer] = useState(true);
@@ -59,18 +57,6 @@ const App = () => {
     }
     return () => clearInterval(responseInterval);
   }, [responseTimerIsActive]);
-
-  // 5 second timer to respond after my name is called
-  useEffect(() => {
-    if (responseCountdownIsActive) {
-      responseCountdownInterval = setInterval(() => {
-        setResponseCountdown(responseCountdown => responseCountdown - 0.1);
-      }, 100);
-    } else {
-      clearInterval(responseCountdownInterval);
-    }
-    return () => clearInterval(responseCountdownInterval);
-  }, [responseCountdownIsActive]);
 
   function startRound() {
     displayClueByNumber(1);
@@ -255,7 +241,7 @@ const App = () => {
     } else {
       setMessageLines('');
       seconds = 0;
-      setResponseCountdown(5);
+      responseCountdownIsActive = false;
       updateAvailableClueNumbers(clue.number);
       board[col][row].visible = true;
       setBoard(board);
@@ -509,7 +495,6 @@ const App = () => {
     msg.text = showData.final_jeopardy.clue;
     window.speechSynthesis.speak(msg);
     msg.addEventListener('end', () => {
-      setResponseCountdown(30);
       responseCountdownIsActive = true;
     });
   }
@@ -551,7 +536,7 @@ const App = () => {
     <div>
       <div className='banner'>
         <Message message={message} />
-        <Podium contestants={contestants} />
+        <Podium contestants={contestants} startTimer={responseCountdownIsActive}/>
       </div>
       <div className='board'>
         <div className='buttons'>
