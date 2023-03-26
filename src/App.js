@@ -549,7 +549,7 @@ const App = () => {
       <Message message={message} />
       <Podium contestants={contestants} />
 
-      <div className='banner'>
+      <div className='buttons'>
         <div>{responseCountdown.toFixed(1)}</div>
         <button onClick={() => concede()}>Concede</button>
         <button onClick={() => answer()} disabled={disableAnswer}>Answer</button>
