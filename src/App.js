@@ -546,9 +546,11 @@ const App = () => {
   }
   return (
     <div>
-      <Message message={message} />
-      <Podium contestants={contestants} />
-
+      <div className='banner'>
+        <Message message={message} />
+        <Podium contestants={contestants} />
+      </div>
+      <div className='board'>
       <div className='buttons'>
         <div>{responseCountdown.toFixed(1)}</div>
         <button onClick={() => concede()}>Concede</button>
@@ -591,6 +593,7 @@ const App = () => {
           })}
         </tbody>
       </table>
+      </div>
     </div>
   );
 }

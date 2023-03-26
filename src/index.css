@@ -45,3 +45,12 @@ td {
 .buttons {
   text-align: center;
 }
+
+.board {
+  position: fixed;
+  top: 100px;
+}
+
+.banner {
+  display: block;
+}
