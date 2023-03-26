@@ -15,9 +15,9 @@ const App = () => {
   const [contestants, setContestants] = useState(null);
   const [disableAnswer, setDisableAnswer] = useState(true);
   let showData;
-  let weakestContestant;
-  let wager;
-  let finalResponse;
+  let weakestContestant = '';
+  let wager = 0;
+  let finalResponse = '';
   let seconds = 0;
   let responseCountdownIsActive = false;
   let responseTimerIsActive = false;
