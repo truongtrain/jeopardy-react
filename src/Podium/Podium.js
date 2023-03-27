@@ -28,7 +28,7 @@ function Podium(props) {
     return (
         <div className='podiums'>
             <div className='ticks'>
-                {ticks.map((_tick, index) =>
+                {responseCountdownIsActive && ticks.map((_tick, index) =>
                     <div key={'tick'+index} className='tick'></div>
                 )}
             </div>
