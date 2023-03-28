@@ -13,7 +13,6 @@ function Podium(props) {
     useEffect(() => {
         if (responseCountdownIsActive) {
             responseCountdownInterval = setInterval(() => {
-                console.log(responseCountdown);
                 if (responseCountdown === 0) {
                     clearInterval(responseCountdownInterval);
                     //TODO: sound alarm
@@ -24,7 +23,6 @@ function Podium(props) {
                 responseCountdown -= 1;
             }, 1000);
         } else {
-            console.log('stopped');
             setTicks(new Array(9).fill(true));
         }
         return () => clearInterval(responseCountdownInterval);
