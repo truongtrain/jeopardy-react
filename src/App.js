@@ -71,8 +71,8 @@ const App = () => {
   }
 
   function answer() {
-    setDisableAnswer(true);
     responseTimerIsActive = false;
+    setDisableAnswer(true);
     let bonusProbability = 0;
     let incorrectContestants = selectedClue.response.incorrect_contestants;
     if (answeredContestants.length === 1) {
@@ -532,7 +532,7 @@ const App = () => {
   return (
     <div>
       <div className='banner'>
-        <Message message={message} />
+        <Message message={message}/>
         <Podium contestants={contestants} startTimer={responseCountdownIsActive}/>
       </div>
       <div className='board'>

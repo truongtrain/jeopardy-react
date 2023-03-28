@@ -5,7 +5,7 @@ function Podium(props) {
     const contestants = props.contestants;
     const responseCountdownIsActive = props.startTimer;
     const names = Object.keys(contestants);
-    const [ticks, setTicks] = useState(new Array(9).fill(true));
+    let [ticks, setTicks] = useState(new Array(9).fill(true));
     let responseCountdown = 5;
     let responseCountdownInterval = {};
 
@@ -13,14 +13,19 @@ function Podium(props) {
     useEffect(() => {
         if (responseCountdownIsActive) {
             responseCountdownInterval = setInterval(() => {
+                console.log(responseCountdown);
                 if (responseCountdown === 0) {
                     clearInterval(responseCountdownInterval);
-                    setTicks([]);
+                    //TODO: sound alarm
+
                 } else {
                     setTicks(new Array(responseCountdown*2-1).fill(true));
                 }
                 responseCountdown -= 1;
             }, 1000);
+        } else {
+            console.log('stopped');
+            setTicks(new Array(9).fill(true));
         }
         return () => clearInterval(responseCountdownInterval);
     }, [responseCountdownIsActive]);
