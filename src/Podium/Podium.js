@@ -7,12 +7,12 @@ function Podium(props) {
     const responseCountdownIsActive = props.startTimer;
     const names = Object.keys(contestants);
     let [ticks, setTicks] = useState(new Array(9).fill(true));
-    let responseCountdown = 4;
-    let responseCountdownInterval = {};
-    let timeout = new Audio(Timeout);
 
     // 5 second timer to respond after my name is called
     useEffect(() => {
+        let responseCountdownInterval = {};
+        let timeout = new Audio(Timeout);
+        let responseCountdown = 4;
         if (responseCountdownIsActive) {
             responseCountdownInterval = setInterval(() => {
                 if (responseCountdown === 0) {
