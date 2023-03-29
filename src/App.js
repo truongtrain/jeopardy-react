@@ -59,9 +59,6 @@ const App = () => {
   }, []);
 
   function startRound() {
-    if (round === 1) {
-      setSelectedClue(getClue(1));
-    }
     displayClueByNumber(1);
   }
 
@@ -472,7 +469,7 @@ const App = () => {
   function startDoubleJeopardyRound() {
     round = 2;
     let thirdPlace = playerName;
-    contestants.forEach(contestant => {
+    Object.keys(contestants).forEach(contestant => {
       if (contestants[contestant].score < thirdPlace) {
         thirdPlace = contestant;
       }
