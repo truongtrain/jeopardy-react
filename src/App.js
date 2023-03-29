@@ -463,8 +463,6 @@ const App = () => {
   function submit() {
     if (round === 3) {
       responseCountdownIsActive = false;
-      contestants[playerName].response = finalResponse;
-      contestants[playerName].wager = wager;
       setContestants(contestants);
     } else {
       displayClueByNumber(selectedClue.number);

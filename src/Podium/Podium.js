@@ -19,7 +19,7 @@ function Podium(props) {
                     clearInterval(responseCountdownInterval);
                     timeout.play();
                 } else {
-                    setTicks(new Array(responseCountdown*2-1).fill(true));
+                    setTicks(new Array(responseCountdown * 2 - 1).fill(true));
                 }
                 responseCountdown -= 1;
             }, 1000);
@@ -33,17 +33,17 @@ function Podium(props) {
         <div className='podiums'>
             <div className='ticks'>
                 {responseCountdownIsActive && ticks.map((_tick, index) =>
-                    <div key={'tick'+index} className='tick'></div>
+                    <div key={'tick' + index} className='tick'></div>
                 )}
             </div>
-            {names.map(name =>
-                <div className='podium' key={name}>
-                    <div>${contestants[name] && contestants[name].score}</div>
+            {names.map(name => {
+                return contestants[name] && <div className='podium' key={name}>
+                    <div>${contestants[name].score}</div>
                     <div>{name}</div>
-                    <div>{contestants[name] && contestants[name].response}</div>
-                    <div>{contestants[name] && contestants[name].wager}</div>
+                    <div>{contestants[name].response}</div>
+                    {contestants[name].response && <div>${contestants[name].wager}</div>}
                 </div>
-            )}
+            })}
         </div>
     );
 }
