@@ -2,10 +2,11 @@ import './App.css';
 import React, { useState, useEffect } from 'react';
 import Podium from './Podium/Podium';
 import Message from './Message/Message';
+import FinalMusic from './final_jeopardy.mp3';
 
 const playerName = 'Alan';
 const hostName = 'Trebek';
-const availableClueNumbers = new Array(30).fill(true);
+let availableClueNumbers = new Array(30).fill(true);
 let showData = {};
 let stats = { numCorrect: 0, numClues: 0, coryatScore: 0, battingAverage: 0 };
 let weakestContestant = '';
@@ -44,7 +45,6 @@ const App = () => {
         filteredContestants.forEach(contestant => tempContestants[contestant] = { score: 0, response: '', wager: null });
         setContestants(tempContestants);
         setBoard(showData.jeopardy_round);
-        setSelectedClue(getClue(1));
       })
   }, []);
 
@@ -56,9 +56,12 @@ const App = () => {
       clearInterval(responseInterval);
     }
     return () => clearInterval(responseInterval);
-  }, [responseTimerIsActive]);
+  }, []);
 
   function startRound() {
+    if (round === 1) {
+      setSelectedClue(getClue(1));
+    }
     displayClueByNumber(1);
   }
 
@@ -460,8 +463,6 @@ const App = () => {
   function submit() {
     if (round === 3) {
       responseCountdownIsActive = false;
-      contestants[playerName].response = finalResponse;
-      contestants[playerName].wager = wager;
       setContestants(contestants);
     } else {
       displayClueByNumber(selectedClue.number);
@@ -488,11 +489,13 @@ const App = () => {
   }
 
   function showFinalJeopardyClue() {
+    let finalMusic = new Audio(FinalMusic);
     setMessageLines(showData.final_jeopardy.clue);
     msg.text = showData.final_jeopardy.clue;
     window.speechSynthesis.speak(msg);
     msg.addEventListener('end', () => {
       responseCountdownIsActive = true;
+      finalMusic.play();
     });
   }
 
