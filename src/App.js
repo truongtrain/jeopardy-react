@@ -2,6 +2,7 @@ import './App.css';
 import React, { useState, useEffect } from 'react';
 import Podium from './Podium/Podium';
 import Message from './Message/Message';
+import FinalMusic from './final_jeopardy.mp3';
 
 const playerName = 'Alan';
 const hostName = 'Trebek';
@@ -490,11 +491,13 @@ const App = () => {
   }
 
   function showFinalJeopardyClue() {
+    let finalMusic = new Audio(FinalMusic);
     setMessageLines(showData.final_jeopardy.clue);
     msg.text = showData.final_jeopardy.clue;
     window.speechSynthesis.speak(msg);
     msg.addEventListener('end', () => {
       responseCountdownIsActive = true;
+      finalMusic.play();
     });
   }
 
