@@ -483,6 +483,8 @@ const App = () => {
   function showFinalJeopardyCategory() {
     round = 3;
     setMessageLines('Enter your wager', showData.final_jeopardy.category);
+    msg.text = showData.final_jeopardy.category;
+    window.speechSynthesis.speak(msg);
   }
 
   function showFinalJeopardyClue() {
