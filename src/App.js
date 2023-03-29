@@ -44,7 +44,6 @@ const App = () => {
         filteredContestants.forEach(contestant => tempContestants[contestant] = { score: 0, response: '', wager: null });
         setContestants(tempContestants);
         setBoard(showData.jeopardy_round);
-        setSelectedClue(getClue(1));
       })
   }, []);
 
@@ -59,6 +58,9 @@ const App = () => {
   }, []);
 
   function startRound() {
+    if (round === 1) {
+      setSelectedClue(getClue(1));
+    }
     displayClueByNumber(1);
   }
 
