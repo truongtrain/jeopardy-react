@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import Timeout from './timeout.mp3';
 import './Podium.css';
 
 function Podium(props) {
@@ -8,6 +9,7 @@ function Podium(props) {
     let [ticks, setTicks] = useState(new Array(9).fill(true));
     let responseCountdown = 4;
     let responseCountdownInterval = {};
+    let timeout = new Audio(Timeout);
 
     // 5 second timer to respond after my name is called
     useEffect(() => {
@@ -15,8 +17,7 @@ function Podium(props) {
             responseCountdownInterval = setInterval(() => {
                 if (responseCountdown === 0) {
                     clearInterval(responseCountdownInterval);
-                    //TODO: sound alarm
-
+                    timeout.play();
                 } else {
                     setTicks(new Array(responseCountdown*2-1).fill(true));
                 }
