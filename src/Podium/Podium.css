@@ -1,9 +1,9 @@
 .podiums {
     display: flex;
-    justify-content: center;
     position: fixed;
     top: 50px;
-    left: 43%;
+    left: 50%;
+    transform: translateX(-50%);
 }
 
 .podium {
@@ -13,4 +13,18 @@
     border: 3px solid black;
     font-weight: bold;
     height: 75px;
+}
+
+.ticks {
+    display: flex;
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.tick {
+    height: 5px;
+    width: 7px;
+    background-color: red;
+    margin: 2px;
 }
