@@ -5,7 +5,7 @@ import Message from './Message/Message';
 
 const playerName = 'Alan';
 const hostName = 'Trebek';
-const availableClueNumbers = new Array(30).fill(true);
+let availableClueNumbers = new Array(30).fill(true);
 let showData = {};
 let stats = { numCorrect: 0, numClues: 0, coryatScore: 0, battingAverage: 0 };
 let weakestContestant = '';
@@ -56,7 +56,7 @@ const App = () => {
       clearInterval(responseInterval);
     }
     return () => clearInterval(responseInterval);
-  }, [responseTimerIsActive]);
+  }, []);
 
   function startRound() {
     displayClueByNumber(1);
