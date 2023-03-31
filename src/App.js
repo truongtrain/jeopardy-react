@@ -71,7 +71,6 @@ const App = () => {
   }
 
   function answer(row, col) {
-    board[col][row].answered = true;
     setResponseTimerIsActive(false);
     setDisableAnswer(true);
     let bonusProbability = 0;
@@ -82,7 +81,7 @@ const App = () => {
       bonusProbability = 0.166;
     }
     const probability = getProbability(selectedClue.value, round, bonusProbability);
-    if (answeredContestants.length === 2 || isFastestResponse(seconds, probability) || (seconds < 3 && isTripleStumper())) {
+    if (answeredContestants.length === 2 || isFastestResponse(seconds, probability) || (seconds < 3 && noAttempts())) {
       readText(playerName);
       responseCountdownIsActive = true;
     } else if (selectedClue.response.correct_contestant !== weakestContestant) {
@@ -97,6 +96,10 @@ const App = () => {
       setMessageLines(selectedClue.response.correct_response);
     }
     clearInterval(responseInterval);
+  }
+
+  function noAttempts() {
+    return !selectedClue.response.correct_contestant && selectedClue.response.incorrect_contestants.length === 0;
   }
 
   function setMessageLines(text1, text2 = '') {
@@ -124,6 +127,7 @@ const App = () => {
         contestants[incorrectContestants[i]].score -= scoreChange;
         answered.push(incorrectContestants[i]);
         answeredContestants = answered;
+        setResponseTimerIsActive(true);
       }
     }
     setMessageLines(incorrectMessage, hostName + ': No. ' + clue.response.correct_response);
@@ -405,6 +409,7 @@ const App = () => {
   }
 
   function incrementScore() {
+    selectedClue.answered = true;
     setResponseTimerIsActive(false);
     lastCorrectContestant = playerName;
     msg.text = 'Correct';
@@ -420,6 +425,8 @@ const App = () => {
   }
 
   function deductScore() {
+    selectedClue.answered = true;
+    setResponseTimerIsActive(false);
     responseCountdownIsActive = false;
     msg.text = 'No';
     window.speechSynthesis.speak(msg);
@@ -442,12 +449,6 @@ const App = () => {
   function readText(text) {
     msg.text = text;
     window.speechSynthesis.speak(msg);
-  }
-
-  function isTripleStumper() {
-    const correctContestant = selectedClue.response.correct_contestant;
-    console.log('correctContestant: ' + correctContestant);
-    return correctContestant.length === 0 || correctContestant === weakestContestant;
   }
 
   function turnOffLight() {
