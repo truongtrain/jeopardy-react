@@ -572,8 +572,8 @@ const App = () => {
                     {!category[row].visible && <button className='clue-button' onClick={() => displayClue(row, column)}>${category[row].value}</button>}
                     {category[row].visible && !category[row].answered && responseTimerIsActive &&
                       <div>
-                        <button onClick={() => answer(row, column)} disabled={disableAnswer}>Answer</button>
-                        <button onClick={() => concede(row, column)}>Concede</button>
+                        <button className='answer-button' onClick={() => answer(row, column)} disabled={disableAnswer}>Answer</button>
+                        <button className='answer-button' onClick={() => concede(row, column)}>Concede</button>
                       </div>
                     }
                     {category[row].answered && <span></span>}
