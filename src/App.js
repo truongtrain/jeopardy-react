@@ -14,7 +14,6 @@ let answeredContestants = [];
 let wager = 0;
 let finalResponse = '';
 let seconds = 0;
-let responseTimerIsActive = false;
 let lastCorrectContestant = playerName;
 let round = 1;
 let responseInterval = {};
@@ -30,6 +29,7 @@ const App = () => {
   const [selectedClue, setSelectedClue] = useState(null);
   const [contestants, setContestants] = useState(null);
   const [disableAnswer, setDisableAnswer] = useState(true);
+  const [responseTimerIsActive, setResponseTimerIsActive] = useState(false);
 
   useEffect(() => {
     fetch('http://localhost:5000/example')
@@ -56,7 +56,7 @@ const App = () => {
       clearInterval(responseInterval);
     }
     return () => clearInterval(responseInterval);
-  }, []);
+  }, [responseTimerIsActive]);
 
   function startRound() {
     displayClueByNumber(1);
@@ -70,8 +70,9 @@ const App = () => {
     }
   }
 
-  function answer() {
-    responseTimerIsActive = false;
+  function answer(row, col) {
+    board[col][row].answered = true;
+    setResponseTimerIsActive(false);
     setDisableAnswer(true);
     let bonusProbability = 0;
     let incorrectContestants = selectedClue.response.incorrect_contestants;
@@ -218,6 +219,7 @@ const App = () => {
   }
 
   function displayNextClue() {
+    setResponseTimerIsActive(false);
     answeredContestants = [];
     setMessageLines('');
     const nextClueNumber = getNextClueNumber();
@@ -229,6 +231,7 @@ const App = () => {
   }
 
   function displayClue(row, col) {
+    setResponseTimerIsActive(false);
     turnOffLight();
     stats.numClues += 1;
     lastCorrectContestant = playerName;
@@ -319,7 +322,7 @@ const App = () => {
     board_copy[col][row].text = '';
     setBoard(board_copy);
     turnOnLight();
-    responseTimerIsActive = true;
+    setResponseTimerIsActive(true);
   }
 
   function getProbability(value, round, bonusProbability) {
@@ -392,7 +395,7 @@ const App = () => {
   }
 
   function showAnswer() {
-    responseTimerIsActive = false;
+    setResponseTimerIsActive(false);
     responseCountdownIsActive = false;
     if (round === 3) {
       setMessageLines(showData.final_jeopardy.correct_response);
@@ -402,7 +405,7 @@ const App = () => {
   }
 
   function incrementScore() {
-    responseTimerIsActive = false;
+    setResponseTimerIsActive(false);
     lastCorrectContestant = playerName;
     msg.text = 'Correct';
     window.speechSynthesis.speak(msg);
@@ -429,8 +432,9 @@ const App = () => {
     setContestants(contestants);
   }
 
-  function concede() {
-    responseTimerIsActive = false;
+  function concede(row, col) {
+    board[col][row].answered = true;
+    setResponseTimerIsActive(false);
     conceded = true;
     updateOpponentScores(selectedClue);
   }
@@ -534,13 +538,11 @@ const App = () => {
   return (
     <div>
       <div className='banner'>
-        <Message message={message}/>
-        <Podium contestants={contestants} startTimer={responseCountdownIsActive}/>
+        <Message message={message} />
+        <Podium contestants={contestants} startTimer={responseCountdownIsActive} />
       </div>
       <div className='board'>
         <div className='buttons'>
-          <button onClick={() => concede()}>Concede</button>
-          <button onClick={() => answer()} disabled={disableAnswer}>Answer</button>
           <button onClick={() => showAnswer()}>Show Correct</button>
           <button onClick={() => incrementScore()}>Correct</button>
           <button onClick={() => deductScore()}>Incorrect</button>
@@ -566,8 +568,15 @@ const App = () => {
               <tr key={'row' + row}>
                 {board.map((category, column) =>
                   <td key={'column' + column}>
-                    <span>{category[row] && category[row].visible && category[row].text}</span>
+                    <span className='clue-text'>{category[row] && category[row].visible && category[row].text}</span>
                     {!category[row].visible && <button className='clue-button' onClick={() => displayClue(row, column)}>${category[row].value}</button>}
+                    {category[row].visible && !category[row].answered && responseTimerIsActive &&
+                      <div>
+                        <button onClick={() => answer(row, column)} disabled={disableAnswer}>Answer</button>
+                        <button onClick={() => concede(row, column)}>Concede</button>
+                      </div>
+                    }
+                    {category[row].answered && <span></span>}
                   </td>
                 )}
               </tr>

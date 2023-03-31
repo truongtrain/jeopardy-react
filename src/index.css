@@ -12,6 +12,27 @@ code {
     monospace;
 }
 
+table {
+  table-layout: fixed;
+}
+
+th {
+  border: 3px solid black;
+  background-color: rgb(25, 25, 195);
+  color: white;
+  font-size: 16px;
+}
+
+td {
+  border: 3px solid black;
+  background-color: rgb(25, 25, 195);
+  color: white;
+  text-align: center;
+  width: 210px;
+  height: 90px;
+  overflow: hidden;
+}
+
 .table-light-on {
   border: 5px solid blue;
 }
@@ -20,26 +41,16 @@ code {
   border: 5px solid white;
 }
 
-th {
-  border: 3px solid black;
-  background-color: rgb(25, 25, 195);
-  color: white;
-  font-size: 25px;
-}
-
-td {
-  border: 3px solid black;
-  background-color: rgb(25, 25, 195);
-  color: white;
-  text-align: center;
-}
-
 .clue-button {
   background-color: rgb(25, 25, 195);
   color: yellow;
   width: 100%;
   font-size: 50px;
   border: 0px;
+}
+
+.clue-text {
+  font-size: 16px;
 }
 
 .buttons {
