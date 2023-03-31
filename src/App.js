@@ -138,6 +138,7 @@ const App = () => {
       lastCorrectContestant = correctContestant;
       contestants[correctContestant].score += scoreChange;
       setContestants(contestants);
+      selectedClue.answered = true;
       setMessageLines(correctContestant + ': What is ' + clue.response.correct_response + '?', hostName + ': Yes! ');
       if (nextClueNumber > 0) {
         setTimeout(() => {
