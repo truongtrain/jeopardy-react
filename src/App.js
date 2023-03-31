@@ -71,7 +71,6 @@ const App = () => {
   }
 
   function answer(row, col) {
-    setResponseTimerIsActive(false);
     setDisableAnswer(true);
     let bonusProbability = 0;
     let incorrectContestants = selectedClue.response.incorrect_contestants;
@@ -81,7 +80,7 @@ const App = () => {
       bonusProbability = 0.166;
     }
     const probability = getProbability(selectedClue.value, round, bonusProbability);
-    if (answeredContestants.length === 2 || isFastestResponse(seconds, probability) || (seconds < 3 && noAttempts())) {
+    if (seconds < 3 && (answeredContestants.length === 2 || isFastestResponse(seconds, probability) || noAttempts() || selectedClue.response.correct_contestant === weakestContestant)) {
       readText(playerName);
       responseCountdownIsActive = true;
     } else if (selectedClue.response.correct_contestant !== weakestContestant) {
@@ -130,7 +129,7 @@ const App = () => {
         setResponseTimerIsActive(true);
       }
     }
-    setMessageLines(incorrectMessage, hostName + ': No. ' + clue.response.correct_response);
+    setMessageLines(incorrectMessage, hostName + ': No. ');
     setContestants(contestants);
   }
 
