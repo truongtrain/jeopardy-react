@@ -27,10 +27,10 @@ td {
   border: 3px solid black;
   background-color: rgb(25, 25, 195);
   color: white;
-  text-align: center;
   width: 210px;
   height: 90px;
   overflow: hidden;
+  text-align: center;
 }
 
 .table-light-on {
@@ -54,6 +54,13 @@ td {
   color: yellow;
   width: 50%;
   font-size: 23px;
+}
+
+.show-answer-button {
+  background-color: rgb(25, 25, 195);
+  color: yellow;
+  font-size: 16px;
+  float: right;
 }
 
 .clue-text {

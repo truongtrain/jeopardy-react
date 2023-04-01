@@ -83,6 +83,8 @@ const App = () => {
     if (seconds < 3 && (answeredContestants.length === 2 || isFastestResponse(seconds, probability) || noAttempts() || selectedClue.response.correct_contestant === weakestContestant)) {
       readText(playerName);
       responseCountdownIsActive = true;
+      board[col][row].showCorrect = true;
+      board[col][row].answered = true;
     } else if (selectedClue.response.correct_contestant !== weakestContestant) {
       if (!hasIncorrectContestants(incorrectContestants)) {
         readText(selectedClue.response.correct_contestant);
@@ -198,7 +200,7 @@ const App = () => {
       if (hasIncorrectContestants(incorrectContestants)) {
         handleIncorrectResponses(incorrectContestants, clue, scoreChange);
       } else {
-        setMessageLines(hostName + ': ' + clue.response.correct_response);
+        setMessageLines(clue.response.correct_response);
       }
       if (nextClueNumber > 0 && lastCorrectContestant !== playerName) {
         setTimeout(() => setMessageLines(message), 2500);
@@ -398,16 +400,6 @@ const App = () => {
     return randomNumber <= adjustedProbability;
   }
 
-  function showAnswer() {
-    setResponseTimerIsActive(false);
-    responseCountdownIsActive = false;
-    if (round === 3) {
-      setMessageLines(showData.final_jeopardy.correct_response);
-    } else {
-      setMessageLines(selectedClue.response.correct_response);
-    }
-  }
-
   function incrementScore() {
     selectedClue.answered = true;
     setResponseTimerIsActive(false);
@@ -445,6 +437,18 @@ const App = () => {
     conceded = true;
     updateOpponentScores(selectedClue);
   }
+
+  function showAnswer(row, col) {
+    setResponseTimerIsActive(false);
+    responseCountdownIsActive = false;
+    board[col][row].showCorrect = false;
+    if (round === 3) {
+      setMessageLines(showData.final_jeopardy.correct_response);
+    } else {
+      setMessageLines(selectedClue.response.correct_response);
+    }
+  }
+
 
   function readText(text) {
     msg.text = text;
@@ -544,7 +548,6 @@ const App = () => {
       </div>
       <div className='board'>
         <div className='buttons'>
-          <button onClick={() => showAnswer()}>Show Correct</button>
           <button onClick={() => incrementScore()}>Correct</button>
           <button onClick={() => deductScore()}>Incorrect</button>
           <button onClick={() => submit()}>Submit</button>
@@ -574,7 +577,12 @@ const App = () => {
                     {category[row].visible && !category[row].answered && responseTimerIsActive &&
                       <div>
                         <button className='answer-button' onClick={() => answer(row, column)} disabled={disableAnswer}>Answer</button>
-                        <button className='answer-button' onClick={() => concede(row, column)}>Concede</button>
+                        <button className='answer-button' onClick={() => concede(row, column)}>Give Up</button>
+                      </div>
+                    }
+                    {category[row].visible && category[row].showCorrect &&
+                      <div>
+                        <button className='show-answer-button' onClick={() => showAnswer(row, column)}>Show Correct</button>
                       </div>
                     }
                     {category[row].answered && <span></span>}
