@@ -1,5 +1,6 @@
 import './App.css';
 import React, { useState, useEffect } from 'react';
+import { BiShow } from 'react-icons/bi';
 import Podium from './Podium/Podium';
 import Message from './Message/Message';
 import FinalMusic from './final_jeopardy.mp3';
@@ -582,7 +583,7 @@ const App = () => {
                     }
                     {category[row].visible && category[row].showCorrect &&
                       <div>
-                        <button className='show-answer-button' onClick={() => showAnswer(row, column)}>Show Correct</button>
+                        <button className='show-answer-button' onClick={() => showAnswer(row, column)}><BiShow /></button>
                       </div>
                     }
                     {category[row].answered && <span></span>}
