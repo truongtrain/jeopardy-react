@@ -12,7 +12,13 @@
     color: white;
     border: 3px solid black;
     font-weight: bold;
-    height: 75px;
+    height: 120px;
+    width: 100px;
+    text-align: center;
+}
+
+.podium-row {
+    border: 2px solid black;
 }
 
 .ticks {

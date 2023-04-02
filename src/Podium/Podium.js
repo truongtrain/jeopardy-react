@@ -38,9 +38,9 @@ function Podium(props) {
             </div>
             {names.map(name => {
                 return contestants[name] && <div className='podium' key={name}>
-                    <div>${contestants[name].score}</div>
-                    <div>{name}</div>
-                    <div>{contestants[name].response}</div>
+                    <div className='podium-row'>${contestants[name].score}</div>
+                    <div className='podium-row'>{name}</div>
+                    <div className='podium-row'>{contestants[name].response}</div>
                     {contestants[name].response && <div>${contestants[name].wager}</div>}
                 </div>
             })}
