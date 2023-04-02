@@ -268,7 +268,7 @@ const App = () => {
     for (let col = 0; col < 6; col++) {
       for (let row = 0; row < 5; row++) {
         if (board[col][row].number === clueNumber) {
-          if (board[col][row].daily_double_wager > 0) {
+          if (!isPlayerDailyDouble && board[col][row].daily_double_wager > 0) {
             isPlayerDailyDouble = false;
             setMessageLines('Answer. Daily Double');
             if (lastCorrectContestant !== playerName) {
@@ -278,6 +278,7 @@ const App = () => {
             }
           }
           board[col][row].visible = true;
+          setMessageLines(board[col][row].text);
           setBoard(board);
           readClue(row, col);
           const clue = getClue(clueNumber);
@@ -329,6 +330,9 @@ const App = () => {
     seconds = 0;
     let board_copy = [...board];
     board_copy[col][row].text = '';
+    if (isPlayerDailyDouble) {
+      selectedClue.showCorrect = true;
+    }
     setBoard(board_copy);
     turnOnLight();
     setResponseTimerIsActive(true);
@@ -579,13 +583,13 @@ const App = () => {
                   <td key={'column' + column}>
                     <span className='clue-text'>{category[row] && category[row].visible && category[row].text}</span>
                     {!category[row].visible && <button className='clue-button' onClick={() => displayClue(row, column)}>${category[row].value}</button>}
-                    {category[row].visible && !category[row].answered && responseTimerIsActive &&
+                    {category[row].visible && category[row].daily_double_wager === 0 && !category[row].answered && responseTimerIsActive &&
                       <div>
                         <button className='answer-button' onClick={() => answer(row, column)} disabled={disableAnswer}>Answer</button>
                         <button className='answer-button' onClick={() => concede(row, column)}>Give Up</button>
                       </div>
                     }
-                    {category[row].visible && category[row].showCorrect &&
+                    {category[row].showCorrect &&
                       <div>
                         <button className='show-answer-button' onClick={() => showAnswer(row, column)}><BiShow /></button>
                       </div>
