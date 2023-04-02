@@ -1,6 +1,8 @@
 import './App.css';
 import React, { useState, useEffect } from 'react';
 import { BiShow } from 'react-icons/bi';
+import { FcApprove } from 'react-icons/fc';
+import { FcDisapprove } from 'react-icons/fc';
 import Podium from './Podium/Podium';
 import Message from './Message/Message';
 import FinalMusic from './final_jeopardy.mp3';
@@ -403,6 +405,7 @@ const App = () => {
 
   function incrementScore() {
     selectedClue.answered = true;
+    selectedClue.showScoring = false;
     setResponseTimerIsActive(false);
     lastCorrectContestant = playerName;
     msg.text = 'Correct';
@@ -419,6 +422,7 @@ const App = () => {
 
   function deductScore() {
     selectedClue.answered = true;
+    selectedClue.showScoring = false;
     setResponseTimerIsActive(false);
     responseCountdownIsActive = false;
     msg.text = 'No';
@@ -443,6 +447,7 @@ const App = () => {
     setResponseTimerIsActive(false);
     responseCountdownIsActive = false;
     board[col][row].showCorrect = false;
+    board[col][row].showScoring = true;
     if (round === 3) {
       setMessageLines(showData.final_jeopardy.correct_response);
     } else {
@@ -549,8 +554,6 @@ const App = () => {
       </div>
       <div className='board'>
         <div className='buttons'>
-          <button onClick={() => incrementScore()}>Correct</button>
-          <button onClick={() => deductScore()}>Incorrect</button>
           <button onClick={() => submit()}>Submit</button>
           <input id="wager" onChange={handleInputChange} />
           <button onClick={() => startDoubleJeopardyRound()}>Double Jeopardy</button>
@@ -584,6 +587,12 @@ const App = () => {
                     {category[row].visible && category[row].showCorrect &&
                       <div>
                         <button className='show-answer-button' onClick={() => showAnswer(row, column)}><BiShow /></button>
+                      </div>
+                    }
+                    {category[row].visible && category[row].showScoring &&
+                      <div>
+                        <button className='show-answer-button' onClick={() => incrementScore()}><FcApprove /></button>
+                        <button className='show-answer-button' onClick={() => deductScore()}><FcDisapprove /></button>
                       </div>
                     }
                     {category[row].answered && <span></span>}
