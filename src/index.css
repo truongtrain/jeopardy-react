@@ -76,12 +76,16 @@ td {
   width: 100px;
 }
 
+.final-input {
+  width: 150px;
+}
+
 .clue-text {
   font-size: 16px;
 }
 
 .buttons {
-  text-align: center;
+  text-align: left;
 }
 
 .board {

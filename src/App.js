@@ -14,8 +14,8 @@ let showData = {};
 let stats = { numCorrect: 0, numClues: 0, coryatScore: 0, battingAverage: 0 };
 let weakestContestant = '';
 let answeredContestants = [];
-let wager = 0;
 let finalResponse = '';
+let wager = 0;
 let seconds = 0;
 let lastCorrectContestant = playerName;
 let round = 1;
@@ -566,8 +566,10 @@ const App = () => {
       </div>
       <div className='board'>
         <div className='buttons'>
-          <button onClick={() => submit()}>Submit</button>
-          <input id="wager" onChange={handleInputChange} />
+          <div>
+            <button onClick={() => submit()}>Submit</button>
+            <input id="finalInput" className='final-input' onChange={handleInputChange} />
+          </div>
           <button onClick={() => startDoubleJeopardyRound()}>Double Jeopardy</button>
           <button onClick={() => showFinalJeopardyCategory()}>Final Jeopardy</button>
           <button onClick={() => startRound()}>Start Round</button>
