@@ -86,6 +86,7 @@ const App = () => {
     if (seconds < 3 && (answeredContestants.length === 2 || isFastestResponse(seconds, probability) || noAttempts() || selectedClue.response.correct_contestant === weakestContestant)) {
       readText(playerName);
       responseCountdownIsActive = true;
+      console.log('89');
       board[col][row].showCorrect = true;
       board[col][row].answered = true;
     } else if (selectedClue.response.correct_contestant !== weakestContestant) {
@@ -273,12 +274,12 @@ const App = () => {
             setMessageLines('Answer. Daily Double');
             if (lastCorrectContestant !== playerName) {
               setMessageLines(lastCorrectContestant + ': I will wager $' + board[col][row].daily_double_wager);
-            } else {
-              setMessageLines(board[col][row].text);
             }
           }
           board[col][row].visible = true;
-          setMessageLines(board[col][row].text);
+          if (isPlayerDailyDouble) {
+            setMessageLines(board[col][row].text);
+          }
           setBoard(board);
           readClue(row, col);
           const clue = getClue(clueNumber);
@@ -328,11 +329,11 @@ const App = () => {
 
   function clearClue(row, col) {
     seconds = 0;
-    let board_copy = [...board];
-    board_copy[col][row].text = '';
     if (isPlayerDailyDouble) {
       selectedClue.showCorrect = true;
     }
+    let board_copy = [...board];
+    board_copy[col][row].text = '';
     setBoard(board_copy);
     turnOnLight();
     setResponseTimerIsActive(true);
@@ -408,6 +409,7 @@ const App = () => {
   }
 
   function incrementScore() {
+    isPlayerDailyDouble = false;
     selectedClue.answered = true;
     selectedClue.showScoring = false;
     setResponseTimerIsActive(false);
@@ -425,6 +427,7 @@ const App = () => {
   }
 
   function deductScore() {
+    isPlayerDailyDouble = false;
     selectedClue.answered = true;
     selectedClue.showScoring = false;
     setResponseTimerIsActive(false);
