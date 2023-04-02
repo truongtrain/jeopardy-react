@@ -476,6 +476,7 @@ const App = () => {
     if (round === 3) {
       responseCountdownIsActive = false;
       setContestants(contestants);
+      showFinalJeopardyClue();
     } else {
       displayClueByNumber(selectedClue.number);
     }
@@ -508,8 +509,11 @@ const App = () => {
     msg.text = showData.final_jeopardy.clue;
     window.speechSynthesis.speak(msg);
     msg.addEventListener('end', () => {
-      responseCountdownIsActive = true;
+      // responseCountdownIsActive = true;
       finalMusic.play();
+    });
+    finalMusic.addEventListener('ended', () => {
+      showFinalJeopardyResults();
     });
   }
 
@@ -557,8 +561,7 @@ const App = () => {
           <button onClick={() => submit()}>Submit</button>
           <input id="wager" onChange={handleInputChange} />
           <button onClick={() => startDoubleJeopardyRound()}>Double Jeopardy</button>
-          <button onClick={() => showFinalJeopardyCategory()}>Final Jeopardy Category</button>
-          <button onClick={() => showFinalJeopardyClue()}>Final Jeopardy Clue</button>
+          <button onClick={() => showFinalJeopardyCategory()}>Final Jeopardy</button>
           <button onClick={() => showFinalJeopardyResults()}>Results</button>
           <button onClick={() => startRound()}>Start Round</button>
         </div>
