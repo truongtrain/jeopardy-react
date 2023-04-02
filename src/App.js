@@ -249,6 +249,7 @@ const App = () => {
     setSelectedClue(clue);
     if (clue.daily_double_wager > 0) {
       isPlayerDailyDouble = true;
+      board[col][row].showWager = true;
       readText('Answer. Daily double. How much will you wager');
       setMessageLines('Daily Double!');
     } else {
@@ -479,12 +480,13 @@ const App = () => {
     setTableStyle('table-light-on');
   }
 
-  function submit() {
+  function submit(row, col) {
     if (round === 3) {
       responseCountdownIsActive = false;
       setContestants(contestants);
       showFinalJeopardyClue();
     } else {
+      board[col][row].showWager = false;
       displayClueByNumber(selectedClue.number);
     }
   }
@@ -585,7 +587,7 @@ const App = () => {
                 {board.map((category, column) =>
                   <td key={'column' + column}>
                     <span className='clue-text'>{category[row] && category[row].visible && category[row].text}</span>
-                    {!category[row].visible && <button className='clue-button' onClick={() => displayClue(row, column)}>${category[row].value}</button>}
+                    {!category[row].visible && !category[row].showWager && <button className='clue-button' onClick={() => displayClue(row, column)}>${category[row].value}</button>}
                     {category[row].visible && category[row].daily_double_wager === 0 && !category[row].answered && responseTimerIsActive &&
                       <div>
                         <button className='answer-button' onClick={() => answer(row, column)} disabled={disableAnswer}>Answer</button>
@@ -601,6 +603,15 @@ const App = () => {
                       <div>
                         <button className='show-answer-button' onClick={() => incrementScore()}><FcApprove /></button>
                         <button className='show-answer-button' onClick={() => deductScore()}><FcDisapprove /></button>
+                      </div>
+                    }
+                    {category[row].showWager &&
+                      <div>
+                        ENTER YOUR WAGER:
+                        <div className='wager'>
+                          <button className='submit-button' onClick={() => submit(row, column)}>SUBMIT</button>
+                          <input id="wager" className='wager-input' onChange={handleInputChange} />
+                        </div>
                       </div>
                     }
                     {category[row].answered && <span></span>}
