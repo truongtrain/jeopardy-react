@@ -509,7 +509,6 @@ const App = () => {
     msg.text = showData.final_jeopardy.clue;
     window.speechSynthesis.speak(msg);
     msg.addEventListener('end', () => {
-      // responseCountdownIsActive = true;
       finalMusic.play();
     });
     finalMusic.addEventListener('ended', () => {
@@ -562,7 +561,6 @@ const App = () => {
           <input id="wager" onChange={handleInputChange} />
           <button onClick={() => startDoubleJeopardyRound()}>Double Jeopardy</button>
           <button onClick={() => showFinalJeopardyCategory()}>Final Jeopardy</button>
-          <button onClick={() => showFinalJeopardyResults()}>Results</button>
           <button onClick={() => startRound()}>Start Round</button>
         </div>
 
