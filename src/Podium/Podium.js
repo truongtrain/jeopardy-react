@@ -40,6 +40,8 @@ function Podium(props) {
                             <div key={'tick' + index} className='tick'></div>
                         )}
                     </div>}
+                    {name === playerName && !responseCountdownIsActive && <div className='blank-ticks'></div>}
+                    {name !== playerName && <div className='blank-ticks'></div>}
                     <div className='podium-row'>${contestants[name].score}</div>
                     <div className='podium-row'>{name}</div>
                     <div className='podium-row'>{contestants[name].response}</div>
