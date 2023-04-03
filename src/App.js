@@ -566,16 +566,16 @@ const App = () => {
       </div>
       <div className='board'>
         <div className='buttons'>
-          <div>
+          {round===3 && <div>
             <button onClick={() => submit()}>Submit</button>
             <input id="finalInput" className='final-input' onChange={handleInputChange} />
-          </div>
+          </div>}
           <button onClick={() => startDoubleJeopardyRound()}>Double Jeopardy</button>
           <button onClick={() => showFinalJeopardyCategory()}>Final Jeopardy</button>
           <button onClick={() => startRound()}>Start Round</button>
         </div>
 
-        <table className={tableStyle}>
+        {round!==3 && <table className={tableStyle}>
           <thead>
             <tr>
               {Array.from(Array(6), (_arrayElement, row) =>
@@ -622,7 +622,7 @@ const App = () => {
               </tr>
             )}
           </tbody>
-        </table>
+        </table>}
       </div>
     </div>
   );
