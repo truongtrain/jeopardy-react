@@ -1,9 +1,5 @@
 .podiums {
     display: flex;
-    position: fixed;
-    top: 50px;
-    left: 50%;
-    transform: translateX(-50%);
 }
 
 .podium {
@@ -23,9 +19,7 @@
 
 .ticks {
     display: flex;
-    position: fixed;
-    left: 50%;
-    transform: translateX(-50%);
+    justify-content: center;
 }
 
 .tick {

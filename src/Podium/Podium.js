@@ -5,6 +5,7 @@ import './Podium.css';
 function Podium(props) {
     const contestants = props.contestants;
     const responseCountdownIsActive = props.startTimer;
+    const playerName = props.playerName;
     const names = Object.keys(contestants);
     let [ticks, setTicks] = useState(new Array(9).fill(true));
 
@@ -31,13 +32,14 @@ function Podium(props) {
 
     return (
         <div className='podiums'>
-            <div className='ticks'>
-                {responseCountdownIsActive && ticks.map((_tick, index) =>
-                    <div key={'tick' + index} className='tick'></div>
-                )}
-            </div>
             {names.map(name => {
                 return contestants[name] && <div className='podium' key={name}>
+                    {name === playerName &&
+                    <div className='ticks'>
+                        {responseCountdownIsActive && ticks.map((_tick, index) =>
+                            <div key={'tick' + index} className='tick'></div>
+                        )}
+                    </div>}
                     <div className='podium-row'>${contestants[name].score}</div>
                     <div className='podium-row'>{name}</div>
                     <div className='podium-row'>{contestants[name].response}</div>
