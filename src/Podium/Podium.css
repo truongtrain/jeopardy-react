@@ -1,9 +1,5 @@
 .podiums {
     display: flex;
-    position: fixed;
-    top: 50px;
-    left: 50%;
-    transform: translateX(-50%);
 }
 
 .podium {
@@ -12,14 +8,22 @@
     color: white;
     border: 3px solid black;
     font-weight: bold;
-    height: 75px;
+    height: 110px;
+    width: 100px;
+    text-align: center;
+}
+
+.podium-row {
+    border-top: 3px solid black;
+}
+
+.blank-ticks {
+    height: 8px;
 }
 
 .ticks {
     display: flex;
-    position: fixed;
-    left: 50%;
-    transform: translateX(-50%);
+    justify-content: center;
 }
 
 .tick {

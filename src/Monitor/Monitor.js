@@ -1,15 +1,15 @@
 import React from 'react';
-import './Message.css';
+import './Monitor.css';
 
 function Message(props) {
     const message = props.message;
 
     return (
-        <div className='message'>
+        <div className='monitor'>
             <div>{message.line1}</div>
             <div>{message.line2}</div>
         </div>
-      );     
-  }
+    );
+}
 
-  export default Message;
+export default Message;
