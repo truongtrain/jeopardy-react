@@ -86,7 +86,6 @@ const App = () => {
     if (seconds < 3 && (answeredContestants.length === 2 || isFastestResponse(seconds, probability) || noAttempts() || selectedClue.response.correct_contestant === weakestContestant)) {
       readText(playerName);
       responseCountdownIsActive = true;
-      console.log('89');
       board[col][row].showCorrect = true;
       board[col][row].answered = true;
     } else if (selectedClue.response.correct_contestant !== weakestContestant) {
