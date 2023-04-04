@@ -507,7 +507,7 @@ const App = () => {
 
   function showFinalJeopardyCategory() {
     round = 3;
-    setMessageLines('Enter your wager', showData.final_jeopardy.category);
+    setMessageLines(showData.final_jeopardy.category);
     msg.text = 'The final jeopardy category is ' + showData.final_jeopardy.category + '. How much will you wager';
     window.speechSynthesis.speak(msg);
   }

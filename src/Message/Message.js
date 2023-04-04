@@ -9,7 +9,7 @@ function Message(props) {
             <div>{message.line1}</div>
             <div>{message.line2}</div>
         </div>
-      );     
-  }
+    );
+}
 
-  export default Message;
+export default Message;
