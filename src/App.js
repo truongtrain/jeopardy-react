@@ -8,7 +8,6 @@ import Monitor from './Monitor/Monitor';
 import FinalMusic from './final_jeopardy.mp3';
 
 const playerName = 'Alan';
-const hostName = 'Trebek';
 let availableClueNumbers = new Array(30).fill(true);
 let showData = {};
 let stats = { numCorrect: 0, numClues: 0, coryatScore: 0, battingAverage: 0 };
