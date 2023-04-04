@@ -573,14 +573,14 @@ const App = () => {
               </div>
             }
           </div>
+          {round === 3 &&
+            <div className='buttons'>
+              <button className='submit-button' onClick={() => submit()}>SUBMIT</button>
+              <input className='final-input' id="finalInput" onChange={handleInputChange} />
+            </div>
+          }
         </div>
       </div>
-      {round === 3 &&
-        <div className='buttons'>
-          <button className='submit-button' onClick={() => submit()}>SUBMIT</button>
-          <input className='final-input' id="finalInput" onChange={handleInputChange} />
-        </div>
-      }
       <div className='board'>
         {round !== 3 &&
           <table className={tableStyle}>
