@@ -134,7 +134,7 @@ const App = () => {
         setResponseTimerIsActive(true);
       }
     }
-    setMessageLines(incorrectMessage, hostName + ': No. ');
+    setMessageLines(incorrectMessage, hostName + ' : No. ');
     setContestants(contestants);
   }
 
