@@ -4,7 +4,7 @@ import { BiShow } from 'react-icons/bi';
 import { FcApprove } from 'react-icons/fc';
 import { FcDisapprove } from 'react-icons/fc';
 import Podium from './Podium/Podium';
-import Message from './Message/Message';
+import Monitor from './Monitor/Monitor';
 import FinalMusic from './final_jeopardy.mp3';
 
 const playerName = 'Alan';
@@ -562,7 +562,7 @@ const App = () => {
     <div>
       <div className='banner'>
         <Podium contestants={contestants} startTimer={responseCountdownIsActive} playerName={playerName}/>
-        <Message message={message} />
+        <Monitor message={message} />
       </div>
       {round === 3 &&
         <div className='buttons'>
