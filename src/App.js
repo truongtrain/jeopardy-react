@@ -127,14 +127,14 @@ const App = () => {
     let answered = [];
     for (let i = 0; i < incorrectContestants.length; i++) {
       if (incorrectContestants[i] !== weakestContestant && !answered.includes(incorrectContestants[i])) {
-        incorrectMessage += incorrectContestants[i] + ': What is ' + clue.response.incorrect_responses[i] + '? '
+        incorrectMessage += clue.response.incorrect_responses[i];
         contestants[incorrectContestants[i]].score -= scoreChange;
         answered.push(incorrectContestants[i]);
         answeredContestants = answered;
         setResponseTimerIsActive(true);
       }
     }
-    setMessageLines(incorrectMessage, hostName + ' : No. ');
+    setMessageLines(incorrectMessage);
     setContestants(contestants);
   }
 
@@ -144,7 +144,7 @@ const App = () => {
       contestants[correctContestant].score += scoreChange;
       setContestants(contestants);
       selectedClue.answered = true;
-      setMessageLines(correctContestant + ': What is ' + clue.response.correct_response + '?', hostName + ': Yes! ');
+      setMessageLines(correctContestant + ': What is ' + clue.response.correct_response + '?');
       if (nextClueNumber > 0) {
         setTimeout(() => {
           setMessageLines(correctContestant + ': ' + nextClue.category + ' for $' + nextClue.value);
