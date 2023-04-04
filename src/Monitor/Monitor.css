@@ -1,12 +1,16 @@
-.message {
+.monitor {
     size: 50px;
     font-weight: bold;
-    margin: 10px;
+    margin-top: 10px;
+    margin-left: 10px;
+    margin-bottom: 1px;
     border: 7px solid black;
-    width: 300px;
+    width: 360px;
+    height: 100px;
     display:flex;
     justify-content:center;
     align-items:center;
     background-color: rgb(25, 25, 195);
     color: white;
+    text-align: center;
 }

@@ -514,7 +514,7 @@ const App = () => {
 
   function showFinalJeopardyClue() {
     let finalMusic = new Audio(FinalMusic);
-    setMessageLines(showData.final_jeopardy.clue);
+    setMessageLines(showData.final_jeopardy.clue.toUpperCase());
     msg.text = showData.final_jeopardy.clue;
     window.speechSynthesis.speak(msg);
     msg.addEventListener('end', () => {
@@ -544,7 +544,7 @@ const App = () => {
       });
     });
     setContestants(contestants);
-    setMessageLines(showData.final_jeopardy.correct_response, showData.final_jeopardy.clue);
+    setMessageLines(showData.final_jeopardy.correct_response);
   }
 
   function getCategory(column) {
@@ -561,8 +561,19 @@ const App = () => {
   return (
     <div>
       <div className='banner'>
-        <Podium contestants={contestants} startTimer={responseCountdownIsActive} playerName={playerName}/>
-        <Monitor message={message} />
+        <Podium contestants={contestants} startTimer={responseCountdownIsActive} playerName={playerName} />
+        <div>
+          <Monitor message={message} />
+          <div className='buttons'>
+            {round !== 3 &&
+              <div>
+                <button className='start-button' onClick={() => startRound()}>Start Round</button>
+                <button className='start-button' onClick={() => startDoubleJeopardyRound()}>Double Jeopardy</button>
+                <button className='start-button' onClick={() => showFinalJeopardyCategory()}>Final Jeopardy</button>
+              </div>
+            }
+          </div>
+        </div>
       </div>
       {round === 3 &&
         <div className='buttons'>
@@ -571,16 +582,6 @@ const App = () => {
         </div>
       }
       <div className='board'>
-        <div className='buttons'>
-          {round !== 3 &&
-            <div>
-              <button className='start-button' onClick={() => startRound()}>Start Round</button>
-              <button className='start-button' onClick={() => startDoubleJeopardyRound()}>Double Jeopardy</button>
-              <button className='start-button' onClick={() => showFinalJeopardyCategory()}>Final Jeopardy</button>
-            </div>
-          }
-        </div>
-
         {round !== 3 &&
           <table className={tableStyle}>
             <thead>
