@@ -581,56 +581,54 @@ const App = () => {
         </div>
       </div>
       <div className='board'>
-        {round !== 3 &&
-          <table className={tableStyle}>
-            <thead>
-              <tr>
-                {Array.from(Array(6), (_arrayElement, row) =>
-                  <th key={'header' + row}>{getCategory(board[row])}</th>
+        <table className={tableStyle}>
+          <thead>
+            <tr>
+              {Array.from(Array(6), (_arrayElement, row) =>
+                <th key={'header' + row}>{getCategory(board[row])}</th>
+              )}
+            </tr>
+          </thead>
+          <tbody>
+            {Array.from(Array(5), (_arrayElement, row) =>
+              <tr key={'row' + row}>
+                {board.map((category, column) =>
+                  <td key={'column' + column}>
+                    <span className='clue-text'>{category[row] && category[row].visible && category[row].text}</span>
+                    {!category[row].visible && !category[row].showWager && <button className='clue-button' onClick={() => displayClue(row, column)}>${category[row].value}</button>}
+                    {category[row].visible && category[row].daily_double_wager === 0 && !category[row].answered && responseTimerIsActive &&
+                      <div>
+                        <button className='answer-button' onClick={() => answer(row, column)} disabled={disableAnswer}>Answer</button>
+                        <button className='answer-button' onClick={() => concede(row, column)}>Give Up</button>
+                      </div>
+                    }
+                    {category[row].showCorrect &&
+                      <div>
+                        <button className='show-answer-button' onClick={() => showAnswer(row, column)}><BiShow /></button>
+                      </div>
+                    }
+                    {category[row].visible && category[row].showScoring &&
+                      <div>
+                        <button className='show-answer-button' onClick={() => incrementScore()}><FcApprove /></button>
+                        <button className='show-answer-button' onClick={() => deductScore()}><FcDisapprove /></button>
+                      </div>
+                    }
+                    {category[row].showWager &&
+                      <div>
+                        ENTER YOUR WAGER:
+                        <div className='wager'>
+                          <button className='submit-button' onClick={() => submit(row, column)}>SUBMIT</button>
+                          <input id="wager" className='wager-input' onChange={handleInputChange} />
+                        </div>
+                      </div>
+                    }
+                    {category[row].answered && <span></span>}
+                  </td>
                 )}
               </tr>
-            </thead>
-            <tbody>
-              {Array.from(Array(5), (_arrayElement, row) =>
-                <tr key={'row' + row}>
-                  {board.map((category, column) =>
-                    <td key={'column' + column}>
-                      <span className='clue-text'>{category[row] && category[row].visible && category[row].text}</span>
-                      {!category[row].visible && !category[row].showWager && <button className='clue-button' onClick={() => displayClue(row, column)}>${category[row].value}</button>}
-                      {category[row].visible && category[row].daily_double_wager === 0 && !category[row].answered && responseTimerIsActive &&
-                        <div>
-                          <button className='answer-button' onClick={() => answer(row, column)} disabled={disableAnswer}>Answer</button>
-                          <button className='answer-button' onClick={() => concede(row, column)}>Give Up</button>
-                        </div>
-                      }
-                      {category[row].showCorrect &&
-                        <div>
-                          <button className='show-answer-button' onClick={() => showAnswer(row, column)}><BiShow /></button>
-                        </div>
-                      }
-                      {category[row].visible && category[row].showScoring &&
-                        <div>
-                          <button className='show-answer-button' onClick={() => incrementScore()}><FcApprove /></button>
-                          <button className='show-answer-button' onClick={() => deductScore()}><FcDisapprove /></button>
-                        </div>
-                      }
-                      {category[row].showWager &&
-                        <div>
-                          ENTER YOUR WAGER:
-                          <div className='wager'>
-                            <button className='submit-button' onClick={() => submit(row, column)}>SUBMIT</button>
-                            <input id="wager" className='wager-input' onChange={handleInputChange} />
-                          </div>
-                        </div>
-                      }
-                      {category[row].answered && <span></span>}
-                    </td>
-                  )}
-                </tr>
-              )}
-            </tbody>
-          </table>
-        }
+            )}
+          </tbody>
+        </table>
       </div>
     </div>
   );
