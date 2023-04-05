@@ -22,6 +22,7 @@ let responseInterval = {};
 let isPlayerDailyDouble = false;
 let conceded = false;
 let responseCountdownIsActive = false;
+let showLogo = true;
 let msg = new SpeechSynthesisUtterance();
 
 const App = () => {
@@ -106,6 +107,7 @@ const App = () => {
   }
 
   function setMessageLines(text1, text2 = '') {
+    showLogo = false;
     setMessage({
       line1: text1,
       line2: text2
@@ -561,7 +563,7 @@ const App = () => {
       <div className='banner'>
         <Podium contestants={contestants} startTimer={responseCountdownIsActive} playerName={playerName} />
         <div>
-          <Monitor message={message} />
+          <Monitor message={message} showLogo={showLogo} />
           <div className='buttons'>
             {round !== 3 &&
               <div>
