@@ -206,7 +206,7 @@ const App = () => {
       } else {
         setMessageLines(clue.response.correct_response);
       }
-      if (nextClueNumber > 0 && lastCorrectContestant !== playerName) {
+      if (nextClueNumber > 0 && lastCorrectContestant !== playerName && clue.answered) {
         setTimeout(() => setMessageLines(message), 2500);
         setTimeout(() => displayNextClue(), 4500);
       }
