@@ -6,6 +6,7 @@ function Message(props) {
 
     return (
         <div className='monitor'>
+            <img src={require('../Resources/jeopardy_logo.jpeg')}></img>
             <div>{message.line1}</div>
             <div>{message.line2}</div>
         </div>

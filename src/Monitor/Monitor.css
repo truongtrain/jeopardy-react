@@ -14,3 +14,8 @@
     color: white;
     text-align: center;
 }
+
+img {
+    height: 100%;
+    width: 100%;   
+}
