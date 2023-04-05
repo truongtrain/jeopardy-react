@@ -31,6 +31,7 @@ const App = () => {
   const [selectedClue, setSelectedClue] = useState(null);
   const [contestants, setContestants] = useState(null);
   const [responseTimerIsActive, setResponseTimerIsActive] = useState(false);
+  const [disableAnswer, setDisableAnswer] = useState(false);
 
   useEffect(() => {
     fetch('http://localhost:5000/example')
@@ -72,6 +73,7 @@ const App = () => {
   }
 
   function answer(row, col) {
+    setDisableAnswer(true);
     let bonusProbability = 0;
     let incorrectContestants = selectedClue.response.incorrect_contestants;
     if (answeredContestants.length === 1) {
@@ -238,6 +240,7 @@ const App = () => {
   }
 
   function displayClue(row, col) {
+    setDisableAnswer(false);
     setResponseTimerIsActive(false);
     answeredContestants = [];
     stats.numClues += 1;
@@ -261,6 +264,7 @@ const App = () => {
   }
 
   function displayClueByNumber(clueNumber) {
+    setDisableAnswer(false);
     answeredContestants = [];
     stats.numClues += 1;
     updateAvailableClueNumbers(clueNumber);
@@ -584,7 +588,7 @@ const App = () => {
                     {!category[row].visible && !category[row].showWager && <button className='clue-button' onClick={() => displayClue(row, column)}>${category[row].value}</button>}
                     {category[row].visible && category[row].daily_double_wager === 0 && !category[row].answered && responseTimerIsActive &&
                       <div>
-                        <button className='answer-button' onClick={() => answer(row, column)}>Answer</button>
+                        <button className='answer-button' onClick={() => answer(row, column)} disabled={disableAnswer}>Answer</button>
                         <button className='answer-button' onClick={() => concede(row, column)}>Give Up</button>
                       </div>
                     }
