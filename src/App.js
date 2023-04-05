@@ -107,7 +107,7 @@ const App = () => {
   }
 
   function setMessageLines(text1, text2 = '') {
-    showLogo = false;
+    showLogo = !text1;
     setMessage({
       line1: text1,
       line2: text2
