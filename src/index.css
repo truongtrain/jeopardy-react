@@ -35,14 +35,6 @@ td {
   text-align: center;
 }
 
-.table-light-on {
-  border: 3px solid blue;
-}
-
-.table-light-off {
-  border: 3px solid black;
-}
-
 .clue-button {
   background-color: rgb(25, 25, 195);
   color: yellow;

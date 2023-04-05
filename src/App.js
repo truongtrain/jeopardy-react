@@ -27,11 +27,9 @@ let msg = new SpeechSynthesisUtterance();
 
 const App = () => {
   const [board, setBoard] = useState(null);
-  const [tableStyle, setTableStyle] = useState('table-light-off');
   const [message, setMessage] = useState({ line1: '', line2: '' });
   const [selectedClue, setSelectedClue] = useState(null);
   const [contestants, setContestants] = useState(null);
-  const [disableAnswer, setDisableAnswer] = useState(true);
   const [responseTimerIsActive, setResponseTimerIsActive] = useState(false);
 
   useEffect(() => {
@@ -74,7 +72,6 @@ const App = () => {
   }
 
   function answer(row, col) {
-    setDisableAnswer(true);
     let bonusProbability = 0;
     let incorrectContestants = selectedClue.response.incorrect_contestants;
     if (answeredContestants.length === 1) {
@@ -242,7 +239,7 @@ const App = () => {
 
   function displayClue(row, col) {
     setResponseTimerIsActive(false);
-    turnOffLight();
+    answeredContestants = [];
     stats.numClues += 1;
     lastCorrectContestant = playerName;
     const clue = board[col][row];
@@ -264,7 +261,7 @@ const App = () => {
   }
 
   function displayClueByNumber(clueNumber) {
-    turnOffLight();
+    answeredContestants = [];
     stats.numClues += 1;
     updateAvailableClueNumbers(clueNumber);
     for (let col = 0; col < 6; col++) {
@@ -336,7 +333,6 @@ const App = () => {
     let board_copy = [...board];
     board_copy[col][row].text = '';
     setBoard(board_copy);
-    turnOnLight();
     setResponseTimerIsActive(true);
   }
 
@@ -469,17 +465,6 @@ const App = () => {
     window.speechSynthesis.speak(msg);
   }
 
-  function turnOffLight() {
-    answeredContestants = [];
-    setDisableAnswer(true);
-    setTableStyle('table-light-off');
-  }
-
-  function turnOnLight() {
-    setDisableAnswer(false);
-    setTableStyle('table-light-on');
-  }
-
   function submit(row, col) {
     if (round === 3) {
       responseCountdownIsActive = false;
@@ -582,7 +567,7 @@ const App = () => {
         </div>
       </div>
       <div className='board'>
-        <table className={tableStyle}>
+        <table>
           <thead>
             <tr>
               {Array.from(Array(6), (_arrayElement, row) =>
@@ -599,7 +584,7 @@ const App = () => {
                     {!category[row].visible && !category[row].showWager && <button className='clue-button' onClick={() => displayClue(row, column)}>${category[row].value}</button>}
                     {category[row].visible && category[row].daily_double_wager === 0 && !category[row].answered && responseTimerIsActive &&
                       <div>
-                        <button className='answer-button' onClick={() => answer(row, column)} disabled={disableAnswer}>Answer</button>
+                        <button className='answer-button' onClick={() => answer(row, column)}>Answer</button>
                         <button className='answer-button' onClick={() => concede(row, column)}>Give Up</button>
                       </div>
                     }
