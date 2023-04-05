@@ -15,6 +15,7 @@ code {
 
 table {
   table-layout: fixed;
+  border-spacing: 0;
 }
 
 th {
