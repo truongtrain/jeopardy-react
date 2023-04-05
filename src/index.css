@@ -16,6 +16,7 @@ code {
 table {
   table-layout: fixed;
   border-spacing: 0;
+  user-select: none;
 }
 
 th {
