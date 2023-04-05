@@ -5,7 +5,7 @@ import { FcApprove } from 'react-icons/fc';
 import { FcDisapprove } from 'react-icons/fc';
 import Podium from './Podium/Podium';
 import Monitor from './Monitor/Monitor';
-import FinalMusic from './final_jeopardy.mp3';
+import FinalMusic from './Resources/final_jeopardy.mp3';
 
 const playerName = 'Alan';
 let availableClueNumbers = new Array(30).fill(true);
