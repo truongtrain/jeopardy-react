@@ -131,6 +131,7 @@ const App = () => {
         contestants[incorrectContestants[i]].score -= scoreChange;
         answered.push(incorrectContestants[i]);
         answeredContestants = answered;
+        setDisableAnswer(false);
         setResponseTimerIsActive(true);
       }
     }
@@ -143,7 +144,6 @@ const App = () => {
       lastCorrectContestant = correctContestant;
       contestants[correctContestant].score += scoreChange;
       setContestants(contestants);
-      // selectedClue.visible = 'blank';
       setBoardState(row, col, 'blank');
       setMessageLines(correctContestant + ': What is ' + clue.response.correct_response + '?');
       if (nextClueNumber > 0) {
@@ -206,7 +206,7 @@ const App = () => {
       } else {
         setMessageLines(clue.response.correct_response);
       }
-      if (nextClueNumber > 0 && lastCorrectContestant !== playerName && clue.answered) {
+      if (nextClueNumber > 0 && lastCorrectContestant !== playerName && clue.visible === 'blank') {
         setTimeout(() => setMessageLines(message), 2500);
         setTimeout(() => displayNextClue(), 4500);
       }
@@ -331,7 +331,7 @@ const App = () => {
 
   function clearClue(row, col) {
     seconds = 0;
-    if (isPlayerDailyDouble) {
+    if (isPlayerDailyDouble && board[col][row].daily_double_wager > 0) {
       setBoardState(row, col, 'eye');
     }
     if (board[col][row].visible === 'clue') {
