@@ -597,13 +597,13 @@ const App = () => {
                     }
                     {category[row].visible==='eye' &&
                       <div>
-                        <button className='show-answer-button' onClick={() => showAnswer(row, column)}><BiShow /></button>
+                        <button className='eye-button' onClick={() => showAnswer(row, column)}><BiShow /></button>
                       </div>
                     }
                     {category[row].visible==='judge' &&
                       <div>
-                        <button className='show-answer-button' onClick={() => incrementScore(row, column)}><FcApprove /></button>
-                        <button className='show-answer-button' onClick={() => deductScore(row, column)}><FcDisapprove /></button>
+                        <button className='answer-button' onClick={() => incrementScore(row, column)}><FcApprove /></button>
+                        <button className='answer-button' onClick={() => deductScore(row, column)}><FcDisapprove /></button>
                       </div>
                     }
                     {category[row].visible==='wager' &&

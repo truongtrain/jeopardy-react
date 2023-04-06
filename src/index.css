@@ -47,10 +47,11 @@ td {
   background-color: rgb(25, 25, 195);
   color: yellow;
   width: 50%;
+  height: 90px;
   font-size: 23px;
 }
 
-.show-answer-button {
+.eye-button {
   background-color: rgb(25, 25, 195);
   color: yellow;
   font-size: 32px;
