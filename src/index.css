@@ -48,7 +48,23 @@ td {
   color: yellow;
   width: 50%;
   height: 90px;
-  font-size: 23px;
+  font-size: 32px;
+}
+
+.buzzer-button {
+  background-color: rgb(25, 25, 195);
+  color: black;
+  width: 50%;
+  height: 90px;
+  font-size: 32px;
+}
+
+.flag-button {
+  background-color: rgb(25, 25, 195);
+  color: white;
+  width: 50%;
+  height: 90px;
+  font-size: 32px;
 }
 
 .eye-button {
