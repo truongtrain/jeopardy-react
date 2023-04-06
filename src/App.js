@@ -74,6 +74,7 @@ const App = () => {
 
   function answer(row, col) {
     setDisableAnswer(true);
+    setResponseTimerIsActive(false);
     let bonusProbability = 0;
     let incorrectContestants = selectedClue.response.incorrect_contestants;
     if (answeredContestants.length === 1) {
@@ -142,7 +143,7 @@ const App = () => {
       lastCorrectContestant = correctContestant;
       contestants[correctContestant].score += scoreChange;
       setContestants(contestants);
-      selectedClue.answered = true;
+      selectedClue.visible = 'blank';
       setMessageLines(correctContestant + ': What is ' + clue.response.correct_response + '?');
       if (nextClueNumber > 0) {
         setTimeout(() => {
@@ -240,7 +241,6 @@ const App = () => {
 
   function displayClue(row, col) {
     setDisableAnswer(false);
-    setResponseTimerIsActive(false);
     answeredContestants = [];
     stats.numClues += 1;
     lastCorrectContestant = playerName;
@@ -331,10 +331,14 @@ const App = () => {
   function clearClue(row, col) {
     seconds = 0;
     if (isPlayerDailyDouble) {
-      selectedClue.showCorrect = true;
+      selectedClue.visible = 'eye';
     }
     if (board[col][row].visible === 'clue') {
-      board[col][row].visible = 'buzzer';
+      console.log('set buzzer');
+      console.log(board);
+      const board_copy = [...board];
+      board_copy[col][row].visible = 'buzzer';
+      setBoard(board_copy);
     }
     setResponseTimerIsActive(true);
   }
@@ -580,9 +584,10 @@ const App = () => {
               <tr key={'row' + row}>
                 {board.map((category, column) =>
                   <td key={'column' + column}>
+                    {category[row].visible}
                     {!category[row].visible && <button className='clue-button' onClick={() => displayClue(row, column)}>${category[row].value}</button>}
                     <span className='clue-text'>{category[row] && category[row].visible==='clue' && category[row].text}</span>
-                    {category[row].visible==='buzzer' &&
+                    {category[row].visible==='buzzer' && category[row].daily_double_wager === 0 &&
                       <div>
                         <button className='answer-button' onClick={() => answer(row, column)} disabled={disableAnswer}>Answer</button>
                         <button className='answer-button' onClick={() => concede(row, column)}>Give Up</button>
@@ -608,7 +613,6 @@ const App = () => {
                         </div>
                       </div>
                     }
-                    {category[row].visible==='blank' && <span></span>}
                   </td>
                 )}
               </tr>
