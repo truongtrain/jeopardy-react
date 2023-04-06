@@ -85,8 +85,7 @@ const App = () => {
     if (seconds < 3 && (answeredContestants.length === 2 || isFastestResponse(seconds, probability) || noAttempts() || selectedClue.response.correct_contestant === weakestContestant)) {
       readText(playerName);
       responseCountdownIsActive = true;
-      board[col][row].showCorrect = true;
-      board[col][row].answered = true;
+      board[col][row].visible = 'eye';
     } else if (selectedClue.response.correct_contestant !== weakestContestant) {
       if (!hasIncorrectContestants(incorrectContestants)) {
         readText(selectedClue.response.correct_contestant);
@@ -249,7 +248,7 @@ const App = () => {
     setSelectedClue(clue);
     if (clue.daily_double_wager > 0) {
       isPlayerDailyDouble = true;
-      board[col][row].showWager = true;
+      board[col][row].visible = 'wager';
       readText('Answer. Daily double. How much will you wager');
       setMessageLines('Daily Double!');
     } else {
@@ -257,7 +256,7 @@ const App = () => {
       seconds = 0;
       responseCountdownIsActive = false;
       updateAvailableClueNumbers(clue.number);
-      board[col][row].visible = true;
+      board[col][row].visible = 'clue';
       setBoard(board);
       readClue(row, col);
     }
@@ -278,7 +277,7 @@ const App = () => {
               setMessageLines(lastCorrectContestant + ': I will wager $' + board[col][row].daily_double_wager);
             }
           }
-          board[col][row].visible = true;
+          board[col][row].visible = 'clue';
           if (isPlayerDailyDouble) {
             setMessageLines(board[col][row].text);
           }
@@ -334,9 +333,9 @@ const App = () => {
     if (isPlayerDailyDouble) {
       selectedClue.showCorrect = true;
     }
-    let board_copy = [...board];
-    board_copy[col][row].text = '';
-    setBoard(board_copy);
+    if (board[col][row].visible === 'clue') {
+      board[col][row].visible = 'buzzer';
+    }
     setResponseTimerIsActive(true);
   }
 
@@ -409,10 +408,9 @@ const App = () => {
     return randomNumber <= adjustedProbability;
   }
 
-  function incrementScore() {
+  function incrementScore(row, col) {
     isPlayerDailyDouble = false;
-    selectedClue.answered = true;
-    selectedClue.showScoring = false;
+    board[col][row].visible = 'blank';
     setResponseTimerIsActive(false);
     lastCorrectContestant = playerName;
     msg.text = 'Correct';
@@ -427,10 +425,9 @@ const App = () => {
     stats.numCorrect += 1;
   }
 
-  function deductScore() {
+  function deductScore(row, col) {
     isPlayerDailyDouble = false;
-    selectedClue.answered = true;
-    selectedClue.showScoring = false;
+    board[col][row].visible = 'blank';
     setResponseTimerIsActive(false);
     responseCountdownIsActive = false;
     msg.text = 'No';
@@ -445,7 +442,7 @@ const App = () => {
   }
 
   function concede(row, col) {
-    board[col][row].answered = true;
+    board[col][row].visible = 'blank';
     setResponseTimerIsActive(false);
     conceded = true;
     updateOpponentScores(selectedClue);
@@ -454,8 +451,7 @@ const App = () => {
   function showAnswer(row, col) {
     setResponseTimerIsActive(false);
     responseCountdownIsActive = false;
-    board[col][row].showCorrect = false;
-    board[col][row].showScoring = true;
+    board[col][row].visible = 'judge';
     if (round === 3) {
       setMessageLines(showData.final_jeopardy.correct_response);
     } else {
@@ -475,7 +471,7 @@ const App = () => {
       setContestants(contestants);
       showFinalJeopardyClue();
     } else {
-      board[col][row].showWager = false;
+      board[col][row].visible = 'clue';
       displayClueByNumber(selectedClue.number);
     }
   }
@@ -584,26 +580,26 @@ const App = () => {
               <tr key={'row' + row}>
                 {board.map((category, column) =>
                   <td key={'column' + column}>
-                    <span className='clue-text'>{category[row] && category[row].visible && category[row].text}</span>
-                    {!category[row].visible && !category[row].showWager && <button className='clue-button' onClick={() => displayClue(row, column)}>${category[row].value}</button>}
-                    {category[row].visible && category[row].daily_double_wager === 0 && !category[row].answered && responseTimerIsActive &&
+                    {!category[row].visible && <button className='clue-button' onClick={() => displayClue(row, column)}>${category[row].value}</button>}
+                    <span className='clue-text'>{category[row] && category[row].visible==='clue' && category[row].text}</span>
+                    {category[row].visible==='buzzer' &&
                       <div>
                         <button className='answer-button' onClick={() => answer(row, column)} disabled={disableAnswer}>Answer</button>
                         <button className='answer-button' onClick={() => concede(row, column)}>Give Up</button>
                       </div>
                     }
-                    {category[row].showCorrect &&
+                    {category[row].visible==='eye' &&
                       <div>
                         <button className='show-answer-button' onClick={() => showAnswer(row, column)}><BiShow /></button>
                       </div>
                     }
-                    {category[row].visible && category[row].showScoring &&
+                    {category[row].visible==='judge' &&
                       <div>
-                        <button className='show-answer-button' onClick={() => incrementScore()}><FcApprove /></button>
-                        <button className='show-answer-button' onClick={() => deductScore()}><FcDisapprove /></button>
+                        <button className='show-answer-button' onClick={() => incrementScore(row, column)}><FcApprove /></button>
+                        <button className='show-answer-button' onClick={() => deductScore(row, column)}><FcDisapprove /></button>
                       </div>
                     }
-                    {category[row].showWager &&
+                    {category[row].visible==='wager' &&
                       <div>
                         ENTER YOUR WAGER:
                         <div className='wager'>
@@ -612,7 +608,7 @@ const App = () => {
                         </div>
                       </div>
                     }
-                    {category[row].answered && <span></span>}
+                    {category[row].visible==='blank' && <span></span>}
                   </td>
                 )}
               </tr>
