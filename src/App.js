@@ -587,7 +587,6 @@ const App = () => {
               <tr key={'row' + row}>
                 {board.map((category, column) =>
                   <td key={'column' + column}>
-                    {category[row].visible}
                     {!category[row].visible && <button className='clue-button' onClick={() => displayClue(row, column)}>${category[row].value}</button>}
                     <span className='clue-text'>{category[row] && category[row].visible==='clue' && category[row].text}</span>
                     {category[row].visible==='buzzer' && category[row].daily_double_wager === 0 &&
