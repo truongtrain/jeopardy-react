@@ -85,26 +85,27 @@ const App = () => {
       bonusProbability = 0.166;
     }
     const probability = getProbability(selectedClue.value, round, bonusProbability);
-    if (seconds < 3 && (answeredContestants.length === 2 || isFastestResponse(seconds, probability) || noAttempts() || selectedClue.response.correct_contestant === weakestContestant)) {
+    if (seconds < 3 && (answeredContestants.length === 2 || isFastestResponse(seconds, probability) || noAttempts())) {
       readText(playerName);
       responseCountdownIsActive = true;
       setBoardState(row, col, 'eye');
-    } else if (selectedClue.response.correct_contestant !== weakestContestant) {
-      if (!hasIncorrectContestants(incorrectContestants)) {
+    } else {
+      if (selectedClue.visible === 'closed') {
+        setMessageLines(selectedClue.response.correct_response);
+      } else if (!hasIncorrectContestants(incorrectContestants)) {
         readText(selectedClue.response.correct_contestant);
       } else {
         const incorrectContestant = getIncorrectContestant(incorrectContestants);
         readText(incorrectContestant);
       }
       updateOpponentScores(selectedClue, row, col);
-    } else {
-      setMessageLines(selectedClue.response.correct_response);
     }
     clearInterval(responseInterval);
   }
 
   function noAttempts() {
-    return !selectedClue.response.correct_contestant && selectedClue.response.incorrect_contestants.length === 0;
+    return (!selectedClue.response.correct_contestant || selectedClue.response.correct_contestant === weakestContestant)
+    && selectedClue.response.incorrect_contestants.length === 0;
   }
 
   function setMessageLines(text1, text2 = '') {
@@ -146,7 +147,7 @@ const App = () => {
       lastCorrectContestant = correctContestant;
       contestants[correctContestant].score += scoreChange;
       setContestants(contestants);
-      setBoardState(row, col, 'blank');
+      setBoardState(row, col, 'closed');
       setMessageLines(correctContestant + ': What is ' + clue.response.correct_response + '?');
       if (nextClueNumber > 0) {
         setTimeout(() => {
@@ -208,7 +209,7 @@ const App = () => {
       } else {
         setMessageLines(clue.response.correct_response);
       }
-      if (nextClueNumber > 0 && lastCorrectContestant !== playerName && clue.visible === 'blank') {
+      if (nextClueNumber > 0 && lastCorrectContestant !== playerName && clue.visible === 'closed') {
         setTimeout(() => setMessageLines(message), 2500);
         setTimeout(() => displayNextClue(), 4500);
       }
@@ -419,7 +420,7 @@ const App = () => {
 
   function incrementScore(row, col) {
     isPlayerDailyDouble = false;
-    setBoardState(row, col, 'blank');
+    setBoardState(row, col, 'closed');
     setResponseTimerIsActive(false);
     lastCorrectContestant = playerName;
     msg.text = 'Correct';
@@ -436,7 +437,7 @@ const App = () => {
 
   function deductScore(row, col) {
     isPlayerDailyDouble = false;
-    setBoardState(row, col, 'blank');
+    setBoardState(row, col, 'closed');
     setResponseTimerIsActive(false);
     responseCountdownIsActive = false;
     msg.text = 'No';
@@ -452,7 +453,7 @@ const App = () => {
   }
 
   function concede(row, col) {
-    setBoardState(row, col, 'blank');
+    setBoardState(row, col, 'closed');
     setResponseTimerIsActive(false);
     conceded = true;
     updateOpponentScores(selectedClue, row, col);
