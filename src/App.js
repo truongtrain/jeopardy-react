@@ -448,6 +448,7 @@ const App = () => {
       stats.coryatScore -= selectedClue.value;
     }
     setContestants(contestants);
+    updateOpponentScores(selectedClue, row, col);
   }
 
   function concede(row, col) {
