@@ -4,7 +4,7 @@ import { BiShow } from 'react-icons/bi';
 import { FcApprove } from 'react-icons/fc';
 import { FcDisapprove } from 'react-icons/fc';
 import { GiButtonFinger } from 'react-icons/gi';
-import { BsFillFlagFill} from 'react-icons/bs';
+import { BsFillFlagFill } from 'react-icons/bs';
 import Podium from './Podium/Podium';
 import Monitor from './Monitor/Monitor';
 import FinalMusic from './Resources/final_jeopardy.mp3';
@@ -105,7 +105,7 @@ const App = () => {
 
   function noAttempts() {
     return (!selectedClue.response.correct_contestant || selectedClue.response.correct_contestant === weakestContestant)
-    && selectedClue.response.incorrect_contestants.length === 0;
+      && selectedClue.response.incorrect_contestants.length === 0;
   }
 
   function setMessageLines(text1, text2 = '') {
@@ -134,8 +134,10 @@ const App = () => {
         contestants[incorrectContestants[i]].score -= scoreChange;
         answered.push(incorrectContestants[i]);
         answeredContestants = answered;
-        setDisableAnswer(false);
-        setResponseTimerIsActive(true);
+        setTimeout(() => {
+          setDisableAnswer(false);
+          setResponseTimerIsActive(true);
+        }, 1000);
       }
     }
     setMessageLines(incorrectMessage);
@@ -592,25 +594,25 @@ const App = () => {
                 {board.map((category, column) =>
                   <td key={'column' + column}>
                     {!category[row].visible && <button className='clue-button' onClick={() => displayClue(row, column)}>${category[row].value}</button>}
-                    <span className='clue-text'>{category[row] && category[row].visible==='clue' && category[row].text}</span>
-                    {category[row].visible==='buzzer' && category[row].daily_double_wager === 0 &&
+                    <span className='clue-text'>{category[row] && category[row].visible === 'clue' && category[row].text}</span>
+                    {category[row].visible === 'buzzer' && category[row].daily_double_wager === 0 &&
                       <div>
                         <button className='buzzer-button' onClick={() => answer(row, column)} disabled={disableAnswer}><GiButtonFinger /></button>
                         <button className='flag-button' onClick={() => concede(row, column)}><BsFillFlagFill /></button>
                       </div>
                     }
-                    {category[row].visible==='eye' &&
+                    {category[row].visible === 'eye' &&
                       <div>
                         <button className='eye-button' onClick={() => showAnswer(row, column)}><BiShow /></button>
                       </div>
                     }
-                    {category[row].visible==='judge' &&
+                    {category[row].visible === 'judge' &&
                       <div>
                         <button className='answer-button' onClick={() => incrementScore(row, column)}><FcApprove /></button>
                         <button className='answer-button' onClick={() => deductScore(row, column)}><FcDisapprove /></button>
                       </div>
                     }
-                    {category[row].visible==='wager' &&
+                    {category[row].visible === 'wager' &&
                       <div>
                         ENTER YOUR WAGER:
                         <div className='wager'>
