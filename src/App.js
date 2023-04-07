@@ -40,7 +40,8 @@ const App = () => {
       .then((res) => res.json())
       .then((data) => {
         showData = data;
-        weakestContestant = showData.weakest_contestant;
+        // weakestContestant = showData.weakest_contestant;
+        weakestContestant = 'Brian';
         let filteredContestants = showData.contestants.filter(
           contestant => contestant !== weakestContestant
         );
@@ -85,14 +86,15 @@ const App = () => {
       bonusProbability = 0.166;
     }
     const probability = getProbability(selectedClue.value, round, bonusProbability);
-    if (seconds < 3 && (answeredContestants.length === 2 || isFastestResponse(seconds, probability) || noAttempts())) {
+    if (seconds < 3 && (answeredContestants.length === 2 || isFastestResponse(seconds, probability) || noAttempts() || noOpponentAttemptsRemaining())) {
       readText(playerName);
       responseCountdownIsActive = true;
       setBoardState(row, col, 'eye');
     } else {
+      console.log(selectedClue.visible);
       if (selectedClue.visible === 'closed') {
         setMessageLines(selectedClue.response.correct_response);
-      } else if (!hasIncorrectContestants(incorrectContestants)) {
+      } else if (!hasIncorrectContestants(incorrectContestants) && selectedClue.response.correct_contestant !== weakestContestant) {
         readText(selectedClue.response.correct_contestant);
       } else {
         const incorrectContestant = getIncorrectContestant(incorrectContestants);
@@ -106,6 +108,11 @@ const App = () => {
   function noAttempts() {
     return (!selectedClue.response.correct_contestant || selectedClue.response.correct_contestant === weakestContestant)
       && selectedClue.response.incorrect_contestants.length === 0;
+  }
+
+  function noOpponentAttemptsRemaining() {
+    const incorrectContestants = selectedClue.response.incorrect_contestants.filter(contestant => contestant !== weakestContestant);
+    return answeredContestants.length === incorrectContestants && selectedClue.response.correct_contestant === weakestContestant;
   }
 
   function setMessageLines(text1, text2 = '') {
@@ -134,14 +141,17 @@ const App = () => {
         contestants[incorrectContestants[i]].score -= scoreChange;
         answered.push(incorrectContestants[i]);
         answeredContestants = answered;
+        readText('No');
+        // keep the buzzer disabled for 500ms
         setTimeout(() => {
           setDisableAnswer(false);
           setResponseTimerIsActive(true);
-        }, 1000);
+        }, 500);
       }
     }
     setMessageLines(incorrectMessage);
     setContestants(contestants);
+    
   }
 
   function handleCorrectResponse(correctContestant, scoreChange, clue, nextClueNumber, nextClue, row, col) {
