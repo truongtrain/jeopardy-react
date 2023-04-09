@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { BiShow } from 'react-icons/bi';
 import { FcApprove } from 'react-icons/fc';
 import { FcDisapprove } from 'react-icons/fc';
-import { GiButtonFinger } from 'react-icons/gi';
+import { HiHandRaised } from 'react-icons/hi2';
 import { BsFillFlagFill } from 'react-icons/bs';
 import Podium from './Podium/Podium';
 import Monitor from './Monitor/Monitor';
@@ -608,7 +608,7 @@ const App = () => {
                     <span className='clue-text'>{category[row] && category[row].visible === 'clue' && category[row].text}</span>
                     {category[row].visible === 'buzzer' && category[row].daily_double_wager === 0 &&
                       <div>
-                        <button className='buzzer-button' onClick={() => answer(row, column)} disabled={disableAnswer}><GiButtonFinger /></button>
+                        <button className='buzzer-button' onClick={() => answer(row, column)} disabled={disableAnswer}><HiHandRaised /></button>
                         <button className='flag-button' onClick={() => concede(row, column)}><BsFillFlagFill /></button>
                       </div>
                     }
