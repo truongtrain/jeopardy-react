@@ -147,7 +147,11 @@ const App = () => {
         }, 500);
       }
     }
-    setMessageLines(incorrectMessage);
+    if (clue.daily_double_wager > 0) {
+      setMessageLines(incorrectMessage, clue.response.correct_response);
+    } else {
+      setMessageLines(incorrectMessage);
+    }   
     setContestants(contestants);
 
   }
@@ -220,6 +224,7 @@ const App = () => {
       } else {
         setMessageLines(clue.response.correct_response);
       }
+      // go to next clue selected by opponent
       if (nextClueNumber > 0 && lastCorrectContestant !== playerName && clue.visible === 'closed') {
         setTimeout(() => setMessageLines(message), 2500);
         setTimeout(() => displayNextClue(), 4500);
@@ -287,7 +292,7 @@ const App = () => {
             isPlayerDailyDouble = false;
             setMessageLines('Answer. Daily Double');
             if (lastCorrectContestant !== playerName) {
-              setMessageLines(lastCorrectContestant + ': I will wager $' + board[col][row].daily_double_wager);
+              setMessageLines('Daily Double', lastCorrectContestant + ': I will wager $' + board[col][row].daily_double_wager);
             }
           }
           setBoardState(row, col, 'clue');
