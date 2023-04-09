@@ -273,7 +273,6 @@ const App = () => {
       responseCountdownIsActive = false;
       updateAvailableClueNumbers(clue.number);
       setBoardState(row, col, 'clue');
-      setBoard(board);
       readClue(row, col);
     }
   }
