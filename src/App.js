@@ -40,7 +40,8 @@ const App = () => {
       .then((res) => res.json())
       .then((data) => {
         showData = data;
-        weakestContestant = showData.weakest_contestant;
+        // weakestContestant = showData.weakest_contestant;
+        weakestContestant = 'Brian';
         let filteredContestants = showData.contestants.filter(
           contestant => contestant !== weakestContestant
         );
@@ -124,29 +125,27 @@ const App = () => {
   function getIncorrectContestant(incorrectContestants) {
     const filteredContestants = incorrectContestants
       .filter(contestant => contestant !== weakestContestant);
-    if (answeredContestants.length === 0) {
-      return filteredContestants[0];
-    }
-    return filteredContestants[1];
+    return filteredContestants[0];
   }
 
   function handleIncorrectResponses(incorrectContestants, clue, scoreChange) {
     let incorrectMessage = '';
-    let answered = [];
     for (let i = 0; i < incorrectContestants.length; i++) {
-      if (incorrectContestants[i] !== weakestContestant && !answered.includes(incorrectContestants[i])) {
+      if (incorrectContestants[i] !== weakestContestant && !answeredContestants.includes(incorrectContestants[i])) {
         incorrectMessage += clue.response.incorrect_responses[i];
         contestants[incorrectContestants[i]].score -= scoreChange;
-        answered.push(incorrectContestants[i]);
-        answeredContestants = answered;
+        answeredContestants.push(incorrectContestants[i]);       
         readText('No');
+        seconds = 0;
         // keep the buzzer disabled for 500ms
         setTimeout(() => {
           setDisableAnswer(false);
-          setResponseTimerIsActive(true);
+          setResponseTimerIsActive(true);         
         }, 500);
       }
+      break;
     }
+    debugger
     if (clue.daily_double_wager > 0) {
       setMessageLines(incorrectMessage, clue.response.correct_response);
     } else {
@@ -220,6 +219,7 @@ const App = () => {
     // handle triple stumpers
     if (!correctContestant || correctContestant === weakestContestant) {
       if (hasIncorrectContestants(incorrectContestants)) {
+        debugger
         handleIncorrectResponses(incorrectContestants, clue, scoreChange);
       } else {
         setMessageLines(clue.response.correct_response);
