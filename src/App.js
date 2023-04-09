@@ -30,7 +30,6 @@ let msg = new SpeechSynthesisUtterance();
 const App = () => {
   const [board, setBoard] = useState(null);
   const [message, setMessage] = useState({ line1: '', line2: '' });
-  const [selectedClue, setSelectedClue] = useState(null);
   const [contestants, setContestants] = useState(null);
   const [responseTimerIsActive, setResponseTimerIsActive] = useState(false);
   const [disableAnswer, setDisableAnswer] = useState(false);
@@ -79,22 +78,22 @@ const App = () => {
     setDisableAnswer(true);
     setResponseTimerIsActive(false);
     let bonusProbability = 0;
-    let incorrectContestants = selectedClue.response.incorrect_contestants;
+    let incorrectContestants = board[col][row].response.incorrect_contestants;
     if (answeredContestants.length === 1) {
       incorrectContestants = incorrectContestants
         .filter(contestant => contestant !== answeredContestants[0]);
       bonusProbability = 0.166;
     }
-    const probability = getProbability(selectedClue.value, round, bonusProbability);
-    if (seconds < 3 && (answeredContestants.length === 2 || isFastestResponse(seconds, probability) || noAttempts() || noOpponentAttemptsRemaining())) {
+    const probability = getProbability(board[col][row].value, round, bonusProbability);
+    if (seconds < 3 && (answeredContestants.length === 2 || isFastestResponse(seconds, probability) || noAttempts(row, col) || noOpponentAttemptsRemaining(row, col))) {
       readText(playerName);
       responseCountdownIsActive = true;
       setBoardState(row, col, 'eye');
     } else {
-      if (selectedClue.visible === 'closed') {
-        setMessageLines(selectedClue.response.correct_response);
-      } else if (!hasIncorrectContestants(incorrectContestants) && selectedClue.response.correct_contestant !== weakestContestant) {
-        readText(selectedClue.response.correct_contestant);
+      if (board[col][row].visible === 'closed') {
+        setMessageLines(board[col][row].response.correct_response);
+      } else if (!hasIncorrectContestants(incorrectContestants) && board[col][row].response.correct_contestant !== weakestContestant) {
+        readText(board[col][row].response.correct_contestant);
       } else {
         const incorrectContestant = getIncorrectContestant(incorrectContestants);
         readText(incorrectContestant);
@@ -104,14 +103,14 @@ const App = () => {
     clearInterval(responseInterval);
   }
 
-  function noAttempts() {
-    return (!selectedClue.response.correct_contestant || selectedClue.response.correct_contestant === weakestContestant)
-      && selectedClue.response.incorrect_contestants.length === 0;
+  function noAttempts(row, col) {
+    return (!board[col][row].response.correct_contestant || board[col][row].response.correct_contestant === weakestContestant)
+      && board[col][row].response.incorrect_contestants.length === 0;
   }
 
-  function noOpponentAttemptsRemaining() {
-    const incorrectContestants = selectedClue.response.incorrect_contestants.filter(contestant => contestant !== weakestContestant);
-    return answeredContestants.length === incorrectContestants && selectedClue.response.correct_contestant === weakestContestant;
+  function noOpponentAttemptsRemaining(row, col) {
+    const incorrectContestants = board[col][row].response.incorrect_contestants.filter(contestant => contestant !== weakestContestant);
+    return answeredContestants.length === incorrectContestants && board[col][row].response.correct_contestant === weakestContestant;
   }
 
   function setMessageLines(text1, text2 = '') {
@@ -263,7 +262,6 @@ const App = () => {
     stats.numClues += 1;
     lastCorrectContestant = playerName;
     const clue = board[col][row];
-    setSelectedClue(clue);
     if (clue.daily_double_wager > 0) {
       isPlayerDailyDouble = true;
       setBoardState(row, col, 'wager');
@@ -299,10 +297,7 @@ const App = () => {
           if (isPlayerDailyDouble) {
             setMessageLines(board[col][row].text);
           }
-          setBoard(board);
           readClue(row, col);
-          const clue = getClue(clueNumber);
-          setSelectedClue(clue);
           return;
         }
       }
@@ -399,7 +394,6 @@ const App = () => {
   function isFastestResponse(seconds, probability) {
     const randomNumber = Math.random();
     seconds %= 5;
-    console.log('answer: ' + selectedClue.response.correct_response);
     console.log('seconds: ' + seconds);
     console.log('randomNumber: ' + randomNumber);
     let adjustedProbability;
@@ -438,13 +432,13 @@ const App = () => {
     lastCorrectContestant = playerName;
     msg.text = 'Correct';
     window.speechSynthesis.speak(msg);
-    if (selectedClue.daily_double_wager > 0) {
+    if (board[col][row].daily_double_wager > 0) {
       contestants[playerName].score += +wager;
     } else {
-      contestants[playerName].score += selectedClue.value;
+      contestants[playerName].score += board[col][row].value;
     }
     setContestants(contestants);
-    stats.coryatScore += selectedClue.value;
+    stats.coryatScore += board[col][row].value;
     stats.numCorrect += 1;
   }
 
@@ -455,11 +449,11 @@ const App = () => {
     responseCountdownIsActive = false;
     msg.text = 'No';
     window.speechSynthesis.speak(msg);
-    if (selectedClue.daily_double_wager > 0) {
+    if (board[col][row].daily_double_wager > 0) {
       contestants[playerName].score -= wager;
     } else {
-      contestants[playerName].score -= selectedClue.value;
-      stats.coryatScore -= selectedClue.value;
+      contestants[playerName].score -= board[col][row].value;
+      stats.coryatScore -= board[col][row].value;
     }
     setContestants(contestants);
     updateOpponentScores(row, col);
@@ -479,7 +473,7 @@ const App = () => {
     if (round === 3) {
       setMessageLines(showData.final_jeopardy.correct_response);
     } else {
-      setMessageLines(selectedClue.response.correct_response);
+      setMessageLines(board[col][row].response.correct_response);
     }
   }
 
@@ -496,7 +490,7 @@ const App = () => {
       showFinalJeopardyClue();
     } else {
       setBoardState(row, col, 'clue');
-      displayClueByNumber(selectedClue.number);
+      displayClueByNumber(board[col][row].number);
     }
   }
 
