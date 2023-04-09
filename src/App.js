@@ -90,7 +90,6 @@ const App = () => {
       responseCountdownIsActive = true;
       setBoardState(row, col, 'eye');
     } else {
-      console.log(selectedClue.visible);
       if (selectedClue.visible === 'closed') {
         setMessageLines(selectedClue.response.correct_response);
       } else if (!hasIncorrectContestants(incorrectContestants) && selectedClue.response.correct_contestant !== weakestContestant) {
@@ -99,7 +98,7 @@ const App = () => {
         const incorrectContestant = getIncorrectContestant(incorrectContestants);
         readText(incorrectContestant);
       }
-      updateOpponentScores(selectedClue, row, col);
+      updateOpponentScores(row, col);
     }
     clearInterval(responseInterval);
   }
@@ -195,7 +194,8 @@ const App = () => {
     return clue.daily_double_wager;
   }
 
-  function updateOpponentScores(clue, row, col) {
+  function updateOpponentScores(row, col) {
+    const clue = board[col][row];
     // don't update opponent score if this is the player's daily double
     if (clue.daily_double_wager > 0 && isPlayerDailyDouble) {
       return;
@@ -224,9 +224,7 @@ const App = () => {
         setTimeout(() => setMessageLines(message), 2500);
         setTimeout(() => displayNextClue(), 4500);
       }
-      return;
-    }
-    if (hasIncorrectContestants(incorrectContestants)) {
+    } else if (hasIncorrectContestants(incorrectContestants)) {
       handleIncorrectResponses(incorrectContestants, clue, scoreChange);
       if (conceded) {
         setTimeout(() => handleCorrectResponse(correctContestant, scoreChange, clue, nextClueNumber, nextClue, row, col), 3000);
@@ -340,14 +338,12 @@ const App = () => {
     msg.text = clue.text;
     window.speechSynthesis.speak(msg);
     msg.addEventListener('end', function clearClue() {
-      console.log('clearClue');
       seconds = 0;
       if (isPlayerDailyDouble && board[col][row].daily_double_wager > 0) {
         setBoardState(row, col, 'eye');
-      }
-      //TODO: Add daily double logic for opponent
-
-      else if (board[col][row].visible === 'clue') {
+      } else if (board[col][row].daily_double_wager > 0) {
+        concede(row, col);      
+      } else if (board[col][row].visible === 'clue') {
         setBoardState(row, col, 'buzzer');
       }
       setResponseTimerIsActive(true);
@@ -461,14 +457,14 @@ const App = () => {
       stats.coryatScore -= selectedClue.value;
     }
     setContestants(contestants);
-    updateOpponentScores(selectedClue, row, col);
+    updateOpponentScores(row, col);
   }
 
   function concede(row, col) {
     setBoardState(row, col, 'closed');
     setResponseTimerIsActive(false);
     conceded = true;
-    updateOpponentScores(selectedClue, row, col);
+    updateOpponentScores(row, col);
   }
 
   function showAnswer(row, col) {
