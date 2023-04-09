@@ -150,7 +150,7 @@ const App = () => {
     }
     setMessageLines(incorrectMessage);
     setContestants(contestants);
-    
+
   }
 
   function handleCorrectResponse(correctContestant, scoreChange, clue, nextClueNumber, nextClue, row, col) {
@@ -339,19 +339,20 @@ const App = () => {
     }
     msg.text = clue.text;
     window.speechSynthesis.speak(msg);
-    msg.addEventListener('end', () => clearClue(row, col));
-    msg.removeEventListener('end', () => clearClue(row, col));
-  }
+    msg.addEventListener('end', function clearClue() {
+      console.log('clearClue');
+      seconds = 0;
+      if (isPlayerDailyDouble && board[col][row].daily_double_wager > 0) {
+        setBoardState(row, col, 'eye');
+      }
+      //TODO: Add daily double logic for opponent
 
-  function clearClue(row, col) {
-    seconds = 0;
-    if (isPlayerDailyDouble && board[col][row].daily_double_wager > 0) {
-      setBoardState(row, col, 'eye');
-    }
-    if (board[col][row].visible === 'clue') {
-      setBoardState(row, col, 'buzzer');
-    }
-    setResponseTimerIsActive(true);
+      else if (board[col][row].visible === 'clue') {
+        setBoardState(row, col, 'buzzer');
+      }
+      setResponseTimerIsActive(true);
+      msg.removeEventListener('end', clearClue, true);
+    }, true);   
   }
 
   function setBoardState(row, col, state) {
