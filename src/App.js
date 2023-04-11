@@ -230,10 +230,9 @@ const App = () => {
       }
     } else if (hasIncorrectContestants(incorrectContestants)) {
       handleIncorrectResponses(incorrectContestants, clue, scoreChange);
-      //TODO: move this code
-      //if (conceded) {
+      if (conceded) {
         setTimeout(() => handleCorrectResponse(correctContestant, scoreChange, clue, nextClueNumber, nextClue, row, col), 3000);
-      //}
+      }
     } else { // no incorrect responses
       handleCorrectResponse(correctContestant, scoreChange, clue, nextClueNumber, nextClue, row, col);
     }
