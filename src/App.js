@@ -484,6 +484,8 @@ const App = () => {
 
   function submit(row, col) {
     if (round === 3) {
+      document.getElementById('finalInput').value = null;
+      setDisableAnswer(true);
       responseCountdownIsActive = false;
       setContestants(contestants);
       showFinalJeopardyClue();
@@ -577,7 +579,7 @@ const App = () => {
           </div>
           {round === 3 &&
             <div className='buttons'>
-              <button className='submit-button' onClick={() => submit()}>SUBMIT</button>
+              <button className='submit-button' disabled={disableAnswer} onClick={() => submit()}>SUBMIT</button>
               <input className='final-input' id="finalInput" onChange={handleInputChange} />
             </div>
           }
