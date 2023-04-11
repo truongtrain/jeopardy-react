@@ -262,6 +262,7 @@ const App = () => {
     const clue = board[col][row];
     if (clue.daily_double_wager > 0) {
       isPlayerDailyDouble = true;
+      wager = contestants[playerName].score;
       setBoardState(row, col, 'wager');
       readText('Answer. Daily double. How much will you wager');
       setMessageLines('Daily Double!');
