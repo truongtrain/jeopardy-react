@@ -285,7 +285,6 @@ const App = () => {
         if (board[col][row].number === clueNumber) {
           if (!isPlayerDailyDouble && board[col][row].daily_double_wager > 0) {
             isPlayerDailyDouble = false;
-            setMessageLines('Answer. Daily Double');
             if (lastCorrectContestant !== playerName) {
               setMessageLines('Daily Double', lastCorrectContestant + ': I will wager $' + board[col][row].daily_double_wager);
             }
