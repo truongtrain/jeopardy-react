@@ -75,6 +75,7 @@ const App = () => {
   }
 
   function answer(row, col) {
+    console.log(board[col][row].text);
     setDisableAnswer(true);
     setResponseTimerIsActive(false);
     let bonusProbability = 0;
@@ -94,7 +95,8 @@ const App = () => {
         setMessageLines(board[col][row].response.correct_response);
       } else if (!hasIncorrectContestants(incorrectContestants) && board[col][row].response.correct_contestant !== weakestContestant) {
         readText(board[col][row].response.correct_contestant);
-      } else {
+      } else if (incorrectContestants.length > 0){
+        debugger
         const incorrectContestant = getIncorrectContestant(incorrectContestants);
         readText(incorrectContestant);
       }
@@ -110,7 +112,7 @@ const App = () => {
 
   function noOpponentAttemptsRemaining(row, col) {
     const incorrectContestants = board[col][row].response.incorrect_contestants.filter(contestant => contestant !== weakestContestant);
-    return answeredContestants.length === incorrectContestants && board[col][row].response.correct_contestant === weakestContestant;
+    return answeredContestants.length === incorrectContestants.length && board[col][row].response.correct_contestant === weakestContestant;
   }
 
   function setMessageLines(text1, text2 = '') {
@@ -144,7 +146,6 @@ const App = () => {
       }
       break;
     }
-    debugger
     if (clue.daily_double_wager > 0) {
       setMessageLines(incorrectMessage, clue.response.correct_response);
     } else {
@@ -217,8 +218,7 @@ const App = () => {
     let scoreChange = clue.daily_double_wager > 0 ? getOpponentDailyDoubleWager(clue) : clue.value;
     // handle triple stumpers
     if (!correctContestant || correctContestant === weakestContestant) {
-      if (hasIncorrectContestants(incorrectContestants)) {
-        debugger
+      if (hasIncorrectContestants(incorrectContestants)) {      
         handleIncorrectResponses(incorrectContestants, clue, scoreChange);
       } else {
         setMessageLines(clue.response.correct_response);
@@ -230,10 +230,11 @@ const App = () => {
       }
     } else if (hasIncorrectContestants(incorrectContestants)) {
       handleIncorrectResponses(incorrectContestants, clue, scoreChange);
-      if (conceded) {
+      //TODO: move this code
+      //if (conceded) {
         setTimeout(() => handleCorrectResponse(correctContestant, scoreChange, clue, nextClueNumber, nextClue, row, col), 3000);
-      }
-    } else {
+      //}
+    } else { // no incorrect responses
       handleCorrectResponse(correctContestant, scoreChange, clue, nextClueNumber, nextClue, row, col);
     }
   }
