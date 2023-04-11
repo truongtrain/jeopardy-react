@@ -89,6 +89,7 @@ td {
 
 .final-input {
   width: 300px;
+  border: 2px solid black;
 }
 
 .clue-text {

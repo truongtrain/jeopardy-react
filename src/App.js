@@ -255,6 +255,7 @@ const App = () => {
   }
 
   function displayClue(row, col) {
+    conceded = false;
     setDisableAnswer(false);
     answeredContestants = [];
     stats.numClues += 1;
@@ -262,6 +263,7 @@ const App = () => {
     const clue = board[col][row];
     if (clue.daily_double_wager > 0) {
       isPlayerDailyDouble = true;
+      wager = contestants[playerName].score;
       setBoardState(row, col, 'wager');
       readText('Answer. Daily double. How much will you wager');
       setMessageLines('Daily Double!');
@@ -276,6 +278,7 @@ const App = () => {
   }
 
   function displayClueByNumber(clueNumber) {
+    conceded = false;
     setDisableAnswer(false);
     answeredContestants = [];
     stats.numClues += 1;
@@ -481,6 +484,8 @@ const App = () => {
 
   function submit(row, col) {
     if (round === 3) {
+      document.getElementById('finalInput').value = null;
+      setDisableAnswer(true);
       responseCountdownIsActive = false;
       setContestants(contestants);
       showFinalJeopardyClue();
@@ -506,6 +511,7 @@ const App = () => {
 
   function showFinalJeopardyCategory() {
     round = 3;
+    setDisableAnswer(false);
     setMessageLines(showData.final_jeopardy.category);
     msg.text = 'The final jeopardy category is ' + showData.final_jeopardy.category + '. How much will you wager';
     window.speechSynthesis.speak(msg);
@@ -574,8 +580,8 @@ const App = () => {
           </div>
           {round === 3 &&
             <div className='buttons'>
-              <button className='submit-button' onClick={() => submit()}>SUBMIT</button>
-              <input className='final-input' id="finalInput" onChange={handleInputChange} />
+              <button className='submit-button' disabled={disableAnswer} onClick={() => submit()}>SUBMIT</button>
+              <input className='final-input' id="finalInput" defaultValue={wager} onChange={handleInputChange} />
             </div>
           }
         </div>
@@ -618,7 +624,7 @@ const App = () => {
                         ENTER YOUR WAGER:
                         <div className='wager'>
                           <button className='submit-button' onClick={() => submit(row, column)}>SUBMIT</button>
-                          <input id="wager" className='wager-input' onChange={handleInputChange} />
+                          <input id="wager" className='wager-input' defaultValue={wager} onChange={handleInputChange} />
                         </div>
                       </div>
                     }
