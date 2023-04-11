@@ -511,6 +511,7 @@ const App = () => {
 
   function showFinalJeopardyCategory() {
     round = 3;
+    setDisableAnswer(false);
     setMessageLines(showData.final_jeopardy.category);
     msg.text = 'The final jeopardy category is ' + showData.final_jeopardy.category + '. How much will you wager';
     window.speechSynthesis.speak(msg);
@@ -580,7 +581,7 @@ const App = () => {
           {round === 3 &&
             <div className='buttons'>
               <button className='submit-button' disabled={disableAnswer} onClick={() => submit()}>SUBMIT</button>
-              <input className='final-input' id="finalInput" onChange={handleInputChange} />
+              <input className='final-input' id="finalInput" defaultValue={wager} onChange={handleInputChange} />
             </div>
           }
         </div>
