@@ -255,6 +255,7 @@ const App = () => {
   }
 
   function displayClue(row, col) {
+    conceded = false;
     setDisableAnswer(false);
     answeredContestants = [];
     stats.numClues += 1;
@@ -277,6 +278,7 @@ const App = () => {
   }
 
   function displayClueByNumber(clueNumber) {
+    conceded = false;
     setDisableAnswer(false);
     answeredContestants = [];
     stats.numClues += 1;
@@ -619,7 +621,7 @@ const App = () => {
                         ENTER YOUR WAGER:
                         <div className='wager'>
                           <button className='submit-button' onClick={() => submit(row, column)}>SUBMIT</button>
-                          <input id="wager" className='wager-input' onChange={handleInputChange} />
+                          <input id="wager" className='wager-input' defaultValue={wager} onChange={handleInputChange} />
                         </div>
                       </div>
                     }
