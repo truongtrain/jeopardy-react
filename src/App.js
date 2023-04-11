@@ -74,7 +74,6 @@ const App = () => {
   }
 
   function answer(row, col) {
-    console.log(board[col][row].text);
     setDisableAnswer(true);
     setResponseTimerIsActive(false);
     let bonusProbability = 0;
