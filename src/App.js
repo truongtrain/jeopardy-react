@@ -39,8 +39,7 @@ const App = () => {
       .then((res) => res.json())
       .then((data) => {
         showData = data;
-        // weakestContestant = showData.weakest_contestant;
-        weakestContestant = 'Brian';
+        weakestContestant = showData.weakest_contestant;
         let filteredContestants = showData.contestants.filter(
           contestant => contestant !== weakestContestant
         );
