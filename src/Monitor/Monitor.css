@@ -2,7 +2,7 @@
     size: 50px;
     font-weight: bold;
     margin-top: 10px;
-    margin-left: 10px;
+    margin-left: auto;
     margin-bottom: 1px;
     border: 7px solid black;
     width: 360px;
@@ -13,4 +13,9 @@
     background-color: rgb(25, 25, 195);
     color: white;
     text-align: center;
+}
+
+img {
+    height: 100%;
+    width: 100%;   
 }

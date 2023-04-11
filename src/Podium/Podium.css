@@ -6,7 +6,7 @@
     margin: 10px;
     background-color: rgb(25, 25, 195);
     color: white;
-    border: 3px solid black;
+    border: 5px solid black;
     font-weight: bold;
     height: 110px;
     width: 100px;
@@ -17,13 +17,19 @@
     border-top: 3px solid black;
 }
 
+.name-row {
+    background-color: darkblue;
+}
+
 .blank-ticks {
     height: 8px;
+    background-color: gray;
 }
 
 .ticks {
     display: flex;
     justify-content: center;
+    background-color: gray;
 }
 
 .tick {
