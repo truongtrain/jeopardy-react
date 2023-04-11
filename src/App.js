@@ -146,7 +146,7 @@ const App = () => {
       }
       break;
     }
-    if (clue.daily_double_wager > 0) {
+    if (clue.daily_double_wager > 0 || conceded) {
       setMessageLines(incorrectMessage, clue.response.correct_response);
     } else {
       setMessageLines(incorrectMessage);
