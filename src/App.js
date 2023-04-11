@@ -35,7 +35,7 @@ const App = () => {
   const [disableAnswer, setDisableAnswer] = useState(false);
 
   useEffect(() => {
-    fetch('http://localhost:5000/example')
+    fetch('http://localhost:5000/game/984')
       .then((res) => res.json())
       .then((data) => {
         showData = data;
@@ -62,6 +62,7 @@ const App = () => {
   }, [responseTimerIsActive]);
 
   function startRound() {
+    stats.numClues += 1;
     displayClueByNumber(1);
   }
 
@@ -248,6 +249,7 @@ const App = () => {
     setMessageLines('');
     const nextClueNumber = getNextClueNumber();
     if (nextClueNumber > 0) {
+      stats.numClues += 1;
       displayClueByNumber(nextClueNumber);
     } else {
       setMessageLines('End of round');
@@ -281,7 +283,6 @@ const App = () => {
     conceded = false;
     setDisableAnswer(false);
     answeredContestants = [];
-    stats.numClues += 1;
     updateAvailableClueNumbers(clueNumber);
     for (let col = 0; col < 6; col++) {
       for (let row = 0; row < 5; row++) {
