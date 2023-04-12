@@ -105,13 +105,16 @@ const App = () => {
   }
 
   function noAttempts(row, col) {
-    return (!board[col][row].response.correct_contestant || board[col][row].response.correct_contestant === weakestContestant)
-      && board[col][row].response.incorrect_contestants.length === 0;
+    return isTripleStumper(row, col) && board[col][row].response.incorrect_contestants.length === 0;
   }
 
   function noOpponentAttemptsRemaining(row, col) {
     const incorrectContestants = board[col][row].response.incorrect_contestants.filter(contestant => contestant !== weakestContestant);
-    return answeredContestants.length === incorrectContestants.length && board[col][row].response.correct_contestant === weakestContestant;
+    return answeredContestants.length === incorrectContestants.length && isTripleStumper(row, col);
+  }
+
+  function isTripleStumper(row, col) {
+    return !board[col][row].response.correct_contestant || board[col][row].response.correct_contestant === weakestContestant;
   }
 
   function setMessageLines(text1, text2 = '') {
