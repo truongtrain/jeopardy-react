@@ -198,8 +198,9 @@ const App = () => {
 
   function updateOpponentScores(row, col) {
     const clue = board[col][row];
+    console.log(isPlayerDailyDouble);
     // don't update opponent score if this is the player's daily double
-    if (clue.daily_double_wager > 0 && isPlayerDailyDouble) {
+    if (isPlayerDailyDouble) {
       return;
     }
     const nextClueNumber = getNextClueNumber();
@@ -287,6 +288,7 @@ const App = () => {
     for (let col = 0; col < 6; col++) {
       for (let row = 0; row < 5; row++) {
         if (board[col][row].number === clueNumber) {
+          debugger
           if (!isPlayerDailyDouble && board[col][row].daily_double_wager > 0) {
             isPlayerDailyDouble = false;
             if (lastCorrectContestant !== playerName) {
@@ -443,7 +445,6 @@ const App = () => {
   }
 
   function deductScore(row, col) {
-    isPlayerDailyDouble = false;
     setBoardState(row, col, 'closed');
     setResponseTimerIsActive(false);
     responseCountdownIsActive = false;
@@ -456,7 +457,9 @@ const App = () => {
       stats.coryatScore -= board[col][row].value;
     }
     setContestants(contestants);
-    updateOpponentScores(row, col);
+    if (!isPlayerDailyDouble) {
+      updateOpponentScores(row, col);
+    }
   }
 
   function concede(row, col) {
