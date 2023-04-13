@@ -81,7 +81,8 @@ const App = () => {
     let incorrectContestants = board[col][row].response.incorrect_contestants;
     if (answeredContestants.length === 1) {
       incorrectContestants = incorrectContestants
-        .filter(contestant => contestant !== answeredContestants[0]);
+        .filter(contestant => contestant !== weakestContestant)
+        .filter(contestant => !answeredContestants.includes(contestant));
       bonusProbability = 0.166;
     }
     const probability = getProbability(board[col][row].value, round, bonusProbability);
@@ -92,12 +93,10 @@ const App = () => {
     } else {
       if (board[col][row].visible === 'closed') {
         setMessageLines(board[col][row].response.correct_response);
-      } else if (!hasIncorrectContestants(incorrectContestants) && board[col][row].response.correct_contestant !== weakestContestant) {
+      } else if (incorrectContestants.length === 0 && board[col][row].response.correct_contestant !== weakestContestant) {
         readText(board[col][row].response.correct_contestant);
-      } else if (incorrectContestants.length > 0){
-        debugger
-        const incorrectContestant = getIncorrectContestant(incorrectContestants);
-        readText(incorrectContestant);
+      } else if (incorrectContestants.length > 0) {
+        readText(incorrectContestants[0]);
       }
       updateOpponentScores(row, col);
     }
@@ -125,25 +124,20 @@ const App = () => {
     });
   }
 
-  function getIncorrectContestant(incorrectContestants) {
-    const filteredContestants = incorrectContestants
-      .filter(contestant => contestant !== weakestContestant);
-    return filteredContestants[0];
-  }
-
   function handleIncorrectResponses(incorrectContestants, clue, scoreChange) {
     let incorrectMessage = '';
     for (let i = 0; i < incorrectContestants.length; i++) {
+      debugger
       if (incorrectContestants[i] !== weakestContestant && !answeredContestants.includes(incorrectContestants[i])) {
         incorrectMessage += clue.response.incorrect_responses[i];
         contestants[incorrectContestants[i]].score -= scoreChange;
-        answeredContestants.push(incorrectContestants[i]);       
+        answeredContestants.push(incorrectContestants[i]);
         readText('No');
         seconds = 0;
         // keep the buzzer disabled for 500ms
         setTimeout(() => {
           setDisableAnswer(false);
-          setResponseTimerIsActive(true);         
+          setResponseTimerIsActive(true);
         }, 500);
       }
       break;
@@ -152,25 +146,23 @@ const App = () => {
       setMessageLines(incorrectMessage, clue.response.correct_response);
     } else {
       setMessageLines(incorrectMessage);
-    }   
+    }
     setContestants(contestants);
 
   }
 
   function handleCorrectResponse(correctContestant, scoreChange, clue, nextClueNumber, nextClue, row, col) {
-    if (correctContestant === clue.response.correct_contestant && correctContestant !== weakestContestant) {
-      lastCorrectContestant = correctContestant;
-      contestants[correctContestant].score += scoreChange;
-      setContestants(contestants);
-      setBoardState(row, col, 'closed');
-      setMessageLines(correctContestant + ': What is ' + clue.response.correct_response + '?');
-      if (nextClueNumber > 0) {
-        setTimeout(() => {
-          setMessageLines(correctContestant + ': ' + nextClue.category + ' for $' + nextClue.value);
-        }, 2000);
-        seconds = 0;
-        setTimeout(() => displayNextClue(), 4000);
-      }
+    lastCorrectContestant = correctContestant;
+    contestants[correctContestant].score += scoreChange;
+    setContestants(contestants);
+    setBoardState(row, col, 'closed');
+    setMessageLines(correctContestant + ': What is ' + clue.response.correct_response + '?');
+    if (nextClueNumber > 0) {
+      setTimeout(() => {
+        setMessageLines(correctContestant + ': ' + nextClue.category + ' for $' + nextClue.value);
+      }, 2000);
+      seconds = 0;
+      setTimeout(() => displayNextClue(), 4000);
     }
   }
 
@@ -201,7 +193,6 @@ const App = () => {
 
   function updateOpponentScores(row, col) {
     const clue = board[col][row];
-    console.log(isPlayerDailyDouble);
     // don't update opponent score if this is the player's daily double
     if (isPlayerDailyDouble) {
       return;
@@ -216,12 +207,16 @@ const App = () => {
       message = lastCorrectContestant + ': ' + nextClue.category + ' for $' + nextClue.value;
     }
     const incorrectContestants = clue.response.incorrect_contestants
+      .filter(contestant => contestant !== weakestContestant)
       .filter(contestant => !answeredContestants.includes(contestant));
-    const correctContestant = clue.response.correct_contestant;
+    let correctContestant = clue.response.correct_contestant;
+    if (correctContestant === weakestContestant) {
+      correctContestant = '';
+    }
     let scoreChange = clue.daily_double_wager > 0 ? getOpponentDailyDoubleWager(clue) : clue.value;
     // handle triple stumpers
-    if (!correctContestant || correctContestant === weakestContestant) {
-      if (hasIncorrectContestants(incorrectContestants)) {      
+    if (!correctContestant) {
+      if (incorrectContestants.length > 0) {
         handleIncorrectResponses(incorrectContestants, clue, scoreChange);
       } else {
         setMessageLines(clue.response.correct_response);
@@ -231,7 +226,7 @@ const App = () => {
         setTimeout(() => setMessageLines(message), 2500);
         setTimeout(() => displayNextClue(), 4500);
       }
-    } else if (hasIncorrectContestants(incorrectContestants)) {
+    } else if (incorrectContestants.length > 0) {
       handleIncorrectResponses(incorrectContestants, clue, scoreChange);
       if (conceded) {
         setTimeout(() => handleCorrectResponse(correctContestant, scoreChange, clue, nextClueNumber, nextClue, row, col), 3000);
@@ -239,12 +234,6 @@ const App = () => {
     } else { // no incorrect responses
       handleCorrectResponse(correctContestant, scoreChange, clue, nextClueNumber, nextClue, row, col);
     }
-  }
-
-  function hasIncorrectContestants(incorrectContestants) {
-    incorrectContestants = incorrectContestants
-      .filter(contestant => contestant !== weakestContestant);
-    return incorrectContestants.length > 0;
   }
 
   function displayNextClue() {
@@ -291,7 +280,6 @@ const App = () => {
     for (let col = 0; col < 6; col++) {
       for (let row = 0; row < 5; row++) {
         if (board[col][row].number === clueNumber) {
-          debugger
           if (!isPlayerDailyDouble && board[col][row].daily_double_wager > 0) {
             isPlayerDailyDouble = false;
             if (lastCorrectContestant !== playerName) {
@@ -347,13 +335,13 @@ const App = () => {
       if (isPlayerDailyDouble && board[col][row].daily_double_wager > 0) {
         setBoardState(row, col, 'eye');
       } else if (board[col][row].daily_double_wager > 0) {
-        concede(row, col);      
+        concede(row, col);
       } else if (board[col][row].visible === 'clue') {
         setBoardState(row, col, 'buzzer');
       }
       setResponseTimerIsActive(true);
       msg.removeEventListener('end', clearClue, true);
-    }, true);   
+    }, true);
   }
 
   function setBoardState(row, col, state) {
