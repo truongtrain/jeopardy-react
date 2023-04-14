@@ -127,7 +127,6 @@ const App = () => {
   function handleIncorrectResponses(incorrectContestants, clue, scoreChange) {
     let incorrectMessage = '';
     for (let i = 0; i < incorrectContestants.length; i++) {
-      debugger
       if (incorrectContestants[i] !== weakestContestant && !answeredContestants.includes(incorrectContestants[i])) {
         incorrectMessage += clue.response.incorrect_responses[i];
         contestants[incorrectContestants[i]].score -= scoreChange;
