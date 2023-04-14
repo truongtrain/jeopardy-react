@@ -3,7 +3,7 @@
 }
 
 .podium {
-    margin: 10px;
+    margin: 0.5rem;
     background-color: rgb(25, 25, 195);
     color: white;
     border: 5px solid black;
@@ -36,5 +36,5 @@
     height: 1vh;
     width: 1vh;
     background-color: red;
-    margin: 2px;
+    margin: 1rem;
 }

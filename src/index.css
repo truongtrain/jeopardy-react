@@ -75,7 +75,7 @@ td {
 }
 
 .wager {
-  margin: 10px;
+  margin: 1rem;
 }
 
 .submit-button {
@@ -98,19 +98,19 @@ td {
 }
 
 .buttons {
-  margin-left: 80px;
+  margin-left: 2rem;
 }
 
 .start-button {
   background-color: rgb(25, 25, 195);
   color: white;
   font-size: 16px;
-  margin-right: 3px;
+  margin-right: 0.3rem;
   border: 3px solid black;
 }
 
 .board {
-  margin: 1vh;
+  margin: 0.5rem;
 }
 
 .banner {

@@ -1,9 +1,9 @@
 .monitor {
     size: 50px;
     font-weight: bold;
-    margin-top: 10px;
+    margin-top: 0.5rem;
     margin-left: auto;
-    margin-bottom: 1px;
+    margin-bottom: 0.25rem;
     border: 7px solid black;
     width: 28vw;
     height: 17vh;
