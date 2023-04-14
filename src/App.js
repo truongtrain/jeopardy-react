@@ -597,7 +597,7 @@ const App = () => {
                     {!category[row].visible && <button className='clue-button' onClick={() => displayClue(row, column)}>${category[row].value}</button>}
                     <span className='clue-text'>{category[row] && category[row].visible === 'clue' && category[row].text}</span>
                     {category[row].visible === 'buzzer' && category[row].daily_double_wager === 0 &&
-                      <div>
+                      <div className='clue-button'>
                         <button className='buzzer-button' onClick={() => answer(row, column)} disabled={disableAnswer}><HiHandRaised /></button>
                         <button className='flag-button' onClick={() => concede(row, column)}><BsFillFlagFill /></button>
                       </div>
@@ -608,7 +608,7 @@ const App = () => {
                       </div>
                     }
                     {category[row].visible === 'judge' &&
-                      <div>
+                      <div className='clue-button'>
                         <button className='answer-button' onClick={() => incrementScore(row, column)}><FcApprove /></button>
                         <button className='answer-button' onClick={() => deductScore(row, column)}><FcDisapprove /></button>
                       </div>
