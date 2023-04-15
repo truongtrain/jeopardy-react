@@ -23,7 +23,6 @@ th {
   border: 3px solid black;
   background-color: rgb(25, 25, 195);
   color: white;
-  font-size: 16px;
 }
 
 td {
@@ -40,7 +39,7 @@ td {
   color: yellow;
   height: 100%;
   width: 100%;
-  font-size: 50px;
+  font-size: 3rem;
   border: 0px;
 }
 
@@ -49,7 +48,7 @@ td {
   color: yellow;
   width: 50%;
   height: 100%;
-  font-size: 32px;
+  font-size: 2rem;
 }
 
 .buzzer-button {
@@ -57,7 +56,7 @@ td {
   color: peachpuff;
   width: 50%;
   height: 100%;
-  font-size: 32px;
+  font-size: 2rem;
 }
 
 .flag-button {
@@ -65,13 +64,13 @@ td {
   color: white;
   width: 50%;
   height: 100%;
-  font-size: 32px;
+  font-size: 2rem;
 }
 
 .eye-button {
   background-color: rgb(25, 25, 195);
   color: yellow;
-  font-size: 32px;
+  font-size: 2rem;
 }
 
 .wager {
@@ -81,7 +80,6 @@ td {
 .submit-button {
   background-color: rgb(25, 25, 195);
   color: yellow;
-  font-size: 1wpx;
 }
 
 .wager-input {
@@ -89,12 +87,8 @@ td {
 }
 
 .final-input {
-  width: 80%;
+  width: 75%;
   border: 2px solid black;
-}
-
-.clue-text {
-  font-size: 16px;
 }
 
 .buttons {
@@ -104,7 +98,7 @@ td {
 .start-button {
   background-color: rgb(25, 25, 195);
   color: white;
-  font-size: 16px;
+  font-size: 1rem;
   margin-right: 0.3rem;
   border: 3px solid black;
 }

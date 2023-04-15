@@ -1,40 +1,53 @@
 .podiums {
     display: flex;
+    height: 20vh;
+    width: 30vw;
 }
 
 .podium {
     margin: 0.5rem;
     background-color: rgb(25, 25, 195);
     color: white;
-    border: 5px solid black;
+    border: 3px solid black;
     font-weight: bold;
-    height: 20vh;
-    width: 8vw;
+    height: 100%; 
+    width: 25%;
     text-align: center;
 }
 
-.podium-row {
+.blank-ticks {
+    height: 10%;
+    background-color: gray;
     border-top: 3px solid black;
+}
+
+.ticks {
+    height: 10%;
+    display: flex;
+    justify-content: center;
+    background-color: gray;
+    border-top: 3px solid black;
+}
+
+.tick {
+    height: 70%;
+    width: 7%;
+    background-color: red;
+    margin: 1.6%;
+}
+
+.podium-row {
+    height: 20%;
+    border-top: 3px solid black;
+}
+
+.bottom-podium-row {
+    height: 40%;
+    border-top: 3px solid black;
+    border-bottom: 3px solid black;
 }
 
 .name-row {
     background-color: darkblue;
 }
 
-.blank-ticks {
-    height: 8%;
-    background-color: gray;
-}
-
-.ticks {
-    display: flex;
-    justify-content: center;
-    background-color: gray;
-}
-
-.tick {
-    height: 1vh;
-    width: 1vh;
-    background-color: red;
-    margin: 1rem;
-}
