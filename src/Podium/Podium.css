@@ -37,13 +37,11 @@
 }
 
 .podium-row {
-    height: 20%;
+    height: 15%;
     border-top: 3px solid black;
 }
 
 .bottom-podium-row {
-    height: 40%;
-    border-top: 3px solid black;
     border-bottom: 3px solid black;
 }
 
