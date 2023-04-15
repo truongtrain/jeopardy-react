@@ -30,10 +30,14 @@
 }
 
 .tick {
-    height: 70%;
-    width: 7%;
+    box-sizing: border-box;
+    height: 0.5rem;
+    width: 0.5rem;
     background-color: red;
-    margin: 1.6%;
+    margin-top: auto;
+    margin-bottom: auto;
+    margin-left: 0.1rem;
+    margin-right: 0.1rem;
 }
 
 .podium-row {
