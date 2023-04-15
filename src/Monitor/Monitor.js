@@ -6,7 +6,7 @@ function Message(props) {
     const showLogo = props.showLogo;
 
     return (
-        <div className='monitor'>
+        <div id='monitor'>
             {showLogo && <img src={require('../Resources/jeopardy_logo.jpeg')} alt=""></img>}
             {!showLogo && <div>
                 <div>{message.line1}</div>

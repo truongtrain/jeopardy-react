@@ -82,16 +82,16 @@ td {
   color: yellow;
 }
 
-.wager-input {
+#daily-double-wager {
   width: 50%;
 }
 
-.final-input {
+#final-input {
   width: 75%;
   border: 2px solid black;
 }
 
-.buttons {
+.button-row {
   margin-left: 2rem;
 }
 
@@ -103,11 +103,11 @@ td {
   border: 3px solid black;
 }
 
-.board {
+#board {
   margin: 0.5rem;
 }
 
-.banner {
+#banner {
   display: flex;
 }
 

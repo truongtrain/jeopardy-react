@@ -478,7 +478,7 @@ const App = () => {
 
   function submit(row, col) {
     if (round === 3) {
-      document.getElementById('finalInput').value = null;
+      document.getElementById('final-input').value = null;
       setDisableAnswer(true);
       responseCountdownIsActive = false;
       setContestants(contestants);
@@ -559,11 +559,11 @@ const App = () => {
   }
   return (
     <div>
-      <div className='banner'>
+      <div id='banner'>
         <Podium contestants={contestants} startTimer={responseCountdownIsActive} playerName={playerName} />
         <div>
           <Monitor message={message} showLogo={showLogo} />
-          <div className='buttons'>
+          <div className='button-row'>
             {round !== 3 &&
               <div>
                 <button className='start-button' onClick={() => startRound()}>Start Round</button>
@@ -573,14 +573,14 @@ const App = () => {
             }
           </div>
           {round === 3 &&
-            <div className='buttons'>
+            <div className='button-row'>
               <button className='submit-button' disabled={disableAnswer} onClick={() => submit()}>SUBMIT</button>
-              <input className='final-input' id="finalInput" defaultValue={wager} onChange={handleInputChange} />
+              <input id="final-input" defaultValue={wager} onChange={handleInputChange} />
             </div>
           }
         </div>
       </div>
-      <div className='board'>
+      <div id='board'>
         <table>
           <thead>
             <tr>
@@ -618,7 +618,7 @@ const App = () => {
                         ENTER YOUR WAGER:
                         <div className='wager'>
                           <button className='submit-button' onClick={() => submit(row, column)}>SUBMIT</button>
-                          <input id="wager" className='wager-input' defaultValue={wager} onChange={handleInputChange} />
+                          <input id="daily-double-wager" defaultValue={wager} onChange={handleInputChange} />
                         </div>
                       </div>
                     }

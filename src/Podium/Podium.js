@@ -31,7 +31,7 @@ function Podium(props) {
     }, [responseCountdownIsActive]);
 
     return (
-        <div className='podiums'>
+        <div id='podiums'>
             {names.map(name => {
                 return contestants[name] && <div className='podium' key={name}>
                     {name === playerName && responseCountdownIsActive && 
