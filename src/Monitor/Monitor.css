@@ -1,9 +1,7 @@
 #monitor {
     size: 3rem;
     font-weight: bold;
-    margin-top: 0.5rem;
-    margin-left: auto;
-    margin-bottom: 0.25rem;
+    margin: 0.5rem 2rem;
     border: 7px solid black;
     width: 28vw;
     height: 17vh;

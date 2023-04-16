@@ -92,7 +92,8 @@ td {
 }
 
 .button-row {
-  margin-left: 2rem;
+  display: flex;
+  justify-content: center;
 }
 
 .start-button {

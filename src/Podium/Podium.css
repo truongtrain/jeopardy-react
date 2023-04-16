@@ -1,7 +1,7 @@
 #podiums {
-    display: flex;
     height: 23vh;
     width: 30vw;
+    display: flex;
 }
 
 .podium {
@@ -25,6 +25,7 @@
     height: 10%;
     display: flex;
     justify-content: center;
+    align-items: center;
     background-color: gray;
     border-top: 3px solid black;
 }
@@ -34,10 +35,7 @@
     height: 0.5rem;
     width: 0.5rem;
     background-color: red;
-    margin-top: auto;
-    margin-bottom: auto;
-    margin-left: 0.1rem;
-    margin-right: 0.1rem;
+    margin: 0.1rem;
 }
 
 .podium-row {
