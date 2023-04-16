@@ -35,7 +35,7 @@ const App = () => {
   const [disableAnswer, setDisableAnswer] = useState(false);
 
   useEffect(() => {
-    fetch('http://localhost:5000/game/984')
+    fetch('http://localhost:5000/game/1052')
       .then((res) => res.json())
       .then((data) => {
         showData = data;
