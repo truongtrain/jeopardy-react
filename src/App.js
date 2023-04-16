@@ -418,9 +418,6 @@ const App = () => {
   }
 
   function incrementScore(row, col) {
-    isPlayerDailyDouble = false;
-    setBoardState(row, col, 'closed');
-    setResponseTimerIsActive(false);
     lastCorrectContestant = playerName;
     msg.text = 'Correct';
     window.speechSynthesis.speak(msg);
@@ -432,12 +429,10 @@ const App = () => {
     setContestants(contestants);
     stats.coryatScore += board[col][row].value;
     stats.numCorrect += 1;
+    resetClue(row, col);
   }
 
   function deductScore(row, col) {
-    setBoardState(row, col, 'closed');
-    setResponseTimerIsActive(false);
-    responseCountdownIsActive = false;
     msg.text = 'No';
     window.speechSynthesis.speak(msg);
     if (board[col][row].daily_double_wager > 0) {
@@ -450,6 +445,14 @@ const App = () => {
     if (!isPlayerDailyDouble) {
       updateOpponentScores(row, col);
     }
+    resetClue(row, col);
+  }
+
+  function resetClue(row, col) {
+    isPlayerDailyDouble = false;
+    setBoardState(row, col, 'closed');
+    setResponseTimerIsActive(false);
+    responseCountdownIsActive = false;
   }
 
   function concede(row, col) {
