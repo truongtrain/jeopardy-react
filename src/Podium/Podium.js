@@ -44,8 +44,8 @@ function Podium(props) {
                     {name !== playerName && <div className='blank-ticks'></div>}
                     <div className='podium-row'>${contestants[name].score}</div>
                     <div className='podium-row name-row'>{name}</div>
-                    <div className='bottom-podium-row'>{contestants[name].response}</div>
-                    {contestants[name].response && <div>${contestants[name].wager}</div>}
+                    <div className='big-podium-row'>{contestants[name].response}</div>
+                    {contestants[name].response && <div className='podium-row'>${contestants[name].wager}</div>}
                 </div>
             })}
         </div>
