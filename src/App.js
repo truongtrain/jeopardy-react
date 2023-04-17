@@ -35,7 +35,7 @@ const App = () => {
   const [disableAnswer, setDisableAnswer] = useState(false);
 
   useEffect(() => {
-    fetch('http://localhost:5000/game/1060')
+    fetch('http://localhost:5000/game/1068')
       .then((res) => res.json())
       .then((data) => {
         showData = data;
@@ -301,7 +301,7 @@ const App = () => {
       if (availableClueNumbers[i - 1] === true) {
         const clue = getClue(i);
         // if this is a daily double that was not answered by the contestant in the televised game, skip this clue
-        if (clue.daily_double_wager > 0 && !isContestantsDailyDouble(lastCorrectContestant)) {
+        if (clue.daily_double_wager > 0 && !isContestantsDailyDouble(clue, lastCorrectContestant)) {
           continue;
         }
         return i;
@@ -310,7 +310,7 @@ const App = () => {
     return -1;
   }
 
-  function isContestantsDailyDouble(contestant) {
+  function isContestantsDailyDouble(clue, contestant) {
     return clue.response.correct_contestant === contestant || clue.response.incorrect_contestants.includes(contestant);
   }
 
