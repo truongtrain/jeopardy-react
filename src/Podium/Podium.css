@@ -2,10 +2,11 @@
     height: 23vh;
     width: 30vw;
     display: flex;
+    justify-content: space-around;
 }
 
 .podium {
-    margin: 0.5rem;
+    margin-top: 0.5rem;
     background-color: rgb(25, 25, 195);
     color: white;
     border: 3px solid black;
@@ -40,6 +41,7 @@
 
 .podium-row {
     height: 15%;
+    border-top: 3px solid black;
 }
 
 .big-podium-row {
@@ -48,5 +50,6 @@
 
 .name-row {
     background-color: darkblue;
+    border-bottom: 3px solid black;
 }
 
