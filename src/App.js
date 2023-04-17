@@ -35,7 +35,7 @@ const App = () => {
   const [disableAnswer, setDisableAnswer] = useState(false);
 
   useEffect(() => {
-    fetch('http://localhost:5000/game/1080')
+    fetch('http://localhost:5000/game/6172')
       .then((res) => res.json())
       .then((data) => {
         showData = data;
@@ -156,7 +156,7 @@ const App = () => {
     setContestants(contestants);
     setBoardState(row, col, 'closed');
     setMessageLines(correctContestant + ': What is ' + clue.response.correct_response + '?');
-    if (nextClueNumber > 0) {
+    if (nextClueNumber > 0 && nextClue) {
       setTimeout(() => {
         setMessageLines(correctContestant + ': ' + nextClue.category + ' for $' + nextClue.value);
       }, 2000);
