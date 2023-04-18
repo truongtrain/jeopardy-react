@@ -570,27 +570,18 @@ const App = () => {
     return <>Loading game...</>;
   }
   return (
-    <div>
-      <div id='banner'>
-        <Podium contestants={contestants} startTimer={responseCountdownIsActive} playerName={playerName} />
-        <div>
+    <div id='content'>
+      <Podium contestants={contestants} startTimer={responseCountdownIsActive} playerName={playerName} />
+      <div id='console'>
+        <div id='monitor-container'>
           <Monitor message={message} showLogo={showLogo} />
-          <div className='button-row'>
-            {round !== 3 &&
-              <div>
-                <button className='start-button' onClick={() => startRound()}>Start Round</button>
-                <button className='start-button' onClick={() => startDoubleJeopardyRound()}>Double Jeopardy</button>
-                <button className='start-button' onClick={() => showFinalJeopardyCategory()}>Final Jeopardy</button>
-              </div>
-            }
-          </div>
-          {round === 3 &&
-            <div className='button-row'>
-              <button className='submit-button' disabled={disableAnswer} onClick={() => submit()}>SUBMIT</button>
-              <input id="final-input" defaultValue={wager} onChange={handleInputChange} />
-            </div>
-          }
         </div>
+        
+        {round !== 3 && <button id='start-button' className='start-button' onClick={() => startRound()}>Start Round</button>}
+        {round !== 3 && <button id='double-jeopardy-button' className='start-button' onClick={() => startDoubleJeopardyRound()}>Double Jeopardy</button>}
+        {round !== 3 && <button id='final-jeopardy-button' className='start-button' onClick={() => showFinalJeopardyCategory()}>Final Jeopardy</button>}
+        {round === 3 && <button id='final-submit-button' className='submit-button' disabled={disableAnswer} onClick={() => submit()}>SUBMIT</button>}
+        {round === 3 && <input id="final-input" defaultValue={wager} onChange={handleInputChange} />}       
       </div>
       <div id='board'>
         <table>

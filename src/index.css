@@ -13,12 +13,56 @@ code {
     monospace;
 }
 
-#banner {
-  display: flex;
-  height: 20%;
+#content {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  grid-template-rows:1fr 3fr;
+  grid-template-areas:
+    "podiums console"
+    "board board";
+}
+
+Podium {
+  grid-area: podiums;
+}
+
+#console {
+  grid-area: console;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 3fr 1fr;
+  grid-template-areas:
+    "monitor-display monitor-display monitor-display"
+    "left middle right";
+}
+
+#monitor-container {
+  grid-area: monitor-display;
+}
+
+#start-button {
+  grid-area: left;
+}
+
+#double-jeopardy-button {
+  grid-area: middle;
+}
+
+#final-jeopardy-button {
+  grid-area: right;
+}
+
+#final-submit-button {
+  grid-area: left;
+}
+
+#final-input {
+  grid-area: middle right; 
+  border: 2px solid black;
 }
 
 #board {
+  grid-area: board;
   margin: 0.25rem;
 }
 
@@ -107,9 +151,4 @@ td {
 
 #daily-double-wager {
   width: 50%;
-}
-
-#final-input {
-  width: 50%;
-  border: 2px solid black;
 }
