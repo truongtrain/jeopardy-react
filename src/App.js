@@ -585,9 +585,9 @@ const App = () => {
       <div id='board'>
         <table>
           <thead>
-            <tr>
+            <tr id='header-row'>
               {Array.from(Array(6), (_arrayElement, row) =>
-                <th key={'header' + row}>{getCategory(board[row])}</th>
+                <th key={'header' + row}>{round !== 3 && getCategory(board[row])}</th>
               )}
             </tr>
           </thead>

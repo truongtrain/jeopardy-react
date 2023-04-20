@@ -73,6 +73,10 @@ table {
   user-select: none;
 }
 
+#header-row {
+  height: 5vh;
+}
+
 th {
   border: 3px solid black;
   background-color: rgb(25, 25, 195);
