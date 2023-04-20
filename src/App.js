@@ -19,7 +19,7 @@ let finalResponse = '';
 let wager = 0;
 let seconds = 0;
 let lastCorrectContestant = playerName;
-let round = 1;
+let round = 0;
 let responseInterval = {};
 let isPlayerDailyDouble = false;
 let conceded = false;
@@ -62,8 +62,26 @@ const App = () => {
   }, [responseTimerIsActive]);
 
   function startRound() {
+    if (round === 1) {
+      startDoubleJeopardyRound();
+    }
+    round += 1;
     stats.numClues += 1;
     displayClueByNumber(1);
+  }
+
+  function startDoubleJeopardyRound() {
+    round = 2;
+    let thirdPlace = playerName;
+    Object.keys(contestants).forEach(contestant => {
+      if (contestants[contestant].score < thirdPlace) {
+        thirdPlace = contestant;
+      }
+    });
+    lastCorrectContestant = thirdPlace;
+    setBoard(showData.double_jeopardy_round);
+    availableClueNumbers = new Array(30).fill(true);
+    setMessageLines('');
   }
 
   const handleInputChange = event => {
@@ -244,6 +262,9 @@ const App = () => {
       displayClueByNumber(nextClueNumber);
     } else {
       setMessageLines('End of round');
+      if (round === 2) {
+        showFinalJeopardyCategory();
+      }
     }
   }
 
@@ -500,20 +521,6 @@ const App = () => {
     }
   }
 
-  function startDoubleJeopardyRound() {
-    round = 2;
-    let thirdPlace = playerName;
-    Object.keys(contestants).forEach(contestant => {
-      if (contestants[contestant].score < thirdPlace) {
-        thirdPlace = contestant;
-      }
-    });
-    lastCorrectContestant = thirdPlace;
-    setBoard(showData.double_jeopardy_round);
-    availableClueNumbers = new Array(30).fill(true);
-    setMessageLines('');
-  }
-
   function showFinalJeopardyCategory() {
     round = 3;
     setDisableAnswer(false);
@@ -572,16 +579,9 @@ const App = () => {
   }
   return (
     <div id='content'>
-      <Podium contestants={contestants} startTimer={responseCountdownIsActive} playerName={playerName} />
-      <div id='console'>
-        <div id='monitor-container'>
-          <Monitor message={message} imageUrl={imageUrl} />
-        </div>
-
-        {round !== 3 && <button id='start-button' className='start-button' onClick={() => startRound()}>Start Round</button>}
-        {round !== 3 && <button id='double-jeopardy-button' className='start-button' onClick={() => startDoubleJeopardyRound()}>Double Jeopardy</button>}
-        {round !== 3 && <button id='final-jeopardy-button' className='start-button' onClick={() => showFinalJeopardyCategory()}>Final Jeopardy</button>}
-      </div>
+      <Podium contestants={contestants} startTimer={responseCountdownIsActive} playerName={playerName} />    
+      <Monitor message={message} imageUrl={imageUrl} />              
+      {round !== 3 && <button id='start-button' onClick={() => startRound()}>Start Round</button>}
       <div id='board'>
         <table>
           <thead>
@@ -596,7 +596,7 @@ const App = () => {
               <tr key={'row' + row}>
                 {board.map((category, column) =>
                   <td key={'column' + column}>
-                    {/* {!category[row].visible && <button className='clue-button' onClick={() => displayClue(row, column)}>${category[row].value}</button>} */}
+                    {!category[row].visible && <button className='clue-button' onClick={() => displayClue(row, column)}>${category[row].value}</button>}
                     <span>{category[row] && category[row].visible === 'clue' && category[row].text}</span>
                     {category[row].visible === 'buzzer' && category[row].daily_double_wager === 0 &&
                       <div className='clue-button'>

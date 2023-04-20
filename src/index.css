@@ -1,5 +1,6 @@
 body {
   margin: 0;
+  height: 100vh;
   background-image: url(./Resources/jeopardy_background.jpeg);
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
@@ -13,12 +14,17 @@ code {
     monospace;
 }
 
+#root {
+  height: 100%;
+}
+
 #content {
+  height: 100%;
   display: grid;
   grid-template-columns: 1fr 1.7fr 1fr;
-  grid-template-rows: 1fr 4fr;
+  grid-template-rows: 1.5fr 4fr;
   grid-template-areas:
-    "podiums console blank"
+    "podiums monitor blank"
     "board board board";
 }
 
@@ -26,35 +32,13 @@ Podium {
   grid-area: podiums;
 }
 
-#console {
-  grid-area: console;
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  grid-template-rows: 4fr;
+Monitor {
+  grid-area: monitor;
   align-items: center;
 }
 
-#monitor-container {
-  grid-column: 2 / 3;
-  grid-row: 1;
-}
-
 #start-button {
-  grid-column: 1;
-  grid-row: 2;
-}
-
-#double-jeopardy-button {
-  grid-column: 2;
-  grid-row: 2;
-}
-
-#final-jeopardy-button {
-  grid-column: 3;
-  grid-row: 2;
-}
-
-.start-button {
+  grid-area: blank;
   background-color: rgb(25, 25, 195);
   color: white;
   font-size: 1rem;
@@ -74,7 +58,7 @@ table {
 }
 
 #header-row {
-  height: 5vh;
+  height: 6vh;
 }
 
 th {
