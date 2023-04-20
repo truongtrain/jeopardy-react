@@ -32,7 +32,7 @@ const App = () => {
   const [contestants, setContestants] = useState(null);
   const [responseTimerIsActive, setResponseTimerIsActive] = useState(false);
   const [disableAnswer, setDisableAnswer] = useState(false);
-  const [imageUrl, setImageUrl] = useState('sdgwes');
+  const [imageUrl, setImageUrl] = useState('');
 
   useEffect(() => {
     fetch('http://localhost:5000/game/1052')
