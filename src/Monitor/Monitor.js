@@ -7,7 +7,7 @@ function Message(props) {
 
     return (
         <div id='monitor'>
-            {<img src={imageUrl} alt=""></img>}
+            {imageUrl && <img src={imageUrl} alt=""></img>}
             {<div>
                 <div>{message.line1}</div>
                 <div>{message.line2}</div>
