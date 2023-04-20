@@ -517,7 +517,7 @@ const App = () => {
   function showFinalJeopardyCategory() {
     round = 3;
     setDisableAnswer(false);
-    setMessageLines(showData.final_jeopardy.category);
+    setMessageLines('');
     msg.text = 'The final jeopardy category is ' + showData.final_jeopardy.category + '. How much will you wager';
     window.speechSynthesis.speak(msg);
   }
@@ -555,6 +555,7 @@ const App = () => {
       });
     });
     setContestants(contestants);
+    setImageUrl('');
     setMessageLines(showData.final_jeopardy.correct_response);
   }
 
@@ -576,7 +577,7 @@ const App = () => {
         <div id='monitor-container'>
           <Monitor message={message} imageUrl={imageUrl} />
         </div>
-        
+
         {round !== 3 && <button id='start-button' className='start-button' onClick={() => startRound()}>Start Round</button>}
         {round !== 3 && <button id='double-jeopardy-button' className='start-button' onClick={() => startDoubleJeopardyRound()}>Double Jeopardy</button>}
         {round !== 3 && <button id='final-jeopardy-button' className='start-button' onClick={() => showFinalJeopardyCategory()}>Final Jeopardy</button>}
@@ -623,6 +624,11 @@ const App = () => {
                         </div>
                       </div>
                     }
+                    {round === 3 && row === 1 && column === 3 && category[row].visible !== 'final' &&
+                      <h3>
+                        {showData.final_jeopardy.category}
+                      </h3>
+                    }
                     {row === 1 && column === 3 && category[row].visible === 'final' &&
                       <div>
                         {showData.final_jeopardy.clue.toUpperCase()}
@@ -630,11 +636,11 @@ const App = () => {
                     }
                     {round === 3 && row === 2 && column === 3 &&
                       <div>
-                        {board[3][1].visible !== 'final' && <span>ENTER YOUR WAGER:</span>}                       
-                        {board[3][1].visible === 'final' && <span>ENTER YOUR RESPONSE:</span>}                       
+                        {board[3][1].visible !== 'final' && <span>ENTER YOUR WAGER:</span>}
+                        {board[3][1].visible === 'final' && <span>ENTER YOUR RESPONSE:</span>}
                         <div className='wager'>
-                          <button id='final-submit-button' className='submit-button' disabled={disableAnswer} onClick={() => submit()}>SUBMIT</button>
-                          <input id="final-input" defaultValue={wager} onChange={handleInputChange} />    
+                          {board[3][1].visible !== 'final' && <button id='final-submit-button' className='submit-button' disabled={disableAnswer} onClick={() => submit()}>SUBMIT</button>}
+                          <input id="final-input" defaultValue={wager} onChange={handleInputChange} />
                         </div>
                       </div>
                     }

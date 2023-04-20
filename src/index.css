@@ -54,16 +54,6 @@ Podium {
   grid-row: 2;
 }
 
-input {
-  width: 50%;
-}
-
-#final-submit-button {
-  grid-column: 3;
-  grid-row: 2;
-  width: 40%;
-}
-
 .start-button {
   background-color: rgb(25, 25, 195);
   color: white;
@@ -138,6 +128,8 @@ td {
 }
 
 .wager {
+  display: flex;
+  justify-content: center;
   margin: 1rem;
 }
 
