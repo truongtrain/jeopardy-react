@@ -33,9 +33,10 @@ const App = () => {
   const [contestants, setContestants] = useState(null);
   const [responseTimerIsActive, setResponseTimerIsActive] = useState(false);
   const [disableAnswer, setDisableAnswer] = useState(false);
+  const [imageUrl, setImageUrl] = useState('sdgwes');
 
   useEffect(() => {
-    fetch('http://localhost:5000/game/6172')
+    fetch('http://localhost:5000/game/1052')
       .then((res) => res.json())
       .then((data) => {
         showData = data;
@@ -525,7 +526,8 @@ const App = () => {
 
   function showFinalJeopardyClue() {
     let finalMusic = new Audio(FinalMusic);
-    setMessageLines(showData.final_jeopardy.clue.toUpperCase());
+    setBoardState(1, 3, 'final');
+    setImageUrl(showData.final_jeopardy.url);
     msg.text = showData.final_jeopardy.clue;
     window.speechSynthesis.speak(msg);
     msg.addEventListener('end', () => {
@@ -574,14 +576,12 @@ const App = () => {
       <Podium contestants={contestants} startTimer={responseCountdownIsActive} playerName={playerName} />
       <div id='console'>
         <div id='monitor-container'>
-          <Monitor message={message} showLogo={showLogo} />
+          <Monitor message={message} showLogo={showLogo} imageUrl={imageUrl} />
         </div>
         
         {round !== 3 && <button id='start-button' className='start-button' onClick={() => startRound()}>Start Round</button>}
         {round !== 3 && <button id='double-jeopardy-button' className='start-button' onClick={() => startDoubleJeopardyRound()}>Double Jeopardy</button>}
         {round !== 3 && <button id='final-jeopardy-button' className='start-button' onClick={() => showFinalJeopardyCategory()}>Final Jeopardy</button>}
-        {round === 3 && <button id='final-submit-button' className='submit-button' disabled={disableAnswer} onClick={() => submit()}>SUBMIT</button>}
-        {round === 3 && <input id="final-input" defaultValue={wager} onChange={handleInputChange} />}       
       </div>
       <div id='board'>
         <table>
@@ -597,7 +597,7 @@ const App = () => {
               <tr key={'row' + row}>
                 {board.map((category, column) =>
                   <td key={'column' + column}>
-                    {!category[row].visible && <button className='clue-button' onClick={() => displayClue(row, column)}>${category[row].value}</button>}
+                    {/* {!category[row].visible && <button className='clue-button' onClick={() => displayClue(row, column)}>${category[row].value}</button>} */}
                     <span>{category[row] && category[row].visible === 'clue' && category[row].text}</span>
                     {category[row].visible === 'buzzer' && category[row].daily_double_wager === 0 &&
                       <div className='clue-button'>
@@ -621,7 +621,22 @@ const App = () => {
                         ENTER YOUR WAGER:
                         <div className='wager'>
                           <button className='submit-button' onClick={() => submit(row, column)}>SUBMIT</button>
-                          <input id="daily-double-wager" defaultValue={wager} onChange={handleInputChange} />
+                          <input defaultValue={wager} onChange={handleInputChange} />
+                        </div>
+                      </div>
+                    }
+                    {row === 1 && column === 3 && category[row].visible === 'final' &&
+                      <div>
+                        {showData.final_jeopardy.clue.toUpperCase()}
+                      </div>
+                    }
+                    {round === 3 && row === 2 && column === 3 &&
+                      <div>
+                        {board[3][1].visible !== 'final' && <span>ENTER YOUR WAGER:</span>}                       
+                        {board[3][1].visible === 'final' && <span>ENTER YOUR RESPONSE:</span>}                       
+                        <div className='wager'>
+                          <button id='final-submit-button' className='submit-button' disabled={disableAnswer} onClick={() => submit()}>SUBMIT</button>
+                          <input id="final-input" defaultValue={wager} onChange={handleInputChange} />    
                         </div>
                       </div>
                     }

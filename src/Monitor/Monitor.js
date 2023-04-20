@@ -4,10 +4,11 @@ import './Monitor.css';
 function Message(props) {
     const message = props.message;
     const showLogo = props.showLogo;
+    const imageUrl = props.imageUrl;
 
     return (
         <div id='monitor'>
-            {showLogo && <img src={require('../Resources/jeopardy_logo.jpeg')} alt=""></img>}
+            {<img src={imageUrl} alt=""></img>}
             {!showLogo && <div>
                 <div>{message.line1}</div>
                 <div>{message.line2}</div>

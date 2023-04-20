@@ -15,8 +15,8 @@ code {
 
 #content {
   display: grid;
-  grid-template-columns: 1fr 1.2fr 1fr;
-  grid-template-rows: 1fr 3fr;
+  grid-template-columns: 1fr 1.7fr 1fr;
+  grid-template-rows: 1fr 4fr;
   grid-template-areas:
     "podiums console blank"
     "board board board";
@@ -30,12 +30,12 @@ Podium {
   grid-area: console;
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
-  grid-template-rows: 4fr 1fr;
+  grid-template-rows: 4fr;
   align-items: center;
 }
 
 #monitor-container {
-  grid-column: 1 / 4;
+  grid-column: 2 / 3;
   grid-row: 1;
 }
 
@@ -54,17 +54,14 @@ Podium {
   grid-row: 2;
 }
 
-#final-input {
-  grid-column: 1 / 3;
-  grid-row: 2; 
-  border: 2px solid black;
-  margin-left: 2rem;
+input {
+  width: 50%;
 }
 
 #final-submit-button {
   grid-column: 3;
   grid-row: 2;
-  width: 80%;
+  width: 40%;
 }
 
 .start-button {
@@ -147,8 +144,4 @@ td {
 .submit-button {
   background-color: rgb(25, 25, 195);
   color: yellow;
-}
-
-#daily-double-wager {
-  width: 50%;
 }
