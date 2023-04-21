@@ -350,7 +350,7 @@ const App = () => {
 
   function readClue(row, col) {
     let clue;
-    if (round === 1) {
+    if (round <= 1) {
       clue = showData.jeopardy_round[col][row];
     } else if (round === 2) {
       clue = showData.double_jeopardy_round[col][row];
