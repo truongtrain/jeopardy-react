@@ -5,6 +5,7 @@
 }
 
 .podium {
+    box-sizing: border-box;
     margin: 0.5rem;
     background-color: rgb(25, 25, 195);
     color: white;
