@@ -62,12 +62,16 @@ const App = () => {
   }, [responseTimerIsActive]);
 
   function startRound() {
-    if (round === 1) {
+    if (round === 0) {
+      round = 1;
+      stats.numClues += 1;
+      displayClueByNumber(1);
+    } else if (round === 1) {
+      stats.numClues += 1;
       startDoubleJeopardyRound();
-    }
-    round += 1;
-    stats.numClues += 1;
-    displayClueByNumber(1);
+    } else if (round === 2) {
+      showFinalJeopardyCategory();
+    } 
   }
 
   function startDoubleJeopardyRound() {
@@ -261,9 +265,6 @@ const App = () => {
       displayClueByNumber(nextClueNumber);
     } else {
       setMessageLines('End of round');
-      if (round === 2) {
-        showFinalJeopardyCategory();
-      }
     }
   }
 
