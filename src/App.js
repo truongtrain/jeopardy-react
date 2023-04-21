@@ -32,7 +32,7 @@ const App = () => {
   const [contestants, setContestants] = useState(null);
   const [responseTimerIsActive, setResponseTimerIsActive] = useState(false);
   const [disableAnswer, setDisableAnswer] = useState(false);
-  const [imageUrl, setImageUrl] = useState('');
+  const [imageUrl, setImageUrl] = useState('logo');
 
   useEffect(() => {
     fetch('http://localhost:5000/game/1052')
@@ -63,6 +63,7 @@ const App = () => {
 
   function startRound() {
     if (round === 0) {
+      setImageUrl('');
       round = 1;
       stats.numClues += 1;
       displayClueByNumber(1);
@@ -75,6 +76,7 @@ const App = () => {
   }
 
   function startDoubleJeopardyRound() {
+    setImageUrl('');
     round = 2;
     let thirdPlace = playerName;
     Object.keys(contestants).forEach(contestant => {
@@ -269,6 +271,7 @@ const App = () => {
   }
 
   function displayClue(row, col) {
+    setImageUrl('');
     if (round === 0) {
       round = 1;
     }

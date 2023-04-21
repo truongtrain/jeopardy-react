@@ -7,7 +7,8 @@ function Message(props) {
 
     return (
         <div id='monitor'>
-            {imageUrl && <img src={imageUrl} alt=""></img>}
+            {imageUrl === 'logo' && <img src={require('../Resources/jeopardy_logo.jpeg')} alt=""></img>}
+            {imageUrl && imageUrl !== 'logo' && <img src={imageUrl} alt=""></img>}
             {<div>
                 <div>{message.line1}</div>
                 <div>{message.line2}</div>
