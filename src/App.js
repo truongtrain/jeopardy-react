@@ -268,6 +268,9 @@ const App = () => {
   }
 
   function displayClue(row, col) {
+    if (round === 0) {
+      round = 1;
+    }
     conceded = false;
     setDisableAnswer(false);
     answeredContestants = [];
@@ -350,7 +353,7 @@ const App = () => {
 
   function readClue(row, col) {
     let clue;
-    if (round <= 1) {
+    if (round === 1) {
       clue = showData.jeopardy_round[col][row];
     } else if (round === 2) {
       clue = showData.double_jeopardy_round[col][row];
@@ -378,6 +381,7 @@ const App = () => {
   }
 
   function getProbability(value, round, bonusProbability) {
+    debugger
     if (round === 1) {
       switch (value) {
         case 200:
