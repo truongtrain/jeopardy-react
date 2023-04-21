@@ -37,15 +37,6 @@ Monitor {
   align-items: center;
 }
 
-#start-button {
-  grid-area: blank;
-  background-color: rgb(25, 25, 195);
-  color: white;
-  font-size: 1rem;
-  margin-right: 0.3rem;
-  border: 3px solid black;
-}
-
 #board {
   grid-area: board;
   margin: 0.25rem;

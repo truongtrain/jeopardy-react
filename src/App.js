@@ -96,11 +96,10 @@ const App = () => {
     setDisableAnswer(true);
     setResponseTimerIsActive(false);
     let bonusProbability = 0;
-    let incorrectContestants = board[col][row].response.incorrect_contestants;
+    let incorrectContestants = board[col][row].response.incorrect_contestants
+    .filter(contestant => contestant !== weakestContestant)
+    .filter(contestant => contestant !== weakestContestant);
     if (answeredContestants.length === 1) {
-      incorrectContestants = incorrectContestants
-        .filter(contestant => contestant !== weakestContestant)
-        .filter(contestant => !answeredContestants.includes(contestant));
       bonusProbability = 0.166;
     }
     const probability = getProbability(board[col][row].value, round, bonusProbability);
@@ -580,8 +579,9 @@ const App = () => {
   return (
     <div id='content'>
       <Podium contestants={contestants} startTimer={responseCountdownIsActive} playerName={playerName} />    
-      <Monitor message={message} imageUrl={imageUrl} />              
-      {round !== 3 && <button id='start-button' onClick={() => startRound()}>Start Round</button>}
+      <div onClick={() => startRound()}>
+        <Monitor message={message} imageUrl={imageUrl} />
+      </div>                  
       <div id='board'>
         <table>
           <thead>
