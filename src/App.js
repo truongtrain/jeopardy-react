@@ -65,10 +65,8 @@ const App = () => {
     if (round === 0) {
       setImageUrl('');
       round = 1;
-      stats.numClues += 1;
       displayClueByNumber(1);
     } else if (round === 1) {
-      stats.numClues += 1;
       startDoubleJeopardyRound();
     } else if (round === 2) {
       showFinalJeopardyCategory();
@@ -263,7 +261,6 @@ const App = () => {
     setMessageLines('');
     const nextClueNumber = getNextClueNumber();
     if (nextClueNumber > 0) {
-      stats.numClues += 1;
       displayClueByNumber(nextClueNumber);
     } else {
       setMessageLines('End of round');
@@ -286,7 +283,6 @@ const App = () => {
     conceded = false;
     setDisableAnswer(false);
     answeredContestants = [];
-    stats.numClues += 1;
     lastCorrectContestant = playerName;
     const clue = board[col][row];
     if (clue.daily_double_wager > 0) {
@@ -364,6 +360,7 @@ const App = () => {
   }
 
   function readClue(row, col) {
+    stats.numClues += 1;
     let clue;
     if (round === 1) {
       clue = showData.jeopardy_round[col][row];
