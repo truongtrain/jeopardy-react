@@ -67,15 +67,18 @@ const App = () => {
       round = 1;
       displayClueByNumber(1);
     } else if (round === 1) {
-      startDoubleJeopardyRound();
+      setUpDoubleJeopardyBoard();     
+    } else if (round === 1.5) {
+      round = 2;
+      displayClueByNumber(1);
     } else if (round === 2) {
       showFinalJeopardyCategory();
     } 
   }
 
-  function startDoubleJeopardyRound() {
+  function setUpDoubleJeopardyBoard() {
     setImageUrl('');
-    round = 2;
+    round = 1.5;
     let thirdPlace = playerName;
     Object.keys(contestants).forEach(contestant => {
       if (contestants[contestant].score < thirdPlace) {
@@ -371,6 +374,7 @@ const App = () => {
     msg.text = clue.text;
     window.speechSynthesis.speak(msg);
     msg.addEventListener('end', function clearClue() {
+      setImageUrl('');
       seconds = 0;
       if (isPlayerDailyDouble && board[col][row].daily_double_wager > 0) {
         setBoardState(row, col, 'eye');
