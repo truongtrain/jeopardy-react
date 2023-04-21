@@ -1,12 +1,11 @@
 #monitor {
-    /* background-image: url(../Resources/jeopardy_logo.jpeg); */
     box-sizing: border-box;
     size: 3rem;
     font-weight: bold;
     margin: 0.5rem 8rem 0.25rem;
     border: 7px solid black;
-    height: 90%;
-    width: 50%;
+    height: 25vh;
+    width: 45vh;
     display:flex;
     justify-content:center;
     align-items:center;

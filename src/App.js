@@ -32,6 +32,7 @@ const App = () => {
   const [contestants, setContestants] = useState(null);
   const [responseTimerIsActive, setResponseTimerIsActive] = useState(false);
   const [disableAnswer, setDisableAnswer] = useState(false);
+  const [disableClue, setDisableClue] = useState(false);
   const [imageUrl, setImageUrl] = useState('logo');
 
   useEffect(() => {
@@ -89,6 +90,7 @@ const App = () => {
     setBoard(showData.double_jeopardy_round);
     availableClueNumbers = new Array(30).fill(true);
     setMessageLines('');
+    setDisableAnswer(false);
   }
 
   const handleInputChange = event => {
@@ -283,6 +285,9 @@ const App = () => {
     if (round === 0) {
       round = 1;
     }
+    if (round === 1.5) {
+      round = 2;
+    }
     conceded = false;
     setDisableAnswer(false);
     answeredContestants = [];
@@ -363,11 +368,12 @@ const App = () => {
   }
 
   function readClue(row, col) {
+    setDisableClue(true);
     stats.numClues += 1;
     let clue;
     if (round === 1) {
       clue = showData.jeopardy_round[col][row];
-    } else if (round === 2) {
+    } else if (round === 2 || round === 1.5) {
       clue = showData.double_jeopardy_round[col][row];
     }
     displayClueImage(row, col);
@@ -464,6 +470,7 @@ const App = () => {
   }
 
   function incrementScore(row, col) {
+    setDisableClue(false);
     lastCorrectContestant = playerName;
     msg.text = 'Correct';
     window.speechSynthesis.speak(msg);
@@ -492,6 +499,7 @@ const App = () => {
       updateOpponentScores(row, col);
     }
     resetClue(row, col);
+    setDisableClue(false);
   }
 
   function resetClue(row, col) {
@@ -506,6 +514,9 @@ const App = () => {
     setResponseTimerIsActive(false);
     conceded = true;
     updateOpponentScores(row, col);
+    if (lastCorrectContestant === playerName) {
+      setDisableClue(false);
+    }
   }
 
   function showAnswer(row, col) {
@@ -614,7 +625,7 @@ const App = () => {
               <tr key={'row' + row}>
                 {board.map((category, column) =>
                   <td key={'column' + column}>
-                    {!category[row].visible && <button className='clue-button' onClick={() => displayClue(row, column)}>${category[row].value}</button>}
+                    {!category[row].visible && <button className='clue-button' onClick={() => displayClue(row, column)} disabled={disableClue}>${category[row].value}</button>}
                     <span>{category[row] && category[row].visible === 'clue' && category[row].text}</span>
                     {category[row].visible === 'buzzer' && category[row].daily_double_wager === 0 &&
                       <div className='clue-button'>
