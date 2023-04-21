@@ -5,7 +5,7 @@
 }
 
 .podium {
-    margin-top: 0.5rem;
+    margin: 0.5rem;
     background-color: rgb(25, 25, 195);
     color: white;
     border: 3px solid black;
@@ -16,13 +16,13 @@
 }
 
 .blank-ticks {
-    height: 10%;
+    height: 7%;
     background-color: gray;
     border-top: 3px solid black;
 }
 
 .ticks {
-    height: 10%;
+    height: 7%;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -39,12 +39,15 @@
 }
 
 .podium-row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     height: 15%;
     border-top: 3px solid black;
 }
 
 .big-podium-row {
-    height: 30%;
+    height: 40%;
 }
 
 .name-row {

@@ -35,7 +35,7 @@ const App = () => {
   const [imageUrl, setImageUrl] = useState('logo');
 
   useEffect(() => {
-    fetch('http://localhost:5000/game/1052')
+    fetch('http://localhost:5000/game/1058')
       .then((res) => res.json())
       .then((data) => {
         showData = data;
@@ -270,8 +270,16 @@ const App = () => {
     }
   }
 
+  function displayClueImage(row, col) {
+    const url = board[col][row].url;
+    if (url) {
+      setImageUrl(url);
+    } else {
+      setImageUrl('');
+    }
+  }
+
   function displayClue(row, col) {
-    setImageUrl('');
     if (round === 0) {
       round = 1;
     }
@@ -362,6 +370,7 @@ const App = () => {
     } else if (round === 2) {
       clue = showData.double_jeopardy_round[col][row];
     }
+    displayClueImage(row, col);
     msg.text = clue.text;
     window.speechSynthesis.speak(msg);
     msg.addEventListener('end', function clearClue() {
