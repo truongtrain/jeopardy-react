@@ -6,9 +6,9 @@
     border: 7px solid black;
     height: 25vh;
     width: 45vh;
-    display:flex;
-    justify-content:center;
-    align-items:center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     background-color: rgb(25, 25, 195);
     color: white;
     text-align: center;
