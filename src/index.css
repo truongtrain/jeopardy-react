@@ -28,13 +28,28 @@ code {
     "board board board";
 }
 
+@media (max-width: 1000px) {
+  html {
+    font-size: 12px;
+  }
+
+  #content {
+    height: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    grid-template-areas:
+      "podiums monitor"
+      "board board";
+  }
+}
+
 Podium {
   grid-area: podiums;
 }
 
-Monitor {
+#monitor-container {
   grid-area: monitor;
-  align-items: center;
 }
 
 #board {
@@ -74,6 +89,9 @@ td {
   width: 100%;
   font-size: 3rem;
   border: 0px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .answer-button {

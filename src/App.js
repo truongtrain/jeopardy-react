@@ -610,8 +610,9 @@ const App = () => {
   }
   return (
     <div id='content'>
+      <meta name='viewport' content='width=device-width, initial-scale=1' />
       <Podium contestants={contestants} startTimer={responseCountdownIsActive} playerName={playerName} />    
-      <div onClick={() => startRound()}>
+      <div id='monitor-container' onClick={() => startRound()}>
         <Monitor message={message} imageUrl={imageUrl} />
       </div>                  
       <div id='board'>
