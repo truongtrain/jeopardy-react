@@ -20,9 +20,9 @@
         size: 3rem;
         font-weight: bold;
         border: 7px solid black;
-        display:flex;
-        justify-content:center;
-        align-items:center;
+        display: flex;
+        justify-content: center;
+        align-items: center;
         background-color: rgb(25, 25, 195);
         color: white;
         text-align: center;
