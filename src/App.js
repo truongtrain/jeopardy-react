@@ -36,7 +36,7 @@ const App = () => {
   const [imageUrl, setImageUrl] = useState('logo');
 
   useEffect(() => {
-    fetch('http://localhost:5000/game/1058')
+    fetch('http://localhost:5000/game/1080')
       .then((res) => res.json())
       .then((data) => {
         showData = data;
@@ -151,6 +151,8 @@ const App = () => {
 
   function handleIncorrectResponses(incorrectContestants, clue, scoreChange) {
     let incorrectMessage = '';
+    clue.response.incorrect_responses = clue.response.incorrect_responses.filter(response =>
+      !response.includes(weakestContestant + ':'));
     for (let i = 0; i < incorrectContestants.length; i++) {
       if (incorrectContestants[i] !== weakestContestant && !answeredContestants.includes(incorrectContestants[i])) {
         incorrectMessage += clue.response.incorrect_responses[i];
@@ -251,6 +253,7 @@ const App = () => {
         setTimeout(() => displayNextClue(), 4500);
       }
     } else if (incorrectContestants.length > 0) {
+      debugger
       handleIncorrectResponses(incorrectContestants, clue, scoreChange);
       if (conceded) {
         setTimeout(() => handleCorrectResponse(correctContestant, scoreChange, clue, nextClueNumber, nextClue, row, col), 3000);
@@ -401,7 +404,6 @@ const App = () => {
   }
 
   function getProbability(value, round, bonusProbability) {
-    debugger
     if (round === 1) {
       switch (value) {
         case 200:
