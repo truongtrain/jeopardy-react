@@ -272,7 +272,7 @@ const App = () => {
     if (nextClueNumber > 0) {
       displayClueByNumber(nextClueNumber);
     } else {
-      setMessageLines('End of round');
+      setImageUrl('logo');
     }
   }
 
