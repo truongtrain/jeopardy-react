@@ -606,7 +606,7 @@ const App = () => {
   }
 
   if (!board) {
-    return <>Loading game...</>;
+    return <span id='loading'>Loading game...</span>;
   }
   return (
     <div id='content'>
