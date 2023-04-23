@@ -631,13 +631,13 @@ const App = () => {
                     <span>{category[row] && category[row].visible === 'clue' && category[row].text}</span>
                     {category[row].visible === 'buzzer' && category[row].daily_double_wager === 0 &&
                       <div className='clue'>
-                        <button id='buzzer-button' onClick={() => answer(row, column)} disabled={disableAnswer}><HiHandRaised /></button>
-                        <button id='flag-button' onClick={() => concede(row, column)}><BsFillFlagFill /></button>
+                        <button className='buzzer-button' onClick={() => answer(row, column)} disabled={disableAnswer}><HiHandRaised /></button>
+                        <button className='flag-button' onClick={() => concede(row, column)}><BsFillFlagFill /></button>
                       </div>
                     }
                     {category[row].visible === 'eye' &&
                       <div>
-                        <button id='eye-button' onClick={() => showAnswer(row, column)}><BiShow /></button>
+                        <button className='eye-button' onClick={() => showAnswer(row, column)}><BiShow /></button>
                       </div>
                     }
                     {category[row].visible === 'judge' &&
