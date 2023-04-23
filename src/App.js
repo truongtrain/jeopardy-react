@@ -629,10 +629,10 @@ const App = () => {
               <tr key={'row' + row}>
                 {board.map((category, column) =>
                   <td key={'column' + column}>
-                    {!category[row].visible && <button className='clue-button' onClick={() => displayClue(row, column)} disabled={disableClue}>${category[row].value}</button>}
+                    {!category[row].visible && <div className='clue-div' onClick={() => displayClue(row, column)} disabled={disableClue}>${category[row].value}</div>}
                     <span>{category[row] && category[row].visible === 'clue' && category[row].text}</span>
                     {category[row].visible === 'buzzer' && category[row].daily_double_wager === 0 &&
-                      <div className='clue-button'>
+                      <div className='clue-div'>
                         <button className='buzzer-button' onClick={() => answer(row, column)} disabled={disableAnswer}><HiHandRaised /></button>
                         <button className='flag-button' onClick={() => concede(row, column)}><BsFillFlagFill /></button>
                       </div>
@@ -643,7 +643,7 @@ const App = () => {
                       </div>
                     }
                     {category[row].visible === 'judge' &&
-                      <div className='clue-button'>
+                      <div className='clue-div'>
                         <button className='answer-button' onClick={() => incrementScore(row, column)}><FcApprove /></button>
                         <button className='answer-button' onClick={() => deductScore(row, column)}><FcDisapprove /></button>
                       </div>

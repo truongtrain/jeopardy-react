@@ -10,11 +10,7 @@ body {
   --main-color: rgb(25, 25, 195);
   --clue-border: 3px solid black;
   --clue-text: white;
-}
-
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+  --clue-button-font-size: 2rem;
 }
 
 #root {
@@ -85,7 +81,7 @@ td {
   text-align: center;
 }
 
-.clue-button {
+.clue-div {
   background-color: inherit;
   color: yellow;
   height: 100%;
@@ -102,7 +98,7 @@ td {
   color: peachpuff;
   width: 50%;
   height: 100%;
-  font-size: 2rem;
+  font-size: var(--clue-button-font-size);
 }
 
 .flag-button {
@@ -110,20 +106,20 @@ td {
   color: white;
   width: 50%;
   height: 100%;
-  font-size: 2rem;
+  font-size: var(--clue-button-font-size);
 }
 
 .eye-button {
   background-color: inherit;
   color: yellow;
-  font-size: 2rem;
+  font-size: var(--clue-button-font-size);
 }
 
 .answer-button {
   background-color: inherit;
   width: 50%;
   height: 100%;
-  font-size: 2rem;
+  font-size: var(--clue-button-font-size);
 }
 
 .wager {
