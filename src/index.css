@@ -9,7 +9,8 @@ body {
   -moz-osx-font-smoothing: grayscale;
   --main-color: rgb(25, 25, 195);
   --clue-border: 3px solid black;
-  --clue-text: white;
+  --clue-value-color: yellow;
+  --clue-text-color: white;
   --clue-button-font-size: 2rem;
   --tick-row-background-color: grey;
 }
@@ -70,13 +71,13 @@ table {
 th {
   border: var(--clue-border);
   background-color: var(--main-color);
-  color: var(--clue-text);
+  color: var(--clue-text-color);
 }
 
 td {
   border: var(--clue-border);
   background-color: var(--main-color);
-  color: var(--clue-text);
+  color: var(--clue-text-color);
   width: 16vw;
   height: 12vh;
   text-align: center;
@@ -84,7 +85,7 @@ td {
 
 .clue-div {
   background-color: inherit;
-  color: yellow;
+  color: var(--clue-value-color);
   height: 100%;
   width: 100%;
   font-size: 3rem;
@@ -112,7 +113,7 @@ td {
 
 .eye-button {
   background-color: inherit;
-  color: yellow;
+  color: var(--clue-value-color);
   font-size: var(--clue-button-font-size);
 }
 
