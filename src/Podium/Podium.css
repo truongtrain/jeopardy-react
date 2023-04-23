@@ -14,13 +14,7 @@
     text-align: center;
 }
 
-.blank-ticks {
-    height: 7%;
-    background-color: var(--tick-row-background-color);
-    border-top: inherit;
-}
-
-.ticks {
+.tick-row {
     height: 7%;
     display: flex;
     justify-content: center;
