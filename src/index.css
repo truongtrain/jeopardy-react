@@ -53,7 +53,7 @@ Podium {
   grid-area: podiums;
 }
 
-Monitor {
+#monitor-container {
   grid-area: monitor;
 }
 
