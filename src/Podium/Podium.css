@@ -6,7 +6,7 @@
     box-sizing: border-box;
     margin: 0.5rem;
     background-color: var(--main-color);
-    color: white;
+    color: var(--clue-text);
     border: var(--clue-border);
     font-weight: bold;
     height: 90%;

@@ -10,7 +10,7 @@
     justify-content: center;
     align-items: center;
     background-color: var(--main-color);
-    color: white;
+    color: var(--clue-text);
     text-align: center;
 }
 
@@ -24,7 +24,7 @@
         justify-content: center;
         align-items: center;
         background-color: var(--main-color);
-        color: white;
+        color: var(--clue-text);
         text-align: center;
     }
 }
