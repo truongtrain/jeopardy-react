@@ -95,7 +95,7 @@ td {
   align-items: center;
 }
 
-.buzzer-button {
+#buzzer-button {
   background-color: inherit;
   color: peachpuff;
   width: 50%;
@@ -103,7 +103,7 @@ td {
   font-size: var(--clue-button-font-size);
 }
 
-.flag-button {
+#flag-button {
   background-color: inherit;
   color: white;
   width: 50%;
@@ -111,7 +111,7 @@ td {
   font-size: var(--clue-button-font-size);
 }
 
-.eye-button {
+#eye-button {
   background-color: inherit;
   color: var(--clue-value-color);
   font-size: var(--clue-button-font-size);
