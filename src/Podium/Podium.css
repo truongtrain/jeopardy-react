@@ -1,17 +1,16 @@
 #podiums {
     display: flex;
-    justify-content: space-around;
 }
 
 .podium {
     box-sizing: border-box;
     margin: 0.5rem;
-    background-color: rgb(25, 25, 195);
+    background-color: var(--main-color);
     color: white;
     border: 3px solid black;
     font-weight: bold;
     height: 90%;
-    min-width: 25%;
+    min-width: 30%;
     text-align: center;
 }
 

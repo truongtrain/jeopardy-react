@@ -7,6 +7,7 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  --main-color: rgb(25, 25, 195);
 }
 
 code {
@@ -69,13 +70,13 @@ table {
 
 th {
   border: 3px solid black;
-  background-color: rgb(25, 25, 195);
+  background-color: var(--main-color);
   color: white;
 }
 
 td {
   border: 3px solid black;
-  background-color: rgb(25, 25, 195);
+  background-color: var(--main-color);
   color: white;
   width: 16vw;
   height: 12vh;
@@ -83,7 +84,7 @@ td {
 }
 
 .clue-button {
-  background-color: rgb(25, 25, 195);
+  background-color: inherit;
   color: yellow;
   height: 100%;
   width: 100%;
@@ -94,16 +95,8 @@ td {
   align-items: center;
 }
 
-.answer-button {
-  background-color: rgb(25, 25, 195);
-  color: yellow;
-  width: 50%;
-  height: 100%;
-  font-size: 2rem;
-}
-
 .buzzer-button {
-  background-color: rgb(25, 25, 195);
+  background-color: inherit;
   color: peachpuff;
   width: 50%;
   height: 100%;
@@ -111,7 +104,7 @@ td {
 }
 
 .flag-button {
-  background-color: rgb(25, 25, 195);
+  background-color: inherit;
   color: white;
   width: 50%;
   height: 100%;
@@ -119,8 +112,15 @@ td {
 }
 
 .eye-button {
-  background-color: rgb(25, 25, 195);
+  background-color: inherit;
   color: yellow;
+  font-size: 2rem;
+}
+
+.answer-button {
+  background-color: inherit;
+  width: 50%;
+  height: 100%;
   font-size: 2rem;
 }
 
@@ -131,6 +131,6 @@ td {
 }
 
 .submit-button {
-  background-color: rgb(25, 25, 195);
-  color: yellow;
+  background-color: inherit;
+  color: inherit;
 }

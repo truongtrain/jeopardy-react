@@ -9,7 +9,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: rgb(25, 25, 195);
+    background-color: var(--main-color);
     color: white;
     text-align: center;
 }
@@ -23,7 +23,7 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        background-color: rgb(25, 25, 195);
+        background-color: var(--main-color);
         color: white;
         text-align: center;
     }
