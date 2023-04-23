@@ -40,11 +40,11 @@ function Podium(props) {
                             <span key={'tick' + index} className='tick'></span>
                         )}
                     </div>}
-                    {!(name === playerName && responseCountdownIsActive) && <span className='tick-row'></span>}
-                    <span className='podium-row'>${contestants[name].score}</span>
-                    <span className='podium-row name-row'>{name}</span>
-                    <span className='big-podium-row'>{contestants[name].response}</span>
-                    {contestants[name].response && <span className='podium-row'>${contestants[name].wager}</span>}
+                    {!(name === playerName && responseCountdownIsActive) && <div className='tick-row'></div>}
+                    <div className='podium-row'>${contestants[name].score}</div>
+                    <div className='podium-row name-row'>{name}</div>
+                    <div className='big-podium-row'>{contestants[name].response}</div>
+                    {contestants[name].response && <div className='podium-row'>${contestants[name].wager}</div>}
                 </div>
             })}
         </div>
