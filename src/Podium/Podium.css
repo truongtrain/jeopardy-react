@@ -16,7 +16,7 @@
 
 .blank-ticks {
     height: 7%;
-    background-color: gray;
+    background-color: var(--tick-row-background-color);
     border-top: inherit;
 }
 
@@ -25,7 +25,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: gray;
+    background-color: var(--tick-row-background-color);
     border-top: inherit;
 }
 
