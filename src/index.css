@@ -64,7 +64,7 @@ table {
   user-select: none;
 }
 
-#header-row {
+#headers {
   height: 6vh;
 }
 
@@ -83,7 +83,7 @@ td {
   text-align: center;
 }
 
-.clue-div {
+.clue {
   background-color: inherit;
   color: var(--clue-value-color);
   height: 100%;

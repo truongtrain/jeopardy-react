@@ -613,10 +613,10 @@ const App = () => {
       <meta name='viewport' content='width=device-width, initial-scale=1' />
       <Podium contestants={contestants} startTimer={responseCountdownIsActive} playerName={playerName} />     
       <Monitor message={message} imageUrl={imageUrl} onClick={() => startRound()} />                    
-      <div id='board'>
-        <table>
+      
+        <table id='board'>
           <thead>
-            <tr id='header-row'>
+            <tr id='headers'>
               {Array.from(Array(6), (_arrayElement, row) =>
                 <th key={'header' + row}>{round !== 3 && getCategory(board[row])}</th>
               )}
@@ -627,10 +627,10 @@ const App = () => {
               <tr key={'row' + row}>
                 {board.map((category, column) =>
                   <td key={'column' + column}>
-                    {!category[row].visible && <div className='clue-div' onClick={() => displayClue(row, column)} disabled={disableClue}>${category[row].value}</div>}
+                    {!category[row].visible && <div className='clue' onClick={() => displayClue(row, column)} disabled={disableClue}>${category[row].value}</div>}
                     <span>{category[row] && category[row].visible === 'clue' && category[row].text}</span>
                     {category[row].visible === 'buzzer' && category[row].daily_double_wager === 0 &&
-                      <div className='clue-div'>
+                      <div className='clue'>
                         <button id='buzzer-button' onClick={() => answer(row, column)} disabled={disableAnswer}><HiHandRaised /></button>
                         <button id='flag-button' onClick={() => concede(row, column)}><BsFillFlagFill /></button>
                       </div>
@@ -641,7 +641,7 @@ const App = () => {
                       </div>
                     }
                     {category[row].visible === 'judge' &&
-                      <div className='clue-div'>
+                      <div className='clue'>
                         <button className='answer-button' onClick={() => incrementScore(row, column)}><FcApprove /></button>
                         <button className='answer-button' onClick={() => deductScore(row, column)}><FcDisapprove /></button>
                       </div>
@@ -681,7 +681,7 @@ const App = () => {
             )}
           </tbody>
         </table>
-      </div>
+      
     </div>
   );
 }
