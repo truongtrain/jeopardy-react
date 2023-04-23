@@ -8,6 +8,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   --main-color: rgb(25, 25, 195);
+  --clue-border: 3px solid black;
 }
 
 code {
@@ -69,13 +70,13 @@ table {
 }
 
 th {
-  border: 3px solid black;
+  border: var(--clue-border);
   background-color: var(--main-color);
   color: white;
 }
 
 td {
-  border: 3px solid black;
+  border: var(--clue-border);
   background-color: var(--main-color);
   color: white;
   width: 16vw;
