@@ -306,6 +306,7 @@ const App = () => {
       wager = contestants[playerName].score;
       setBoardState(row, col, 'wager');
       readText('Answer. Daily double. How much will you wager');
+      setMessageLines('Daily Double!');
     } else {
       setMessageLines('');
       seconds = 0;
