@@ -280,13 +280,16 @@ const App = () => {
     const url = board[col][row].url;
     if (url) {
       setImageUrl(url);
+      setMessageLines('');
     } else {
       setImageUrl('');
     }
   }
 
   function displayClue(row, col) {
-    handle.enter();
+    if (!handle.active) {
+      handle.enter();
+    }
     if (round === 0) {
       round = 1;
     }
@@ -303,7 +306,6 @@ const App = () => {
       wager = contestants[playerName].score;
       setBoardState(row, col, 'wager');
       readText('Answer. Daily double. How much will you wager');
-      setMessageLines('Daily Double!');
     } else {
       setMessageLines('');
       seconds = 0;
@@ -315,7 +317,9 @@ const App = () => {
   }
 
   function displayClueByNumber(clueNumber) {
-    handle.enter();
+    if (!handle.active) {
+      handle.enter();
+    } 
     conceded = false;
     setDisableAnswer(false);
     answeredContestants = [];
@@ -330,7 +334,7 @@ const App = () => {
             }
           }
           setBoardState(row, col, 'clue');
-          if (isPlayerDailyDouble) {
+          if (isPlayerDailyDouble && !board[col][row].url) {
             setMessageLines(board[col][row].text);
           }
           readClue(row, col);
