@@ -8,6 +8,7 @@ import { BsFillFlagFill } from 'react-icons/bs';
 import Podium from './Podium/Podium';
 import Monitor from './Monitor/Monitor';
 import FinalMusic from './Resources/final_jeopardy.mp3';
+import { FullScreen, useFullScreenHandle } from 'react-full-screen';
 
 const playerName = 'Alan';
 let availableClueNumbers = new Array(30).fill(true);
@@ -34,6 +35,7 @@ const App = () => {
   const [disableAnswer, setDisableAnswer] = useState(false);
   const [disableClue, setDisableClue] = useState(false);
   const [imageUrl, setImageUrl] = useState('logo');
+  const handle = useFullScreenHandle();
 
   useEffect(() => {
     fetch('http://localhost:5000/game/1080')
@@ -116,7 +118,7 @@ const App = () => {
       readText(playerName);
       responseCountdownIsActive = true;
       setBoardState(row, col, 'eye');
-    } else {     
+    } else {
       if (board[col][row].visible === 'closed') {
         setMessageLines(board[col][row].response.correct_response);
       } else if (incorrectContestants.length === 0 && board[col][row].response.correct_contestant !== weakestContestant) {
@@ -284,6 +286,7 @@ const App = () => {
   }
 
   function displayClue(row, col) {
+    handle.enter();
     if (round === 0) {
       round = 1;
     }
@@ -312,6 +315,7 @@ const App = () => {
   }
 
   function displayClueByNumber(clueNumber) {
+    handle.enter();
     conceded = false;
     setDisableAnswer(false);
     answeredContestants = [];
@@ -607,80 +611,82 @@ const App = () => {
     return <></>;
   }
   return (
-    <main>
-      <meta name='viewport' content='width=device-width, initial-scale=1' />
-      <Podium contestants={contestants} startTimer={responseCountdownIsActive} playerName={playerName} />
-      <div id='monitor-container' onClick={() => startRound()}>
-        <Monitor message={message} imageUrl={imageUrl}  />
-      </div>     
-      <table id='board'>
-        <thead>
-          <tr id='headers'>
-            {Array.from(Array(6), (_arrayElement, row) =>
-              <th key={'header' + row}>{round !== 3 && getCategory(board[row])}</th>
-            )}
-          </tr>
-        </thead>
-        <tbody>
-          {Array.from(Array(5), (_arrayElement, row) =>
-            <tr key={'row' + row}>
-              {board.map((category, column) =>
-                <td key={'column' + column}>
-                  {!category[row].visible && <div className='clue' onClick={() => displayClue(row, column)} disabled={disableClue}>${category[row].value}</div>}
-                  <span>{category[row] && category[row].visible === 'clue' && category[row].text}</span>
-                  {category[row].visible === 'buzzer' && category[row].daily_double_wager === 0 &&
-                    <div className='clue'>
-                      <button className='buzzer-button' onClick={() => answer(row, column)} disabled={disableAnswer}><HiHandRaised /></button>
-                      <button className='flag-button' onClick={() => concede(row, column)}><BsFillFlagFill /></button>
-                    </div>
-                  }
-                  {category[row].visible === 'eye' &&
-                    <div>
-                      <button className='eye-button' onClick={() => showAnswer(row, column)}><BiShow /></button>
-                    </div>
-                  }
-                  {category[row].visible === 'judge' &&
-                    <div className='clue'>
-                      <button className='answer-button' onClick={() => incrementScore(row, column)}><FcApprove /></button>
-                      <button className='answer-button' onClick={() => deductScore(row, column)}><FcDisapprove /></button>
-                    </div>
-                  }
-                  {category[row].visible === 'wager' &&
-                    <div>
-                      ENTER YOUR WAGER:
-                      <div className='wager'>
-                        <button className='submit-button' onClick={() => submit(row, column)}>SUBMIT</button>
-                        <input defaultValue={wager} onChange={handleInputChange} />
-                      </div>
-                    </div>
-                  }
-                  {round === 3 && row === 1 && column === 3 && category[row].visible !== 'final' &&
-                    <h3>
-                      {showData.final_jeopardy.category}
-                    </h3>
-                  }
-                  {row === 1 && column === 3 && category[row].visible === 'final' &&
-                    <div>
-                      {showData.final_jeopardy.clue.toUpperCase()}
-                    </div>
-                  }
-                  {round === 3 && row === 2 && column === 3 &&
-                    <div>
-                      {board[3][1].visible !== 'final' && <span>ENTER YOUR WAGER:</span>}
-                      {board[3][1].visible === 'final' && <span>ENTER YOUR RESPONSE:</span>}
-                      <div className='wager'>
-                        {board[3][1].visible !== 'final' && <button id='final-submit-button' className='submit-button' disabled={disableAnswer} onClick={() => submit()}>SUBMIT</button>}
-                        <input id="final-input" defaultValue={wager} onChange={handleInputChange} />
-                      </div>
-                    </div>
-                  }
-                </td>
+    <FullScreen handle={handle}>
+      <main>
+        <meta name='viewport' content='width=device-width, initial-scale=1' />
+        <Podium contestants={contestants} startTimer={responseCountdownIsActive} playerName={playerName} />
+        <div id='monitor-container' onClick={() => startRound()}>
+          <Monitor message={message} imageUrl={imageUrl} />
+        </div>
+        <table id='board'>
+          <thead>
+            <tr id='headers'>
+              {Array.from(Array(6), (_arrayElement, row) =>
+                <th key={'header' + row}>{round !== 3 && getCategory(board[row])}</th>
               )}
             </tr>
-          )}
-        </tbody>
-      </table>
-    </main>
+          </thead>
+          <tbody>
+            {Array.from(Array(5), (_arrayElement, row) =>
+              <tr key={'row' + row}>
+                {board.map((category, column) =>
+                  <td key={'column' + column}>
+                    {!category[row].visible && <div className='clue' onClick={() => displayClue(row, column)} disabled={disableClue}>${category[row].value}</div>}
+                    <span>{category[row] && category[row].visible === 'clue' && category[row].text}</span>
+                    {category[row].visible === 'buzzer' && category[row].daily_double_wager === 0 &&
+                      <div className='clue'>
+                        <button className='buzzer-button' onClick={() => answer(row, column)} disabled={disableAnswer}><HiHandRaised /></button>
+                        <button className='flag-button' onClick={() => concede(row, column)}><BsFillFlagFill /></button>
+                      </div>
+                    }
+                    {category[row].visible === 'eye' &&
+                      <div>
+                        <button className='eye-button' onClick={() => showAnswer(row, column)}><BiShow /></button>
+                      </div>
+                    }
+                    {category[row].visible === 'judge' &&
+                      <div className='clue'>
+                        <button className='answer-button' onClick={() => incrementScore(row, column)}><FcApprove /></button>
+                        <button className='answer-button' onClick={() => deductScore(row, column)}><FcDisapprove /></button>
+                      </div>
+                    }
+                    {category[row].visible === 'wager' &&
+                      <div>
+                        ENTER YOUR WAGER:
+                        <div className='wager'>
+                          <button className='submit-button' onClick={() => submit(row, column)}>SUBMIT</button>
+                          <input defaultValue={wager} onChange={handleInputChange} />
+                        </div>
+                      </div>
+                    }
+                    {round === 3 && row === 1 && column === 3 && category[row].visible !== 'final' &&
+                      <h3>
+                        {showData.final_jeopardy.category}
+                      </h3>
+                    }
+                    {row === 1 && column === 3 && category[row].visible === 'final' &&
+                      <div>
+                        {showData.final_jeopardy.clue.toUpperCase()}
+                      </div>
+                    }
+                    {round === 3 && row === 2 && column === 3 &&
+                      <div>
+                        {board[3][1].visible !== 'final' && <span>ENTER YOUR WAGER:</span>}
+                        {board[3][1].visible === 'final' && <span>ENTER YOUR RESPONSE:</span>}
+                        <div className='wager'>
+                          {board[3][1].visible !== 'final' && <button id='final-submit-button' className='submit-button' disabled={disableAnswer} onClick={() => submit()}>SUBMIT</button>}
+                          <input id='final-input' defaultValue={wager} onChange={handleInputChange} />
+                        </div>
+                      </div>
+                    }
+                  </td>
+                )}
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </main>
+    </FullScreen>
   );
 }
 

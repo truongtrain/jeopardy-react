@@ -15,6 +15,10 @@ body {
   --tick-row-background-color: grey;
 }
 
+.fullscreen-enabled {
+  background-image: url(./Resources/jeopardy_background.jpeg);
+}
+
 #root {
   height: 100%;
 }
