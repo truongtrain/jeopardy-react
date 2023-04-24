@@ -607,7 +607,7 @@ const App = () => {
     return <></>;
   }
   return (
-    <div id='content'>
+    <main>
       <meta name='viewport' content='width=device-width, initial-scale=1' />
       <Podium contestants={contestants} startTimer={responseCountdownIsActive} playerName={playerName} />
       <div id='monitor-container' onClick={() => startRound()}>
@@ -680,7 +680,7 @@ const App = () => {
           )}
         </tbody>
       </table>
-    </div>
+    </main>
   );
 }
 

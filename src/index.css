@@ -19,7 +19,7 @@ body {
   height: 100%;
 }
 
-#content {
+main {
   height: 100%;
   display: grid;
   grid-template-columns: 1fr 1.7fr 1fr;
@@ -34,7 +34,7 @@ body {
     font-size: 12px;
   }
 
-  #content {
+  main {
     height: 100%;
     display: grid;
     grid-template-columns: 1fr 1fr;
