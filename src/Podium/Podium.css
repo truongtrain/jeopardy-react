@@ -1,40 +1,51 @@
-.podiums {
+#podiums {
     display: flex;
 }
 
 .podium {
-    margin: 10px;
-    background-color: rgb(25, 25, 195);
-    color: white;
-    border: 5px solid black;
+    box-sizing: border-box;
+    margin: 0.5rem;
+    background-color: var(--main-color);
+    color: var(--clue-text-color);
+    border: var(--clue-border);
     font-weight: bold;
-    height: 130px;
-    width: 100px;
+    height: 90%;
+    min-width: 30%;
     text-align: center;
 }
 
+.tick-row {
+    height: 7%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--tick-row-background-color);
+    border-top: inherit;
+}
+
+.tick {
+    box-sizing: border-box;
+    height: 0.5rem;
+    width: 0.5rem;
+    background-color: red;
+    margin: 0.1rem;
+}
+
 .podium-row {
-    border-top: 3px solid black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 15%;
+    border-top: inherit;
+}
+
+.big-podium-row {
+    height: 40%;
+    font-size: 0.8rem;
 }
 
 .name-row {
     background-color: darkblue;
+    border-bottom: inherit;
 }
 
-.blank-ticks {
-    height: 8px;
-    background-color: gray;
-}
-
-.ticks {
-    display: flex;
-    justify-content: center;
-    background-color: gray;
-}
-
-.tick {
-    height: 5px;
-    width: 7px;
-    background-color: red;
-    margin: 2px;
-}

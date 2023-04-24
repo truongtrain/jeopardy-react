@@ -31,21 +31,20 @@ function Podium(props) {
     }, [responseCountdownIsActive]);
 
     return (
-        <div className='podiums'>
+        <div id='podiums'>
             {names.map(name => {
                 return contestants[name] && <div className='podium' key={name}>
-                    {name === playerName &&
-                    <div className='ticks'>
-                        {responseCountdownIsActive && ticks.map((_tick, index) =>
-                            <div key={'tick' + index} className='tick'></div>
+                    {name === playerName && responseCountdownIsActive && 
+                    <div className='tick-row'>
+                        {ticks.map((_tick, index) =>
+                            <span key={'tick' + index} className='tick'></span>
                         )}
                     </div>}
-                    {name === playerName && !responseCountdownIsActive && <div className='blank-ticks'></div>}
-                    {name !== playerName && <div className='blank-ticks'></div>}
+                    {!(name === playerName && responseCountdownIsActive) && <div className='tick-row'></div>}
                     <div className='podium-row'>${contestants[name].score}</div>
                     <div className='podium-row name-row'>{name}</div>
-                    <div className='podium-row'>{contestants[name].response}</div>
-                    {contestants[name].response && <div>${contestants[name].wager}</div>}
+                    <div className='big-podium-row'>{contestants[name].response}</div>
+                    {contestants[name].response && <div className='podium-row'>${contestants[name].wager}</div>}
                 </div>
             })}
         </div>

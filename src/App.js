@@ -19,12 +19,11 @@ let finalResponse = '';
 let wager = 0;
 let seconds = 0;
 let lastCorrectContestant = playerName;
-let round = 1;
+let round = 0;
 let responseInterval = {};
 let isPlayerDailyDouble = false;
 let conceded = false;
 let responseCountdownIsActive = false;
-let showLogo = true;
 let msg = new SpeechSynthesisUtterance();
 
 const App = () => {
@@ -33,9 +32,11 @@ const App = () => {
   const [contestants, setContestants] = useState(null);
   const [responseTimerIsActive, setResponseTimerIsActive] = useState(false);
   const [disableAnswer, setDisableAnswer] = useState(false);
+  const [disableClue, setDisableClue] = useState(false);
+  const [imageUrl, setImageUrl] = useState('logo');
 
   useEffect(() => {
-    fetch('http://localhost:5000/game/984')
+    fetch('http://localhost:5000/game/1080')
       .then((res) => res.json())
       .then((data) => {
         showData = data;
@@ -62,8 +63,34 @@ const App = () => {
   }, [responseTimerIsActive]);
 
   function startRound() {
-    stats.numClues += 1;
-    displayClueByNumber(1);
+    if (round === 0) {
+      setImageUrl('');
+      round = 1;
+      displayClueByNumber(1);
+    } else if (round === 1) {
+      setUpDoubleJeopardyBoard();
+    } else if (round === 1.5) {
+      round = 2;
+      displayClueByNumber(1);
+    } else if (round === 2) {
+      showFinalJeopardyCategory();
+    }
+  }
+
+  function setUpDoubleJeopardyBoard() {
+    setImageUrl('');
+    round = 1.5;
+    let thirdPlace = playerName;
+    Object.keys(contestants).forEach(contestant => {
+      if (contestants[contestant].score < thirdPlace) {
+        thirdPlace = contestant;
+      }
+    });
+    lastCorrectContestant = thirdPlace;
+    setBoard(showData.double_jeopardy_round);
+    availableClueNumbers = new Array(30).fill(true);
+    setMessageLines('');
+    setDisableAnswer(false);
   }
 
   const handleInputChange = event => {
@@ -78,11 +105,10 @@ const App = () => {
     setDisableAnswer(true);
     setResponseTimerIsActive(false);
     let bonusProbability = 0;
-    let incorrectContestants = board[col][row].response.incorrect_contestants;
+    let incorrectContestants = board[col][row].response.incorrect_contestants
+      .filter(contestant => contestant !== weakestContestant)
+      .filter(contestant => !answeredContestants.includes(contestant));
     if (answeredContestants.length === 1) {
-      incorrectContestants = incorrectContestants
-        .filter(contestant => contestant !== weakestContestant)
-        .filter(contestant => !answeredContestants.includes(contestant));
       bonusProbability = 0.166;
     }
     const probability = getProbability(board[col][row].value, round, bonusProbability);
@@ -90,7 +116,7 @@ const App = () => {
       readText(playerName);
       responseCountdownIsActive = true;
       setBoardState(row, col, 'eye');
-    } else {
+    } else {     
       if (board[col][row].visible === 'closed') {
         setMessageLines(board[col][row].response.correct_response);
       } else if (incorrectContestants.length === 0 && board[col][row].response.correct_contestant !== weakestContestant) {
@@ -117,7 +143,6 @@ const App = () => {
   }
 
   function setMessageLines(text1, text2 = '') {
-    showLogo = !text1;
     setMessage({
       line1: text1,
       line2: text2
@@ -126,8 +151,9 @@ const App = () => {
 
   function handleIncorrectResponses(incorrectContestants, clue, scoreChange) {
     let incorrectMessage = '';
+    clue.response.incorrect_responses = clue.response.incorrect_responses.filter(response =>
+      !response.includes(weakestContestant + ':'));
     for (let i = 0; i < incorrectContestants.length; i++) {
-      debugger
       if (incorrectContestants[i] !== weakestContestant && !answeredContestants.includes(incorrectContestants[i])) {
         incorrectMessage += clue.response.incorrect_responses[i];
         contestants[incorrectContestants[i]].score -= scoreChange;
@@ -157,7 +183,7 @@ const App = () => {
     setContestants(contestants);
     setBoardState(row, col, 'closed');
     setMessageLines(correctContestant + ': What is ' + clue.response.correct_response + '?');
-    if (nextClueNumber > 0) {
+    if (nextClueNumber > 0 && nextClue) {
       setTimeout(() => {
         setMessageLines(correctContestant + ': ' + nextClue.category + ' for $' + nextClue.value);
       }, 2000);
@@ -242,18 +268,31 @@ const App = () => {
     setMessageLines('');
     const nextClueNumber = getNextClueNumber();
     if (nextClueNumber > 0) {
-      stats.numClues += 1;
       displayClueByNumber(nextClueNumber);
     } else {
-      setMessageLines('End of round');
+      setImageUrl('logo');
+    }
+  }
+
+  function displayClueImage(row, col) {
+    const url = board[col][row].url;
+    if (url) {
+      setImageUrl(url);
+    } else {
+      setImageUrl('');
     }
   }
 
   function displayClue(row, col) {
+    if (round === 0) {
+      round = 1;
+    }
+    if (round === 1.5) {
+      round = 2;
+    }
     conceded = false;
     setDisableAnswer(false);
     answeredContestants = [];
-    stats.numClues += 1;
     lastCorrectContestant = playerName;
     const clue = board[col][row];
     if (clue.daily_double_wager > 0) {
@@ -300,10 +339,19 @@ const App = () => {
   function getNextClueNumber() {
     for (let i = 1; i <= 30; i++) {
       if (availableClueNumbers[i - 1] === true) {
+        const clue = getClue(i);
+        // if this is a daily double that was not answered by the contestant in the televised game, skip this clue
+        if (clue && clue.daily_double_wager > 0 && !isContestantsDailyDouble(clue, lastCorrectContestant)) {
+          continue;
+        }
         return i;
       }
     }
     return -1;
+  }
+
+  function isContestantsDailyDouble(clue, contestant) {
+    return clue.response.correct_contestant === contestant || clue.response.incorrect_contestants.includes(contestant);
   }
 
   function updateAvailableClueNumbers(clueNumber) {
@@ -322,15 +370,19 @@ const App = () => {
   }
 
   function readClue(row, col) {
+    setDisableClue(true);
+    stats.numClues += 1;
     let clue;
     if (round === 1) {
       clue = showData.jeopardy_round[col][row];
-    } else if (round === 2) {
+    } else if (round === 2 || round === 1.5) {
       clue = showData.double_jeopardy_round[col][row];
     }
+    displayClueImage(row, col);
     msg.text = clue.text;
     window.speechSynthesis.speak(msg);
     msg.addEventListener('end', function clearClue() {
+      setImageUrl('');
       seconds = 0;
       if (isPlayerDailyDouble && board[col][row].daily_double_wager > 0) {
         setBoardState(row, col, 'eye');
@@ -419,9 +471,7 @@ const App = () => {
   }
 
   function incrementScore(row, col) {
-    isPlayerDailyDouble = false;
-    setBoardState(row, col, 'closed');
-    setResponseTimerIsActive(false);
+    setDisableClue(false);
     lastCorrectContestant = playerName;
     msg.text = 'Correct';
     window.speechSynthesis.speak(msg);
@@ -433,12 +483,10 @@ const App = () => {
     setContestants(contestants);
     stats.coryatScore += board[col][row].value;
     stats.numCorrect += 1;
+    resetClue(row, col);
   }
 
   function deductScore(row, col) {
-    setBoardState(row, col, 'closed');
-    setResponseTimerIsActive(false);
-    responseCountdownIsActive = false;
     msg.text = 'No';
     window.speechSynthesis.speak(msg);
     if (board[col][row].daily_double_wager > 0) {
@@ -451,6 +499,15 @@ const App = () => {
     if (!isPlayerDailyDouble) {
       updateOpponentScores(row, col);
     }
+    resetClue(row, col);
+    setDisableClue(false);
+  }
+
+  function resetClue(row, col) {
+    isPlayerDailyDouble = false;
+    setBoardState(row, col, 'closed');
+    setResponseTimerIsActive(false);
+    responseCountdownIsActive = false;
   }
 
   function concede(row, col) {
@@ -458,6 +515,9 @@ const App = () => {
     setResponseTimerIsActive(false);
     conceded = true;
     updateOpponentScores(row, col);
+    if (lastCorrectContestant === playerName) {
+      setDisableClue(false);
+    }
   }
 
   function showAnswer(row, col) {
@@ -479,7 +539,7 @@ const App = () => {
 
   function submit(row, col) {
     if (round === 3) {
-      document.getElementById('finalInput').value = null;
+      document.getElementById('final-input').value = null;
       setDisableAnswer(true);
       responseCountdownIsActive = false;
       setContestants(contestants);
@@ -490,31 +550,18 @@ const App = () => {
     }
   }
 
-  function startDoubleJeopardyRound() {
-    round = 2;
-    let thirdPlace = playerName;
-    Object.keys(contestants).forEach(contestant => {
-      if (contestants[contestant].score < thirdPlace) {
-        thirdPlace = contestant;
-      }
-    });
-    lastCorrectContestant = thirdPlace;
-    setBoard(showData.double_jeopardy_round);
-    availableClueNumbers = new Array(30).fill(true);
-    setMessageLines('');
-  }
-
   function showFinalJeopardyCategory() {
     round = 3;
     setDisableAnswer(false);
-    setMessageLines(showData.final_jeopardy.category);
+    setMessageLines('');
     msg.text = 'The final jeopardy category is ' + showData.final_jeopardy.category + '. How much will you wager';
     window.speechSynthesis.speak(msg);
   }
 
   function showFinalJeopardyClue() {
     let finalMusic = new Audio(FinalMusic);
-    setMessageLines(showData.final_jeopardy.clue.toUpperCase());
+    setBoardState(1, 3, 'final');
+    setImageUrl(showData.final_jeopardy.url);
     msg.text = showData.final_jeopardy.clue;
     window.speechSynthesis.speak(msg);
     msg.addEventListener('end', () => {
@@ -544,6 +591,7 @@ const App = () => {
       });
     });
     setContestants(contestants);
+    setImageUrl('');
     setMessageLines(showData.final_jeopardy.correct_response);
   }
 
@@ -556,80 +604,82 @@ const App = () => {
   }
 
   if (!board) {
-    return <>Loading game...</>;
+    return <></>;
   }
   return (
-    <div>
-      <div className='banner'>
-        <Podium contestants={contestants} startTimer={responseCountdownIsActive} playerName={playerName} />
-        <div>
-          <Monitor message={message} showLogo={showLogo} />
-          <div className='buttons'>
-            {round !== 3 &&
-              <div>
-                <button className='start-button' onClick={() => startRound()}>Start Round</button>
-                <button className='start-button' onClick={() => startDoubleJeopardyRound()}>Double Jeopardy</button>
-                <button className='start-button' onClick={() => showFinalJeopardyCategory()}>Final Jeopardy</button>
-              </div>
-            }
-          </div>
-          {round === 3 &&
-            <div className='buttons'>
-              <button className='submit-button' disabled={disableAnswer} onClick={() => submit()}>SUBMIT</button>
-              <input className='final-input' id="finalInput" defaultValue={wager} onChange={handleInputChange} />
-            </div>
-          }
-        </div>
-      </div>
-      <div className='board'>
-        <table>
-          <thead>
-            <tr>
-              {Array.from(Array(6), (_arrayElement, row) =>
-                <th key={'header' + row}>{getCategory(board[row])}</th>
+    <div id='content'>
+      <meta name='viewport' content='width=device-width, initial-scale=1' />
+      <Podium contestants={contestants} startTimer={responseCountdownIsActive} playerName={playerName} />
+      <div id='monitor-container' onClick={() => startRound()}>
+        <Monitor message={message} imageUrl={imageUrl}  />
+      </div>     
+      <table id='board'>
+        <thead>
+          <tr id='headers'>
+            {Array.from(Array(6), (_arrayElement, row) =>
+              <th key={'header' + row}>{round !== 3 && getCategory(board[row])}</th>
+            )}
+          </tr>
+        </thead>
+        <tbody>
+          {Array.from(Array(5), (_arrayElement, row) =>
+            <tr key={'row' + row}>
+              {board.map((category, column) =>
+                <td key={'column' + column}>
+                  {!category[row].visible && <div className='clue' onClick={() => displayClue(row, column)} disabled={disableClue}>${category[row].value}</div>}
+                  <span>{category[row] && category[row].visible === 'clue' && category[row].text}</span>
+                  {category[row].visible === 'buzzer' && category[row].daily_double_wager === 0 &&
+                    <div className='clue'>
+                      <button className='buzzer-button' onClick={() => answer(row, column)} disabled={disableAnswer}><HiHandRaised /></button>
+                      <button className='flag-button' onClick={() => concede(row, column)}><BsFillFlagFill /></button>
+                    </div>
+                  }
+                  {category[row].visible === 'eye' &&
+                    <div>
+                      <button className='eye-button' onClick={() => showAnswer(row, column)}><BiShow /></button>
+                    </div>
+                  }
+                  {category[row].visible === 'judge' &&
+                    <div className='clue'>
+                      <button className='answer-button' onClick={() => incrementScore(row, column)}><FcApprove /></button>
+                      <button className='answer-button' onClick={() => deductScore(row, column)}><FcDisapprove /></button>
+                    </div>
+                  }
+                  {category[row].visible === 'wager' &&
+                    <div>
+                      ENTER YOUR WAGER:
+                      <div className='wager'>
+                        <button className='submit-button' onClick={() => submit(row, column)}>SUBMIT</button>
+                        <input defaultValue={wager} onChange={handleInputChange} />
+                      </div>
+                    </div>
+                  }
+                  {round === 3 && row === 1 && column === 3 && category[row].visible !== 'final' &&
+                    <h3>
+                      {showData.final_jeopardy.category}
+                    </h3>
+                  }
+                  {row === 1 && column === 3 && category[row].visible === 'final' &&
+                    <div>
+                      {showData.final_jeopardy.clue.toUpperCase()}
+                    </div>
+                  }
+                  {round === 3 && row === 2 && column === 3 &&
+                    <div>
+                      {board[3][1].visible !== 'final' && <span>ENTER YOUR WAGER:</span>}
+                      {board[3][1].visible === 'final' && <span>ENTER YOUR RESPONSE:</span>}
+                      <div className='wager'>
+                        {board[3][1].visible !== 'final' && <button id='final-submit-button' className='submit-button' disabled={disableAnswer} onClick={() => submit()}>SUBMIT</button>}
+                        <input id="final-input" defaultValue={wager} onChange={handleInputChange} />
+                      </div>
+                    </div>
+                  }
+                </td>
               )}
             </tr>
-          </thead>
-          <tbody>
-            {Array.from(Array(5), (_arrayElement, row) =>
-              <tr key={'row' + row}>
-                {board.map((category, column) =>
-                  <td key={'column' + column}>
-                    {!category[row].visible && <button className='clue-button' onClick={() => displayClue(row, column)}>${category[row].value}</button>}
-                    <span className='clue-text'>{category[row] && category[row].visible === 'clue' && category[row].text}</span>
-                    {category[row].visible === 'buzzer' && category[row].daily_double_wager === 0 &&
-                      <div>
-                        <button className='buzzer-button' onClick={() => answer(row, column)} disabled={disableAnswer}><HiHandRaised /></button>
-                        <button className='flag-button' onClick={() => concede(row, column)}><BsFillFlagFill /></button>
-                      </div>
-                    }
-                    {category[row].visible === 'eye' &&
-                      <div>
-                        <button className='eye-button' onClick={() => showAnswer(row, column)}><BiShow /></button>
-                      </div>
-                    }
-                    {category[row].visible === 'judge' &&
-                      <div>
-                        <button className='answer-button' onClick={() => incrementScore(row, column)}><FcApprove /></button>
-                        <button className='answer-button' onClick={() => deductScore(row, column)}><FcDisapprove /></button>
-                      </div>
-                    }
-                    {category[row].visible === 'wager' &&
-                      <div>
-                        ENTER YOUR WAGER:
-                        <div className='wager'>
-                          <button className='submit-button' onClick={() => submit(row, column)}>SUBMIT</button>
-                          <input id="wager" className='wager-input' defaultValue={wager} onChange={handleInputChange} />
-                        </div>
-                      </div>
-                    }
-                  </td>
-                )}
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+          )}
+        </tbody>
+      </table>
     </div>
   );
 }

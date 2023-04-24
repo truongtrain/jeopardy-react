@@ -1,17 +1,16 @@
-.monitor {
-    size: 50px;
+#monitor {
+    box-sizing: border-box;
+    size: 3rem;
     font-weight: bold;
-    margin-top: 10px;
-    margin-left: auto;
-    margin-bottom: 1px;
+    margin: 0.5rem 8rem 0.25rem;
     border: 7px solid black;
-    width: 360px;
-    height: 100px;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    background-color: rgb(25, 25, 195);
-    color: white;
+    height: 25vh;
+    width: 45vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--main-color);
+    color: var(--clue-text-color);
     text-align: center;
 }
 

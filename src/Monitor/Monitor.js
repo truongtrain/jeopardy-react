@@ -3,15 +3,16 @@ import './Monitor.css';
 
 function Message(props) {
     const message = props.message;
-    const showLogo = props.showLogo;
+    const imageUrl = props.imageUrl;
 
     return (
-        <div className='monitor'>
-            {showLogo && <img src={require('../Resources/jeopardy_logo.jpeg')} alt=""></img>}
-            {!showLogo && <div>
+        <div id='monitor'>
+            {imageUrl === 'logo' && <img src={require('../Resources/jeopardy_logo.jpeg')} alt=""></img>}
+            {imageUrl && imageUrl !== 'logo' && <img src={imageUrl} alt=""></img>}  
+            <div>
                 <div>{message.line1}</div>
-                <div>{message.line2}</div>
-            </div>}
+                <div>{message.line2}</div>      
+            </div>                           
         </div>
     );
 }
