@@ -116,8 +116,7 @@ const App = () => {
       readText(playerName);
       responseCountdownIsActive = true;
       setBoardState(row, col, 'eye');
-    } else {
-      debugger
+    } else {     
       if (board[col][row].visible === 'closed') {
         setMessageLines(board[col][row].response.correct_response);
       } else if (incorrectContestants.length === 0 && board[col][row].response.correct_contestant !== weakestContestant) {
@@ -259,7 +258,6 @@ const App = () => {
         setTimeout(() => handleCorrectResponse(correctContestant, scoreChange, clue, nextClueNumber, nextClue, row, col), 3000);
       }
     } else { // no incorrect responses
-      debugger
       handleCorrectResponse(correctContestant, scoreChange, clue, nextClueNumber, nextClue, row, col);
     }
   }
