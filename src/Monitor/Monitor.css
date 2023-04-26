@@ -4,7 +4,7 @@
     font-weight: bold;
     margin: 0.5rem 8rem 0.25rem;
     border: 7px solid black;
-    height: 25vh;
+    height: var(--podium-height);
     width: 45vh;
     display: flex;
     justify-content: center;
