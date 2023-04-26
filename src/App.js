@@ -286,10 +286,14 @@ const App = () => {
     }
   }
 
-  function displayClue(row, col) {
+  function enterFullScreen() {
     if (!handle.active) {
       handle.enter();
     }
+  }
+
+  function displayClue(row, col) {
+    enterFullScreen();
     if (round === 0) {
       round = 1;
     }
@@ -318,9 +322,7 @@ const App = () => {
   }
 
   function displayClueByNumber(clueNumber) {
-    if (!handle.active) {
-      handle.enter();
-    } 
+    enterFullScreen();
     conceded = false;
     setDisableAnswer(false);
     answeredContestants = [];
