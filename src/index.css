@@ -1,6 +1,5 @@
 body {
   margin: 0;
-  height: 100vh;
   background-image: url(./Resources/jeopardy_background.jpeg);
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
@@ -13,6 +12,7 @@ body {
   --clue-text-color: white;
   --clue-button-font-size: 2rem;
   --tick-row-background-color: grey;
+  --podium-height: 20vh;
 }
 
 .fullscreen-enabled {
@@ -27,7 +27,7 @@ main {
   height: 100%;
   display: grid;
   grid-template-columns: 1fr 1.7fr 1fr;
-  grid-template-rows: 1.5fr 4fr;
+  grid-template-rows: 1.2fr 4fr;
   grid-template-areas:
     "podiums monitor blank"
     "board board board";
