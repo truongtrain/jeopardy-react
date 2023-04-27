@@ -243,7 +243,6 @@ const App = () => {
     }
     let scoreChange = clue.daily_double_wager > 0 ? getOpponentDailyDoubleWager(clue) : clue.value;
     // handle triple stumpers
-    debugger
     if (!correctContestant) {
       if (incorrectContestants.length > 0) {
         handleIncorrectResponses(incorrectContestants, clue, scoreChange);
