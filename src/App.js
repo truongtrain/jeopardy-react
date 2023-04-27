@@ -84,7 +84,7 @@ const App = () => {
     round = 1.5;
     let thirdPlace = playerName;
     Object.keys(contestants).forEach(contestant => {
-      if (contestants[contestant].score < thirdPlace) {
+      if (contestants[contestant].score < contestants[thirdPlace].score) {
         thirdPlace = contestant;
       }
     });
@@ -243,6 +243,7 @@ const App = () => {
     }
     let scoreChange = clue.daily_double_wager > 0 ? getOpponentDailyDoubleWager(clue) : clue.value;
     // handle triple stumpers
+    debugger
     if (!correctContestant) {
       if (incorrectContestants.length > 0) {
         handleIncorrectResponses(incorrectContestants, clue, scoreChange);
