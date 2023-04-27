@@ -84,7 +84,7 @@ const App = () => {
     round = 1.5;
     let thirdPlace = playerName;
     Object.keys(contestants).forEach(contestant => {
-      if (contestants[contestant].score < thirdPlace) {
+      if (contestants[contestant].score < contestants[thirdPlace].score) {
         thirdPlace = contestant;
       }
     });
