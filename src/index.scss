@@ -1,0 +1,100 @@
+@import './Styles/buttons.scss';
+
+body {
+    --main-color: rgb(25, 25, 195);
+    --main-border-width: 3px;
+    --monitor-border-width: 7px;
+    --clue-value-color: yellow;
+    --clue-text-color: white;
+    --clue-button-font-size: 2rem;
+    --tick-row-background-color: grey;
+    --podium-height: 20vh;
+    --jeopardy-background: url(./Resources/jeopardy_background.jpeg);
+    background-image: var(--jeopardy-background);
+}
+
+@mixin gridTemplate($columns, $rows, $area-row1, $area-row2) {
+    height: 100%;
+    display: grid;
+    grid-template-columns: $columns;
+    grid-template-rows: $rows;
+    grid-template-areas:
+        $area-row1
+        $area-row2;
+}
+
+@mixin flexCenter {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+@mixin clueLayout($border-width) {
+    border: $border-width solid black;
+    background-color: var(--main-color);
+    color: var(--clue-text-color);
+    text-align: center;
+}
+
+main {
+    @include gridTemplate(1fr 1.7fr 1fr, 1.2fr 4fr, "podiums monitor blank", "board board board");
+}
+
+@media (max-width: 1000px) {
+    main {
+        @include gridTemplate(1fr 1fr, 1fr 1fr, "podiums monitor", "board board");      
+    }
+}
+
+Podium {
+    grid-area: podiums;
+}
+
+#monitor-container {
+    grid-area: monitor;
+}
+
+#board {
+    grid-area: board;
+    margin: 0.25rem;
+}
+
+table {
+    table-layout: fixed;
+    border-spacing: 0;
+    user-select: none;
+}
+
+#headers {
+    height: 6vh;
+}
+
+th {
+    @include clueLayout(var(--main-border-width));
+}
+
+td {
+    @include clueLayout(var(--main-border-width));
+    width: 16vw;
+    height: 12vh;
+    text-align: center;
+}
+
+.fullscreen-enabled {
+    background-image: var(--jeopardy-background);
+}
+
+.clue {
+    @include flexCenter();
+    background-color: inherit;
+    color: var(--clue-value-color);
+    height: 100%;
+    width: 100%;
+    font-size: 3rem;
+    border: 0;
+}
+
+.wager {
+    @include flexCenter();
+    margin: 1rem;
+}

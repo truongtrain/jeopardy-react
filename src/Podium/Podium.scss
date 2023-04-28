@@ -1,24 +1,21 @@
+@import '../index.scss';
+
 #podiums {
     display: flex;
 }
 
 .podium {
+    @include clueLayout(var(--main-border-width));
     box-sizing: border-box;
     margin: 0.5rem;
-    background-color: var(--main-color);
-    color: var(--clue-text-color);
-    border: var(--clue-border);
     font-weight: bold;
     height: var(--podium-height);
     min-width: 30%;
-    text-align: center;
 }
 
 .tick-row {
+    @include flexCenter();
     height: 7%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
     background-color: var(--tick-row-background-color);
     border-top: inherit;
 }
@@ -32,9 +29,7 @@
 }
 
 .podium-row {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    @include flexCenter();
     height: 15%;
     border-top: inherit;
 }

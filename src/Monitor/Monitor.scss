@@ -1,17 +1,14 @@
+@import '../index.scss';
+
 #monitor {
+    @include flexCenter();
+    @include clueLayout(var(--monitor-border-width));
     box-sizing: border-box;
     size: 3rem;
     font-weight: bold;
     margin: 0.5rem 8rem 0.25rem;
-    border: 7px solid black;
     height: var(--podium-height);
     width: 45vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: var(--main-color);
-    color: var(--clue-text-color);
-    text-align: center;
 }
 
 img {

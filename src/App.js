@@ -1,4 +1,5 @@
 import './App.css';
+import './index.scss';
 import React, { useState, useEffect } from 'react';
 import { BiShow } from 'react-icons/bi';
 import { FcApprove } from 'react-icons/fc';
@@ -507,10 +508,10 @@ const App = () => {
       stats.coryatScore -= board[col][row].value;
     }
     setContestants(contestants);
+    resetClue(row, col);
     if (!isPlayerDailyDouble) {
       updateOpponentScores(row, col);
     }
-    resetClue(row, col);
     setDisableClue(false);
   }
 
@@ -642,8 +643,8 @@ const App = () => {
                     <span>{category[row] && category[row].visible === 'clue' && category[row].text}</span>
                     {category[row].visible === 'buzzer' && category[row].daily_double_wager === 0 &&
                       <div className='clue'>
-                        <button className='buzzer-button' onClick={() => answer(row, column)} disabled={disableAnswer}><HiHandRaised /></button>
-                        <button className='flag-button' onClick={() => concede(row, column)}><BsFillFlagFill /></button>
+                        <button className='answer-button buzzer-button' onClick={() => answer(row, column)} disabled={disableAnswer}><HiHandRaised /></button>
+                        <button className='answer-button flag-button' onClick={() => concede(row, column)}><BsFillFlagFill /></button>
                       </div>
                     }
                     {category[row].visible === 'eye' &&
