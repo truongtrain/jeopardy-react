@@ -1,5 +1,5 @@
 import React from 'react';
-import './Monitor.css';
+import './Monitor.scss';
 
 function Message(props) {
     const message = props.message;
