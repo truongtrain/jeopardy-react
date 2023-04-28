@@ -1,3 +1,5 @@
+@import './Styles/buttons.scss';
+
 body {
     --main-color: rgb(25, 25, 195);
     --main-border-width: 3px;
@@ -32,10 +34,6 @@ body {
     background-color: var(--main-color);
     color: var(--clue-text-color);
     text-align: center;
-}
-
-.fullscreen-enabled {
-    background-image: var(--jeopardy-background);
 }
 
 main {
@@ -82,6 +80,10 @@ td {
     text-align: center;
 }
 
+.fullscreen-enabled {
+    background-image: var(--jeopardy-background);
+}
+
 .clue {
     @include flexCenter();
     background-color: inherit;
@@ -92,33 +94,7 @@ td {
     border: 0;
 }
 
-.buzzer-button {
-    color: peachpuff;
-}
-
-.flag-button {
-    color: white;
-}
-
-.answer-button {
-    background-color: inherit;
-    width: 50%;
-    height: 100%;
-    font-size: var(--clue-button-font-size);
-}
-
-.eye-button {
-    background-color: inherit;
-    color: var(--clue-value-color);
-    font-size: var(--clue-button-font-size);
-}
-
 .wager {
     @include flexCenter();
     margin: 1rem;
-}
-
-.submit-button {
-    background-color: inherit;
-    color: inherit;
 }
