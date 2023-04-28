@@ -508,10 +508,10 @@ const App = () => {
       stats.coryatScore -= board[col][row].value;
     }
     setContestants(contestants);
+    resetClue(row, col);
     if (!isPlayerDailyDouble) {
       updateOpponentScores(row, col);
     }
-    resetClue(row, col);
     setDisableClue(false);
   }
 
