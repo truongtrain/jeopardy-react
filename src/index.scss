@@ -26,12 +26,6 @@ main {
     @include gridTemplate(1fr 1.7fr 1fr, 1.2fr 4fr, "podiums monitor blank", "board board board");
 }
 
-@media (max-width: 1000px) {
-    main {
-        @include gridTemplate(1fr 1fr, 1fr 1fr, "podiums monitor", "board board");
-    }
-}
-
 Podium {
     grid-area: podiums;
 }

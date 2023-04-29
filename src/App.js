@@ -288,7 +288,7 @@ const App = () => {
   }
 
   function enterFullScreen() {
-    if (!handle.active) {
+    if (!handle.active && window.innerWidth > 1000) {
       handle.enter();
     }
   }
@@ -639,7 +639,7 @@ const App = () => {
               <tr key={'row' + row}>
                 {board.map((category, column) =>
                   <td key={'column' + column}>
-                    {!category[row].visible && <div className='clue' onClick={() => displayClue(row, column)} disabled={disableClue}>${category[row].value}</div>}
+                    {!category[row].visible && <button className='clue' onClick={() => displayClue(row, column)} disabled={disableClue}>${category[row].value}</button>}
                     <span>{category[row] && category[row].visible === 'clue' && category[row].text}</span>
                     {category[row].visible === 'buzzer' && category[row].daily_double_wager === 0 &&
                       <div className='clue'>
