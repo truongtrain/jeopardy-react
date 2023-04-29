@@ -6,9 +6,9 @@ import { FcApprove } from 'react-icons/fc';
 import { FcDisapprove } from 'react-icons/fc';
 import { HiHandRaised } from 'react-icons/hi2';
 import { BsFillFlagFill } from 'react-icons/bs';
-import Podium from './Podium/Podium';
-import Monitor from './Monitor/Monitor';
-import FinalMusic from './Resources/final_jeopardy.mp3';
+import Podium from './components/Podium';
+import Monitor from './components/Monitor';
+import FinalMusic from './resources/final_jeopardy.mp3';
 import { FullScreen, useFullScreenHandle } from 'react-full-screen';
 
 const playerName = 'Alan';
