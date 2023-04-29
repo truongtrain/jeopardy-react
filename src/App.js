@@ -512,11 +512,11 @@ const App = () => {
     if (!isPlayerDailyDouble) {
       updateOpponentScores(row, col);
     }
+    isPlayerDailyDouble = false;
     setDisableClue(false);
   }
 
   function resetClue(row, col) {
-    isPlayerDailyDouble = false;
     setBoardState(row, col, 'closed');
     setResponseTimerIsActive(false);
     responseCountdownIsActive = false;
