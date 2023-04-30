@@ -1,0 +1,21 @@
+@mixin gridTemplate($columns, $rows, $area-row1, $area-row2) {
+    height: 100%;
+    display: grid;
+    grid-template-columns: $columns;
+    grid-template-rows: $rows;
+    grid-template-areas:
+        $area-row1 $area-row2;
+}
+
+@mixin flexCenter {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+@mixin clueLayout($border-width) {
+    border: $border-width solid black;
+    background-color: var(--main-color);
+    color: var(--clue-text-color);
+    text-align: center;
+}

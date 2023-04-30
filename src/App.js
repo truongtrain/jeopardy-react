@@ -6,9 +6,9 @@ import { FcApprove } from 'react-icons/fc';
 import { FcDisapprove } from 'react-icons/fc';
 import { HiHandRaised } from 'react-icons/hi2';
 import { BsFillFlagFill } from 'react-icons/bs';
-import Podium from './Podium/Podium';
-import Monitor from './Monitor/Monitor';
-import FinalMusic from './Resources/final_jeopardy.mp3';
+import Podium from './components/Podium';
+import Monitor from './components/Monitor';
+import FinalMusic from './resources/final_jeopardy.mp3';
 import { FullScreen, useFullScreenHandle } from 'react-full-screen';
 
 const playerName = 'Alan';
@@ -288,7 +288,7 @@ const App = () => {
   }
 
   function enterFullScreen() {
-    if (!handle.active) {
+    if (!handle.active && window.innerWidth > 1000) {
       handle.enter();
     }
   }
@@ -311,7 +311,6 @@ const App = () => {
       wager = contestants[playerName].score;
       setBoardState(row, col, 'wager');
       readText('Answer. Daily double. How much will you wager');
-      setMessageLines('Daily Double!');
     } else {
       setMessageLines('');
       seconds = 0;
@@ -508,10 +507,8 @@ const App = () => {
       stats.coryatScore -= board[col][row].value;
     }
     setContestants(contestants);
+    updateOpponentScores(row, col);
     resetClue(row, col);
-    if (!isPlayerDailyDouble) {
-      updateOpponentScores(row, col);
-    }
     setDisableClue(false);
   }
 
@@ -639,7 +636,7 @@ const App = () => {
               <tr key={'row' + row}>
                 {board.map((category, column) =>
                   <td key={'column' + column}>
-                    {!category[row].visible && <div className='clue' onClick={() => displayClue(row, column)} disabled={disableClue}>${category[row].value}</div>}
+                    {!category[row].visible && <button className='clue' onClick={() => displayClue(row, column)} disabled={disableClue}>${category[row].value}</button>}
                     <span>{category[row] && category[row].visible === 'clue' && category[row].text}</span>
                     {category[row].visible === 'buzzer' && category[row].daily_double_wager === 0 &&
                       <div className='clue'>

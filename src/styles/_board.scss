@@ -1,0 +1,40 @@
+#board {
+    grid-area: board;
+    margin: 0.25rem;
+}
+
+table {
+    table-layout: fixed;
+    border-spacing: 0;
+    user-select: none;
+}
+
+#headers {
+    height: 6vh;
+}
+
+th {
+    @include clueLayout(var(--main-border-width));
+}
+
+td {
+    @include clueLayout(var(--main-border-width));
+    width: 16vw;
+    height: 12vh;
+    text-align: center;
+}
+
+.clue {
+    @include flexCenter();
+    background-color: inherit;
+    color: var(--clue-value-color);
+    height: 100%;
+    width: 100%;
+    font-size: 3rem;
+    border: 0;
+}
+
+.wager {
+    @include flexCenter();
+    margin: 1rem;
+}

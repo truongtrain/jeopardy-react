@@ -1,5 +1,4 @@
 import React from 'react';
-import './Monitor.scss';
 
 function Message(props) {
     const message = props.message;
@@ -7,7 +6,7 @@ function Message(props) {
 
     return (
         <div id='monitor'>
-            {imageUrl === 'logo' && <img src={require('../Resources/jeopardy_logo.jpeg')} alt=""></img>}
+            {imageUrl === 'logo' && <img src={require('../resources/jeopardy_logo.jpeg')} alt=""></img>}
             {imageUrl && imageUrl !== 'logo' && <img src={imageUrl} alt=""></img>}  
             <div>
                 <div>{message.line1}</div>

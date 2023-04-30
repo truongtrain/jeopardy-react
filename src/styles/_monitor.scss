@@ -1,5 +1,3 @@
-@import '../index.scss';
-
 #monitor {
     @include flexCenter();
     @include clueLayout(var(--monitor-border-width));

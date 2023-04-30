@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import Timeout from '../Resources/timeout.mp3';
-import './Podium.scss';
+import Timeout from '../resources/timeout.mp3';
 
 function Podium(props) {
     const contestants = props.contestants;
