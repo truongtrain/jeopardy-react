@@ -311,7 +311,6 @@ const App = () => {
       wager = contestants[playerName].score;
       setBoardState(row, col, 'wager');
       readText('Answer. Daily double. How much will you wager');
-      setMessageLines('Daily Double!');
     } else {
       setMessageLines('');
       seconds = 0;
@@ -508,15 +507,13 @@ const App = () => {
       stats.coryatScore -= board[col][row].value;
     }
     setContestants(contestants);
+    updateOpponentScores(row, col);
     resetClue(row, col);
-    if (!isPlayerDailyDouble) {
-      updateOpponentScores(row, col);
-    }
-    isPlayerDailyDouble = false;
     setDisableClue(false);
   }
 
   function resetClue(row, col) {
+    isPlayerDailyDouble = false;
     setBoardState(row, col, 'closed');
     setResponseTimerIsActive(false);
     responseCountdownIsActive = false;
