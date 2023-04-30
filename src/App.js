@@ -627,7 +627,9 @@ const App = () => {
           <thead>
             <tr id='headers'>
               {Array.from(Array(6), (_arrayElement, row) =>
-                <th key={'header' + row}>{round !== 3 && getCategory(board[row])}</th>
+                <th key={'header' + row}>{round !== 3 && getCategory(board[row])}
+                  <span className='tooltip'>Tooltip</span>
+                </th>
               )}
             </tr>
           </thead>
