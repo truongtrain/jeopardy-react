@@ -251,7 +251,7 @@ const App = () => {
         setMessageLines(clue.response.correct_response);
       }
       // go to next clue selected by opponent
-      if (nextClueNumber > 0 && lastCorrectContestant !== playerName && clue.visible === 'closed') {
+      if (nextClueNumber > 0 && lastCorrectContestant !== playerName) {
         setTimeout(() => setMessageLines(message), 2500);
         setTimeout(() => displayNextClue(), 4500);
       }
