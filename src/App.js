@@ -251,7 +251,7 @@ const App = () => {
         setMessageLines(clue.response.correct_response);
       }
       // go to next clue selected by opponent
-      if (nextClueNumber > 0 && lastCorrectContestant !== playerName && clue.visible === 'closed') {
+      if (nextClueNumber > 0 && lastCorrectContestant !== playerName) {
         setTimeout(() => setMessageLines(message), 2500);
         setTimeout(() => displayNextClue(), 4500);
       }
@@ -627,7 +627,9 @@ const App = () => {
           <thead>
             <tr id='headers'>
               {Array.from(Array(6), (_arrayElement, row) =>
-                <th key={'header' + row}>{round !== 3 && getCategory(board[row])}</th>
+                <th key={'header' + row}>{round !== 3 && getCategory(board[row])}
+                  {board[row][0].category_note && <span className='tooltip'>{board[row][0].category_note}</span>}
+                </th>
               )}
             </tr>
           </thead>
