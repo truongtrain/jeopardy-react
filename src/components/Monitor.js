@@ -1,6 +1,6 @@
 import React from 'react';
 
-function Message(props) {
+function Monitor(props) {
     const message = props.message;
     const imageUrl = props.imageUrl;
 
@@ -16,4 +16,4 @@ function Message(props) {
     );
 }
 
-export default Message;
+export default Monitor;

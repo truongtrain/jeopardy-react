@@ -93,6 +93,7 @@ const App = () => {
     setBoard(showData.double_jeopardy_round);
     availableClueNumbers = new Array(30).fill(true);
     setMessageLines('');
+    setDisableClue(false);
     setDisableAnswer(false);
   }
 
