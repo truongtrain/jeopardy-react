@@ -17,12 +17,8 @@ let showData = {};
 let stats = { numCorrect: 0, numClues: 0, coryatScore: 0, battingAverage: 0 };
 let contestants = { weakest: '', answered: [], lastCorrect: playerName };
 let player = { finalResponse: '', wager: 0, conceded: false};
-
-let seconds = 0;
+let response = { seconds: 0, interval: {}, countdown: false};
 let round = 0;
-let responseInterval = {};
-let responseCountdownIsActive = false;
-
 let msg = new SpeechSynthesisUtterance();
 
 const App = () => {
@@ -56,11 +52,11 @@ const App = () => {
   // determines how fast I click after the clue is read
   useEffect(() => {
     if (responseTimerIsActive) {
-      responseInterval = setInterval(() => seconds += 0.01, 10);
+      response.interval = setInterval(() => response.seconds += 0.01, 10);
     } else {
-      clearInterval(responseInterval);
+      clearInterval(response.interval);
     }
-    return () => clearInterval(responseInterval);
+    return () => clearInterval(response.interval);
   }, [responseTimerIsActive]);
 
   function startRound() {
@@ -114,9 +110,9 @@ const App = () => {
       bonusProbability = 0.166;
     }
     const probability = getProbability(board[col][row].value, round, bonusProbability);
-    if (seconds < 3 && (contestants.answered.length === 2 || isFastestResponse(seconds, probability) || noAttempts(row, col) || noOpponentAttemptsRemaining(row, col))) {
+    if (response.seconds < 3 && (contestants.answered.length === 2 || isFastestResponse(response.seconds, probability) || noAttempts(row, col) || noOpponentAttemptsRemaining(row, col))) {
       readText(playerName);
-      responseCountdownIsActive = true;
+      response.countdown = true;
       setBoardState(row, col, 'eye');
     } else {
       if (board[col][row].visible === 'closed') {
@@ -128,7 +124,7 @@ const App = () => {
       }
       updateOpponentScores(row, col);
     }
-    clearInterval(responseInterval);
+    clearInterval(response.interval);
   }
 
   function noAttempts(row, col) {
@@ -161,7 +157,7 @@ const App = () => {
         scores[incorrectContestants[i]].score -= scoreChange;
         contestants.answered.push(incorrectContestants[i]);
         readText('No');
-        seconds = 0;
+        response.seconds = 0;
         // keep the buzzer disabled for 500ms
         setTimeout(() => {
           setDisableAnswer(false);
@@ -189,7 +185,7 @@ const App = () => {
       setTimeout(() => {
         setMessageLines(correctContestant + ': ' + nextClue.category + ' for $' + nextClue.value);
       }, 2000);
-      seconds = 0;
+      response.seconds = 0;
       setTimeout(() => displayNextClue(), 4000);
     }
   }
@@ -311,8 +307,8 @@ const App = () => {
       readText('Answer. Daily double. How much will you wager');
     } else {
       setMessageLines('');
-      seconds = 0;
-      responseCountdownIsActive = false;
+      response.seconds = 0;
+      response.countdown = false;
       updateAvailableClueNumbers(clue.number);
       setBoardState(row, col, 'clue');
       readClue(row, col);
@@ -391,7 +387,7 @@ const App = () => {
     window.speechSynthesis.speak(msg);
     msg.addEventListener('end', function clearClue() {
       setImageUrl('');
-      seconds = 0;
+      response.seconds = 0;
       if (isPlayerDailyDouble(row, col) && board[col][row].daily_double_wager > 0) {
         setBoardState(row, col, 'eye');
       } else if (board[col][row].daily_double_wager > 0) {
@@ -516,7 +512,7 @@ const App = () => {
   function resetClue(row, col) {
     setBoardState(row, col, 'closed');
     setResponseTimerIsActive(false);
-    responseCountdownIsActive = false;
+    response.countdown = false;
   }
 
   function concede(row, col) {
@@ -531,7 +527,7 @@ const App = () => {
 
   function showAnswer(row, col) {
     setResponseTimerIsActive(false);
-    responseCountdownIsActive = false;
+    response.countdown = false;
     setBoardState(row, col, 'judge');
     if (round === 3) {
       setMessageLines(showData.final_jeopardy.correct_response);
@@ -550,7 +546,7 @@ const App = () => {
     if (round === 3) {
       document.getElementById('final-input').value = null;
       setDisableAnswer(true);
-      responseCountdownIsActive = false;
+      response.countdown = false;
       setScores(scores);
       showFinalJeopardyClue();
     } else {
@@ -619,7 +615,7 @@ const App = () => {
     <FullScreen handle={handle}>
       <main>
         <meta name='viewport' content='width=device-width, initial-scale=1' />
-        <Podium contestants={scores} startTimer={responseCountdownIsActive} playerName={playerName} />
+        <Podium contestants={scores} startTimer={response.countdown} playerName={playerName} />
         <div id='monitor-container' onClick={() => startRound()}>
           <Monitor message={message} imageUrl={imageUrl} />
         </div>
