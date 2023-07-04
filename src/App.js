@@ -18,7 +18,6 @@ let stats = { numCorrect: 0, numClues: 0, coryatScore: 0, battingAverage: 0 };
 let contestants = { weakest: '', answered: [], lastCorrect: playerName };
 let player = { finalResponse: '', wager: 0, conceded: false};
 
-let isPlayerDailyDouble = false;
 let seconds = 0;
 let round = 0;
 let responseInterval = {};
@@ -223,7 +222,7 @@ const App = () => {
   function updateOpponentScores(row, col) {
     const clue = board[col][row];
     // don't update opponent score if this is the player's daily double
-    if (isPlayerDailyDouble) {
+    if (isPlayerDailyDouble(row, col)) {
       return;
     }
     const nextClueNumber = getNextClueNumber();
@@ -307,7 +306,6 @@ const App = () => {
     contestants.lastCorrect = playerName;
     const clue = board[col][row];
     if (clue.daily_double_wager > 0) {
-      isPlayerDailyDouble = true;
       player.wager = scores[playerName].score;
       setBoardState(row, col, 'wager');
       readText('Answer. Daily double. How much will you wager');
@@ -330,14 +328,13 @@ const App = () => {
     for (let col = 0; col < 6; col++) {
       for (let row = 0; row < 5; row++) {
         if (board[col][row].number === clueNumber) {
-          if (!isPlayerDailyDouble && board[col][row].daily_double_wager > 0) {
-            isPlayerDailyDouble = false;
+          if (!isPlayerDailyDouble(row, col) && board[col][row].daily_double_wager > 0) {
             if (contestants.lastCorrect !== playerName) {
               setMessageLines('Daily Double', contestants.lastCorrect + ': I will wager $' + board[col][row].daily_double_wager);
             }
           }
           setBoardState(row, col, 'clue');
-          if (isPlayerDailyDouble && !board[col][row].url) {
+          if (isPlayerDailyDouble(row, col) && !board[col][row].url) {
             setMessageLines(board[col][row].text);
           }
           readClue(row, col);
@@ -395,7 +392,7 @@ const App = () => {
     msg.addEventListener('end', function clearClue() {
       setImageUrl('');
       seconds = 0;
-      if (isPlayerDailyDouble && board[col][row].daily_double_wager > 0) {
+      if (isPlayerDailyDouble(row, col) && board[col][row].daily_double_wager > 0) {
         setBoardState(row, col, 'eye');
       } else if (board[col][row].daily_double_wager > 0) {
         concede(row, col);
@@ -512,8 +509,11 @@ const App = () => {
     setDisableClue(false);
   }
 
+  function isPlayerDailyDouble(row, col) {
+    return contestants.lastCorrect === playerName && board[col][row].daily_double_wager > 0;
+  }
+
   function resetClue(row, col) {
-    isPlayerDailyDouble = false;
     setBoardState(row, col, 'closed');
     setResponseTimerIsActive(false);
     responseCountdownIsActive = false;
