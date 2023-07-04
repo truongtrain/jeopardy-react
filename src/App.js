@@ -16,15 +16,12 @@ let availableClueNumbers = new Array(30).fill(true);
 let showData = {};
 let stats = { numCorrect: 0, numClues: 0, coryatScore: 0, battingAverage: 0 };
 let contestants = { weakest: '', answered: [], lastCorrect: playerName };
+let player = { finalResponse: '', wager: 0, conceded: false};
 
-let response;
-let finalResponse = '';
-let wager = 0;
+let isPlayerDailyDouble = false;
 let seconds = 0;
 let round = 0;
 let responseInterval = {};
-let isPlayerDailyDouble = false;
-let conceded = false;
 let responseCountdownIsActive = false;
 
 let msg = new SpeechSynthesisUtterance();
@@ -101,9 +98,9 @@ const App = () => {
 
   const handleInputChange = event => {
     if (isNaN(event.target.value)) {
-      finalResponse = event.target.value;
+      player.finalResponse = event.target.value;
     } else {
-      wager = event.target.value;
+      player.wager = event.target.value;
     }
   }
 
@@ -174,7 +171,7 @@ const App = () => {
       }
       break;
     }
-    if (clue.daily_double_wager > 0 || conceded) {
+    if (clue.daily_double_wager > 0 || player.conceded) {
       setMessageLines(incorrectMessage, clue.response.correct_response);
     } else {
       setMessageLines(incorrectMessage);
@@ -260,7 +257,7 @@ const App = () => {
       }
     } else if (incorrectContestants.length > 0) {
       handleIncorrectResponses(incorrectContestants, clue, scoreChange);
-      if (conceded) {
+      if (player.conceded) {
         setTimeout(() => handleCorrectResponse(correctContestant, scoreChange, clue, nextClueNumber, nextClue, row, col), 3000);
       }
     } else { // no incorrect responses
@@ -304,14 +301,14 @@ const App = () => {
     if (round === 1.5) {
       round = 2;
     }
-    conceded = false;
+    player.conceded = false;
     setDisableAnswer(false);
     contestants.answered = [];
     contestants.lastCorrect = playerName;
     const clue = board[col][row];
     if (clue.daily_double_wager > 0) {
       isPlayerDailyDouble = true;
-      wager = scores[playerName].score;
+      player.wager = scores[playerName].score;
       setBoardState(row, col, 'wager');
       readText('Answer. Daily double. How much will you wager');
     } else {
@@ -326,7 +323,7 @@ const App = () => {
 
   function displayClueByNumber(clueNumber) {
     enterFullScreen();
-    conceded = false;
+    player.conceded = false;
     setDisableAnswer(false);
     contestants.answered = [];
     updateAvailableClueNumbers(clueNumber);
@@ -490,7 +487,7 @@ const App = () => {
     msg.text = 'Correct';
     window.speechSynthesis.speak(msg);
     if (board[col][row].daily_double_wager > 0) {
-      scores[playerName].score += +wager;
+      scores[playerName].score += +player.wager;
     } else {
       scores[playerName].score += board[col][row].value;
     }
@@ -504,7 +501,7 @@ const App = () => {
     msg.text = 'No';
     window.speechSynthesis.speak(msg);
     if (board[col][row].daily_double_wager > 0) {
-      scores[playerName].score -= wager;
+      scores[playerName].score -= player.wager;
     } else {
       scores[playerName].score -= board[col][row].value;
       stats.coryatScore -= board[col][row].value;
@@ -525,7 +522,7 @@ const App = () => {
   function concede(row, col) {
     setBoardState(row, col, 'closed');
     setResponseTimerIsActive(false);
-    conceded = true;
+    player.conceded = true;
     updateOpponentScores(row, col);
     if (contestants.lastCorrect === playerName) {
       setDisableClue(false);
@@ -587,8 +584,8 @@ const App = () => {
   function showFinalJeopardyResults() {
     stats.battingAverage = stats.numCorrect / stats.numClues * 1.0;
     console.log(stats);
-    scores[playerName].response = finalResponse;
-    scores[playerName].wager = wager;
+    scores[playerName].response = player.finalResponse;
+    scores[playerName].wager = player.wager;
     Object.keys(scores).forEach(contestant => {
       showData.final_jeopardy.contestant_responses.forEach(response => {
         if (response.contestant === contestant) {
@@ -665,7 +662,7 @@ const App = () => {
                         ENTER YOUR WAGER:
                         <div className='wager'>
                           <button className='submit-button' onClick={() => submit(row, column)}>SUBMIT</button>
-                          <input defaultValue={wager} onChange={handleInputChange} />
+                          <input defaultValue={player.wager} onChange={handleInputChange} />
                         </div>
                       </div>
                     }
@@ -685,7 +682,7 @@ const App = () => {
                         {board[3][1].visible === 'final' && <span>ENTER YOUR RESPONSE:</span>}
                         <div className='wager'>
                           {board[3][1].visible !== 'final' && <button id='final-submit-button' className='submit-button' disabled={disableAnswer} onClick={() => submit()}>SUBMIT</button>}
-                          <input id='final-input' defaultValue={wager} onChange={handleInputChange} />
+                          <input id='final-input' defaultValue={player.wager} onChange={handleInputChange} />
                         </div>
                       </div>
                     }
