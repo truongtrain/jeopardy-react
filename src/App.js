@@ -12,11 +12,9 @@ import FinalMusic from './resources/final_jeopardy.mp3';
 import { FullScreen, useFullScreenHandle } from 'react-full-screen';
 import Welcome from './components/Welcome';
 
-let playerName = '';
 let availableClueNumbers = new Array(30).fill(true);
 let showData = {};
 let stats = { numCorrect: 0, numClues: 0, coryatScore: 0, battingAverage: 0 };
-let contestants = { weakest: '', answered: [], lastCorrect: playerName };
 let player = { finalResponse: '', wager: 0, conceded: false};
 let response = { seconds: 0, interval: {}, countdown: false};
 let msg = new SpeechSynthesisUtterance();
@@ -32,7 +30,7 @@ const App = () => {
   const [disableClue, setDisableClue] = useState(false);
   const [imageUrl, setImageUrl] = useState('logo');
   const handle = useFullScreenHandle();
-
+  let contestants = { weakest: '', answered: [], lastCorrect: playerName };
 
   useEffect(() => {
     fetch('http://localhost:5000/game/1080')
