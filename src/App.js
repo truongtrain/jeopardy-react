@@ -10,18 +10,20 @@ import Podium from './components/Podium';
 import Monitor from './components/Monitor';
 import FinalMusic from './resources/final_jeopardy.mp3';
 import { FullScreen, useFullScreenHandle } from 'react-full-screen';
+import Welcome from './components/Welcome';
 
-const playerName = 'Alan';
+let playerName = '';
 let availableClueNumbers = new Array(30).fill(true);
 let showData = {};
 let stats = { numCorrect: 0, numClues: 0, coryatScore: 0, battingAverage: 0 };
 let contestants = { weakest: '', answered: [], lastCorrect: playerName };
 let player = { finalResponse: '', wager: 0, conceded: false};
 let response = { seconds: 0, interval: {}, countdown: false};
-let round = 0;
 let msg = new SpeechSynthesisUtterance();
 
 const App = () => {
+  const [playerName, setPlayerName] = useState('');
+  const [round, setRound] = useState(-1);
   const [board, setBoard] = useState(null);
   const [message, setMessage] = useState({ line1: '', line2: '' });
   const [scores, setScores] = useState(null);
@@ -47,7 +49,7 @@ const App = () => {
         setScores(tempContestants);
         setBoard(showData.jeopardy_round);
       })
-  }, []);
+  }, [playerName]);
 
   // determines how fast I click after the clue is read
   useEffect(() => {
@@ -62,12 +64,12 @@ const App = () => {
   function startRound() {
     if (round === 0) {
       setImageUrl('');
-      round = 1;
+      setRound(1);
       displayClueByNumber(1);
     } else if (round === 1) {
       setUpDoubleJeopardyBoard();
     } else if (round === 1.5) {
-      round = 2;
+      setRound(2);
       displayClueByNumber(1);
     } else if (round === 2) {
       showFinalJeopardyCategory();
@@ -76,7 +78,7 @@ const App = () => {
 
   function setUpDoubleJeopardyBoard() {
     setImageUrl('');
-    round = 1.5;
+    setRound(1.5);
     let thirdPlace = playerName;
     Object.keys(contestants).forEach(contestant => {
       if (scores[contestant].score < scores[thirdPlace].score) {
@@ -291,10 +293,10 @@ const App = () => {
   function displayClue(row, col) {
     enterFullScreen();
     if (round === 0) {
-      round = 1;
+      setRound(1);
     }
     if (round === 1.5) {
-      round = 2;
+      setRound(2);
     }
     player.conceded = false;
     setDisableAnswer(false);
@@ -556,7 +558,7 @@ const App = () => {
   }
 
   function showFinalJeopardyCategory() {
-    round = 3;
+    setRound(3);
     setDisableAnswer(false);
     setMessageLines('');
     msg.text = 'The final jeopardy category is ' + showData.final_jeopardy.category + '. How much will you wager';
@@ -613,13 +615,14 @@ const App = () => {
   }
   return (
     <FullScreen handle={handle}>
+      {round === -1 && <Welcome setPlayerName={setPlayerName} setRound={setRound}></Welcome>}
       <main>
         <meta name='viewport' content='width=device-width, initial-scale=1' />
         <Podium contestants={scores} startTimer={response.countdown} playerName={playerName} />
         <div id='monitor-container' onClick={() => startRound()}>
           <Monitor message={message} imageUrl={imageUrl} />
         </div>
-        <table id='board'>
+        {round >= 0 && <table id='board'>
           <thead>
             <tr id='headers'>
               {Array.from(Array(6), (_arrayElement, row) =>
@@ -688,6 +691,7 @@ const App = () => {
             )}
           </tbody>
         </table>
+        }
       </main>
     </FullScreen>
   );
