@@ -1,4 +1,4 @@
-function Welcome({setPlayerName, setRound}) {
+function Welcome({startRound}) {
     let playerName = '';
 
     const handleInputChange = event => {
@@ -9,7 +9,7 @@ function Welcome({setPlayerName, setRound}) {
         <div>
             <h3>Welcome to Jeopardy!</h3>
             Enter Your Name: <input defaultValue={playerName} onChange={handleInputChange}></input>
-            <button onClick={() => {setPlayerName(playerName); setRound(1)}}>Submit</button>
+            <button onClick={() => {startRound(0, playerName)}}>Submit</button>
         </div>
     );
 }

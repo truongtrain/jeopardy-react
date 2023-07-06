@@ -37,17 +37,9 @@ const App = () => {
       .then((res) => res.json())
       .then((data) => {
         showData = data;
-        contestants.weakest = showData.weakest_contestant;
-        let filteredContestants = showData.contestants.filter(
-          contestant => contestant !== contestants.weakest
-        );
-        filteredContestants.push(playerName);
-        let tempContestants = {};
-        filteredContestants.forEach(contestant => tempContestants[contestant] = { score: 0, response: '', wager: null });
-        setScores(tempContestants);
         setBoard(showData.jeopardy_round);
       })
-  }, [playerName]);
+  }, []);
 
   // determines how fast I click after the clue is read
   useEffect(() => {
@@ -59,11 +51,21 @@ const App = () => {
     return () => clearInterval(response.interval);
   }, [responseTimerIsActive]);
 
-  function startRound() {
-    if (round === 0) {
+  function startRound(roundParam, playerNameParam) {
+    if (roundParam === 0) {
+      setPlayerName(playerNameParam);
+      contestants.weakest = showData.weakest_contestant;
+        let filteredContestants = showData.contestants.filter(
+          contestant => contestant !== contestants.weakest
+        );
+        filteredContestants.push(playerNameParam);
+        let tempContestants = {};
+        filteredContestants.forEach(contestant => tempContestants[contestant] = { score: 0, response: '', wager: null });
+        setScores(tempContestants);
+        
       setImageUrl('');
       setRound(1);
-      displayClueByNumber(1);
+      // displayClueByNumber(1);
     } else if (round === 1) {
       setUpDoubleJeopardyBoard();
     } else if (round === 1.5) {
@@ -613,8 +615,8 @@ const App = () => {
   }
   return (
     <FullScreen handle={handle}>
-      {round === -1 && <Welcome setPlayerName={setPlayerName} setRound={setRound}></Welcome>}
-      <main>
+      {round === -1 && <Welcome startRound={startRound}></Welcome>}
+      {round >= 0 && <main>
         <meta name='viewport' content='width=device-width, initial-scale=1' />
         <Podium contestants={scores} startTimer={response.countdown} playerName={playerName} />
         <div id='monitor-container' onClick={() => startRound()}>
@@ -690,7 +692,7 @@ const App = () => {
           </tbody>
         </table>
         }
-      </main>
+      </main>}
     </FullScreen>
   );
 }
