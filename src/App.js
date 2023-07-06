@@ -2,11 +2,13 @@ import './App.css';
 import './index.scss';
 import React, { useState, useEffect } from 'react';
 import { BiShow } from 'react-icons/bi';
+
 import { FcApprove } from 'react-icons/fc';
 import { FcDisapprove } from 'react-icons/fc';
 import { HiHandRaised } from 'react-icons/hi2';
 import { BsFillFlagFill } from 'react-icons/bs';
 import Podium from './components/Podium';
+
 import Monitor from './components/Monitor';
 import FinalMusic from './resources/final_jeopardy.mp3';
 import { FullScreen, useFullScreenHandle } from 'react-full-screen';
@@ -610,19 +612,16 @@ const App = () => {
     return column[i].category;
   }
 
-  if (!board) {
-    return <></>;
-  }
   return (
     <FullScreen handle={handle}>
-      {round === -1 && <Welcome startRound={startRound}></Welcome>}
-      {round >= 0 && <main>
+      {round === -1 ? <Welcome startRound={startRound}></Welcome> :
+      <main>
         <meta name='viewport' content='width=device-width, initial-scale=1' />
         <Podium contestants={scores} startTimer={response.countdown} playerName={playerName} />
         <div id='monitor-container' onClick={() => startRound()}>
           <Monitor message={message} imageUrl={imageUrl} />
         </div>
-        {round >= 0 && <table id='board'>
+        <table id='board'>
           <thead>
             <tr id='headers'>
               {Array.from(Array(6), (_arrayElement, row) =>
@@ -691,7 +690,6 @@ const App = () => {
             )}
           </tbody>
         </table>
-        }
       </main>}
     </FullScreen>
   );
