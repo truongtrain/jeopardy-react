@@ -32,7 +32,20 @@ const App = () => {
   const [disableClue, setDisableClue] = useState(false);
   const [imageUrl, setImageUrl] = useState('logo');
   const handle = useFullScreenHandle();
-  let contestants = { weakest: '', answered: [], lastCorrect: playerName };
+  let contestants = { weakest: '', answered: [], lastCorrect: '' };
+
+  function loadContestants(playerNameParam) {
+    contestants.weakest = showData.weakest_contestant;
+    let filteredContestants = showData.contestants.filter(
+      contestant => contestant !== contestants.weakest
+    );
+    filteredContestants.push(playerNameParam);
+    let tempContestants = {};
+    filteredContestants.forEach(
+      contestant => tempContestants[contestant] = { score: 0, response: '', wager: null }
+    );
+    setScores(tempContestants);
+  }
 
   useEffect(() => {
     fetch('http://localhost:5000/game/1080')
@@ -55,16 +68,8 @@ const App = () => {
 
   function startRound(roundParam, playerNameParam) {
     if (roundParam === 0) {
-      setPlayerName(playerNameParam);
-      contestants.weakest = showData.weakest_contestant;
-        let filteredContestants = showData.contestants.filter(
-          contestant => contestant !== contestants.weakest
-        );
-        filteredContestants.push(playerNameParam);
-        let tempContestants = {};
-        filteredContestants.forEach(contestant => tempContestants[contestant] = { score: 0, response: '', wager: null });
-        setScores(tempContestants);
-        
+      setPlayerName(playerNameParam); 
+      loadContestants(playerNameParam);
       setImageUrl('');
       setRound(1);
       // displayClueByNumber(1);
@@ -612,9 +617,20 @@ const App = () => {
     return column[i].category;
   }
 
+  function isFinalJeopardyCategoryCell(row, col) {
+    return row === 1 && col === 3;
+  }
+
+  function isFinalJeopardyResponseCell(row, col) {
+    return row === 2 && col === 3;
+  }
+
+  if (!board) {
+    return <span>Loading...</span>;
+  }
   return (
+    round === -1 ? <Welcome startRound={startRound}></Welcome> :
     <FullScreen handle={handle}>
-      {round === -1 ? <Welcome startRound={startRound}></Welcome> :
       <main>
         <meta name='viewport' content='width=device-width, initial-scale=1' />
         <Podium contestants={scores} startTimer={response.countdown} playerName={playerName} />
@@ -664,17 +680,17 @@ const App = () => {
                         </div>
                       </div>
                     }
-                    {round === 3 && row === 1 && column === 3 && category[row].visible !== 'final' &&
+                    {round === 3 && isFinalJeopardyCategoryCell(row, column) && category[row].visible !== 'final' &&
                       <h3>
                         {showData.final_jeopardy.category}
                       </h3>
                     }
-                    {row === 1 && column === 3 && category[row].visible === 'final' &&
+                    {isFinalJeopardyCategoryCell(row, column) && category[row].visible === 'final' &&
                       <div>
                         {showData.final_jeopardy.clue.toUpperCase()}
                       </div>
                     }
-                    {round === 3 && row === 2 && column === 3 &&
+                    {round === 3 && isFinalJeopardyResponseCell(row, column) &&
                       <div>
                         {board[3][1].visible !== 'final' && <span>ENTER YOUR WAGER:</span>}
                         {board[3][1].visible === 'final' && <span>ENTER YOUR RESPONSE:</span>}
@@ -690,7 +706,7 @@ const App = () => {
             )}
           </tbody>
         </table>
-      </main>}
+      </main>
     </FullScreen>
   );
 }
