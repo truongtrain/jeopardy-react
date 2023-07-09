@@ -72,7 +72,6 @@ const App = () => {
       loadContestants(playerNameParam);
       setImageUrl('');
       setRound(1);
-      // displayClueByNumber(1);
     } else if (round === 1) {
       setUpDoubleJeopardyBoard();
     } else if (round === 1.5) {
@@ -634,7 +633,7 @@ const App = () => {
       <main>
         <meta name='viewport' content='width=device-width, initial-scale=1' />
         <Podium contestants={scores} startTimer={response.countdown} playerName={playerName} />
-        <div id='monitor-container' onClick={() => startRound()}>
+        <div id='monitor-container' onClick={() => displayClueByNumber(1)}>
           <Monitor message={message} imageUrl={imageUrl} />
         </div>
         <table id='board'>
