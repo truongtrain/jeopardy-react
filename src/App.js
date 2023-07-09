@@ -13,6 +13,7 @@ import Monitor from './components/Monitor';
 import FinalMusic from './resources/final_jeopardy.mp3';
 import { FullScreen, useFullScreenHandle } from 'react-full-screen';
 import Name from './components/Name';
+import sampleGame from './resources/sample_game.json';
 
 let availableClueNumbers = new Array(30).fill(true);
 let showData = {};
@@ -52,6 +53,11 @@ const App = () => {
       .then((res) => res.json())
       .then((data) => {
         showData = data;
+        setBoard(showData.jeopardy_round);
+      },
+      () => {
+        // load sample game if service not available
+        showData = sampleGame;
         setBoard(showData.jeopardy_round);
       })
   }, []);
