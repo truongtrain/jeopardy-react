@@ -29,3 +29,12 @@ Podium {
     background-image: var(--jeopardy-background);
 }
 
+.center-screen {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    min-height: 100vh;
+    color: white;
+  }
+
