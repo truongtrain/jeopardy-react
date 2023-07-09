@@ -12,7 +12,7 @@ import Podium from './components/Podium';
 import Monitor from './components/Monitor';
 import FinalMusic from './resources/final_jeopardy.mp3';
 import { FullScreen, useFullScreenHandle } from 'react-full-screen';
-import Welcome from './components/Welcome';
+import Name from './components/Name';
 
 let availableClueNumbers = new Array(30).fill(true);
 let showData = {};
@@ -626,10 +626,10 @@ const App = () => {
   }
 
   if (!board) {
-    return <span>Loading...</span>;
+    return <h1 class='center-screen'>Welcome to JEOPARDY!</h1>;
   }
   return (
-    round === -1 ? <Welcome startRound={startRound}></Welcome> :
+    round === -1 ? <Name startRound={startRound}></Name> :
     <FullScreen handle={handle}>
       <main>
         <meta name='viewport' content='width=device-width, initial-scale=1' />
