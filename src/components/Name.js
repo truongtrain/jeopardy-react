@@ -6,9 +6,9 @@ function Name({startRound}) {
     }
 
     return (
-        <div class='center-screen'>
+        <div className='center-screen'>
             <b>Enter your name:</b> <input defaultValue={playerName} onChange={handleInputChange}></input>
-            <button onClick={() => {startRound(0, playerName)}}>Submit</button>
+            <button onClick={() => {startRound(playerName)}}>Submit</button>
         </div>
     );
 }

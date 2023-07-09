@@ -20,10 +20,11 @@ let stats = { numCorrect: 0, numClues: 0, coryatScore: 0, battingAverage: 0 };
 let player = { finalResponse: '', wager: 0, conceded: false};
 let response = { seconds: 0, interval: {}, countdown: false};
 let msg = new SpeechSynthesisUtterance();
+let contestants = { weakest: '', answered: [], lastCorrect: '' };
+let round = -1;
 
 const App = () => {
   const [playerName, setPlayerName] = useState('');
-  const [round, setRound] = useState(-1);
   const [board, setBoard] = useState(null);
   const [message, setMessage] = useState({ line1: '', line2: '' });
   const [scores, setScores] = useState(null);
@@ -32,7 +33,6 @@ const App = () => {
   const [disableClue, setDisableClue] = useState(false);
   const [imageUrl, setImageUrl] = useState('logo');
   const handle = useFullScreenHandle();
-  let contestants = { weakest: '', answered: [], lastCorrect: '' };
 
   function loadContestants(playerNameParam) {
     contestants.weakest = showData.weakest_contestant;
@@ -66,16 +66,19 @@ const App = () => {
     return () => clearInterval(response.interval);
   }, [responseTimerIsActive]);
 
-  function startRound(roundParam, playerNameParam) {
-    if (roundParam === 0) {
+  function startRound(playerNameParam) {
+    if (round === -1) {
       setPlayerName(playerNameParam); 
       loadContestants(playerNameParam);
       setImageUrl('');
-      setRound(1);
+      round = 0;
+    } else if (round === 0) {
+      round = 1;
+      displayClueByNumber(1);
     } else if (round === 1) {
       setUpDoubleJeopardyBoard();
     } else if (round === 1.5) {
-      setRound(2);
+      round = 2;
       displayClueByNumber(1);
     } else if (round === 2) {
       showFinalJeopardyCategory();
@@ -84,9 +87,9 @@ const App = () => {
 
   function setUpDoubleJeopardyBoard() {
     setImageUrl('');
-    setRound(1.5);
+    round = 1.5;
     let thirdPlace = playerName;
-    Object.keys(contestants).forEach(contestant => {
+    Object.keys(scores).forEach(contestant => {
       if (scores[contestant].score < scores[thirdPlace].score) {
         thirdPlace = contestant;
       }
@@ -115,7 +118,7 @@ const App = () => {
       .filter(contestant => contestant !== contestants.weakest)
       .filter(contestant => !contestants.answered.includes(contestant));
     if (contestants.answered.length === 1) {
-      bonusProbability = 0.166;
+      bonusProbability = 0.166; // increase the probability of a successful buzz-in if a contestant has already answered this clue
     }
     const probability = getProbability(board[col][row].value, round, bonusProbability);
     if (response.seconds < 3 && (contestants.answered.length === 2 || isFastestResponse(response.seconds, probability) || noAttempts(row, col) || noOpponentAttemptsRemaining(row, col))) {
@@ -299,10 +302,10 @@ const App = () => {
   function displayClue(row, col) {
     enterFullScreen();
     if (round === 0) {
-      setRound(1);
+      round = 1;
     }
     if (round === 1.5) {
-      setRound(2);
+      round = 2;
     }
     player.conceded = false;
     setDisableAnswer(false);
@@ -564,7 +567,7 @@ const App = () => {
   }
 
   function showFinalJeopardyCategory() {
-    setRound(3);
+    round = 3;
     setDisableAnswer(false);
     setMessageLines('');
     msg.text = 'The final jeopardy category is ' + showData.final_jeopardy.category + '. How much will you wager';
@@ -625,7 +628,7 @@ const App = () => {
   }
 
   if (!board) {
-    return <h1 class='center-screen'>Welcome to JEOPARDY!</h1>;
+    return <h1 className='center-screen'>Welcome to JEOPARDY!</h1>;
   }
   return (
     round === -1 ? <Name startRound={startRound}></Name> :
@@ -633,7 +636,7 @@ const App = () => {
       <main>
         <meta name='viewport' content='width=device-width, initial-scale=1' />
         <Podium contestants={scores} startTimer={response.countdown} playerName={playerName} />
-        <div id='monitor-container' onClick={() => displayClueByNumber(1)}>
+        <div id='monitor-container' onClick={() => startRound(playerName)}>
           <Monitor message={message} imageUrl={imageUrl} />
         </div>
         <table id='board'>
