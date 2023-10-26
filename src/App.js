@@ -117,7 +117,6 @@ const App = () => {
   }
 
   function answer(row, col) {
-    debugger
     setDisableAnswer(true);
     setResponseTimerIsActive(false);
     let bonusProbability = 0;
