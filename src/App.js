@@ -553,10 +553,10 @@ const App = () => {
     msg.text = text;
     window.speechSynthesis.speak(msg);
     // keep the buzzer disabled for 500ms
-        setTimeout(() => {
-          setDisableAnswer(false);
-          setResponseTimerIsActive(true);
-        }, 500);
+    setTimeout(() => {
+      setDisableAnswer(false);
+      setResponseTimerIsActive(true);
+    }, 500);
   }
 
   function submit(row, col) {
