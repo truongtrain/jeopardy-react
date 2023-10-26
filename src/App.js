@@ -117,6 +117,7 @@ const App = () => {
   }
 
   function answer(row, col) {
+    debugger
     setDisableAnswer(true);
     setResponseTimerIsActive(false);
     let bonusProbability = 0;
@@ -149,7 +150,7 @@ const App = () => {
   }
 
   function noOpponentAttemptsRemaining(row, col) {
-    const incorrectContestants = board[col][row].response.incorrect_contestants.filter(contestant => contestant !== contestant.weakest);
+    const incorrectContestants = board[col][row].response.incorrect_contestants.filter(contestant => contestant !== contestants.weakest);
     return contestants.answered.length === incorrectContestants.length && isTripleStumper(row, col);
   }
 
@@ -175,11 +176,6 @@ const App = () => {
         contestants.answered.push(incorrectContestants[i]);
         readText('No');
         response.seconds = 0;
-        // keep the buzzer disabled for 500ms
-        setTimeout(() => {
-          setDisableAnswer(false);
-          setResponseTimerIsActive(true);
-        }, 500);
       }
       break;
     }
@@ -557,6 +553,11 @@ const App = () => {
   function readText(text) {
     msg.text = text;
     window.speechSynthesis.speak(msg);
+    // keep the buzzer disabled for 500ms
+        setTimeout(() => {
+          setDisableAnswer(false);
+          setResponseTimerIsActive(true);
+        }, 500);
   }
 
   function submit(row, col) {
