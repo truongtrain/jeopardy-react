@@ -35,23 +35,11 @@ const App = () => {
   const [imageUrl, setImageUrl] = useState('logo');
   const handle = useFullScreenHandle();
 
-  function loadContestants(playerNameParam) {
-    contestants.weakest = showData.weakest_contestant;
-    let filteredContestants = showData.contestants.filter(
-      contestant => contestant !== contestants.weakest
-    );
-    filteredContestants.push(playerNameParam);
-    let tempContestants = {};
-    filteredContestants.forEach(
-      contestant => tempContestants[contestant] = { score: 0, response: '', wager: null }
-    );
-    setScores(tempContestants);
-  }
-
   useEffect(() => {
     fetch('http://localhost:5000/game/1080')
       .then((res) => res.json())
       .then((data) => {
+        console.log(data);
         showData = data;
         setBoard(showData.jeopardy_round);
       },
@@ -74,7 +62,7 @@ const App = () => {
 
   function startRound(playerNameParam) {
     if (round === -1) {
-      setPlayerName(playerNameParam); 
+      setPlayerName(playerNameParam);
       loadContestants(playerNameParam);
       setImageUrl('');
       round = 0;
@@ -89,6 +77,19 @@ const App = () => {
     } else if (round === 2) {
       showFinalJeopardyCategory();
     }
+  }
+
+  function loadContestants(playerNameParam) {
+    contestants.weakest = showData.weakest_contestant;
+    let filteredContestants = showData.contestants.filter(
+      contestant => contestant !== contestants.weakest
+    );
+    filteredContestants.push(playerNameParam);
+    let tempContestants = {};
+    filteredContestants.forEach(
+      contestant => tempContestants[contestant] = { score: 0, response: '', wager: null }
+    );
+    setScores(tempContestants);
   }
 
   function setUpDoubleJeopardyBoard() {

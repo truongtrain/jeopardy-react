@@ -1,8 +1,7 @@
 import React from 'react';
 
 function Monitor(props) {
-    const message = props.message;
-    const imageUrl = props.imageUrl;
+    const {message, imageUrl} = props;
 
     return (
         <div id='monitor'>
