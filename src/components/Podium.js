@@ -2,11 +2,13 @@ import React, { useState, useEffect } from 'react';
 import Timeout from '../resources/timeout.mp3';
 
 function Podium(props) {
-    const {contestants, startTimer, playerName} = props;
+    const { contestants, startTimer, playerName } = props;
     const names = Object.keys(contestants);
     let [ticks, setTicks] = useState(new Array(9).fill(true));
+    const ticksList = ticks.map((_tick, index) =>
+        <span key={'tick' + index} className='tick'></span>);
 
-    // 4 second countdown to respond after my name is called
+    // 4 second countdown to respond after player's name is called
     useEffect(() => {
         let responseCountdownInterval = {};
         let timeout = new Audio(Timeout);
@@ -36,16 +38,12 @@ function Podium(props) {
             {names.map(name => {
                 return contestants[name] &&
                     <div className='podium' key={name}>
-                    {isActivePlayerPodium(name) ? <div className='tick-row'>
-                        {ticks.map((_tick, index) =>
-                            <span key={'tick' + index} className='tick'></span>
-                        )}
-                    </div> : <div className='tick-row'></div>}
-                    <div className='podium-row'>${contestants[name].score}</div>
-                    <div className='podium-row name-row'>{name}</div>
-                    <div className='big-podium-row'>{contestants[name].response}</div>
-                    {contestants[name].response && <div className='podium-row'>${contestants[name].wager}</div>}
-                </div>
+                        {isActivePlayerPodium(name) ? <div className='tick-row'>{ticksList}</div> : <div className='tick-row'></div>}
+                        <div className='podium-row'>${contestants[name].score}</div>
+                        <div className='podium-row name-row'>{name}</div>
+                        <div className='big-podium-row'>{contestants[name].response}</div>
+                        {contestants[name].response && <div className='podium-row'>${contestants[name].wager}</div>}
+                    </div>
             })}
         </div>
     );
