@@ -704,7 +704,7 @@ const App = () => {
                         {board[3][1].visible !== 'final' && <span>ENTER YOUR WAGER:</span>}
                         {board[3][1].visible === 'final' && <span>ENTER YOUR RESPONSE:</span>}
                         <div className='wager'>
-                          {board[3][1].visible !== 'final' && <button id='final-submit-button' className='submit-button' disabled={disableAnswer} onClick={() => submit()}>SUBMIT</button>}
+                          {board[3][1].visible !== 'final' && <button id='final-submit-button' className='submit-button' disabled={disableAnswer} onClick={submit}>SUBMIT</button>}
                           <input id='final-input' defaultValue={player.wager} onChange={handleInputChange} />
                         </div>
                       </div>
