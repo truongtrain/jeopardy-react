@@ -27,17 +27,20 @@ function Podium(props) {
         return () => clearInterval(responseCountdownInterval);
     }, [startTimer]);
 
+    function isActivePlayerPodium(name) {
+        return name === playerName && startTimer;
+    }
+
     return (
         <div id='podiums'>
             {names.map(name => {
-                return contestants[name] && <div className='podium' key={name}>
-                    {name === playerName && startTimer && 
-                    <div className='tick-row'>
+                return contestants[name] &&
+                    <div className='podium' key={name}>
+                    {isActivePlayerPodium(name) ? <div className='tick-row'>
                         {ticks.map((_tick, index) =>
                             <span key={'tick' + index} className='tick'></span>
                         )}
-                    </div>}
-                    {!(name === playerName && startTimer) && <div className='tick-row'></div>}
+                    </div> : <div className='tick-row'></div>}
                     <div className='podium-row'>${contestants[name].score}</div>
                     <div className='podium-row name-row'>{name}</div>
                     <div className='big-podium-row'>{contestants[name].response}</div>
