@@ -1,4 +1,4 @@
-function Name({startRound}) {
+function Name({loadBoard}) {
     let playerName = '';
 
     const handleInputChange = event => {
@@ -8,7 +8,7 @@ function Name({startRound}) {
     return (
         <div className='center-screen'>
             <b>Enter your name:</b> <input defaultValue={playerName} onChange={handleInputChange}></input>
-            <button onClick={() => {startRound(playerName)}}>Submit</button>
+            <button onClick={() => {loadBoard(playerName)}}>Submit</button>
         </div>
     );
 }

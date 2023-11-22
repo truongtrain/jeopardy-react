@@ -60,13 +60,15 @@ const App = () => {
     return () => clearInterval(response.interval);
   }, [responseTimerIsActive]);
 
-  function startRound(playerNameParam) {
-    if (round === -1) {
-      setPlayerName(playerNameParam);
-      loadContestants(playerNameParam);
-      setImageUrl('');
-      round = 0;
-    } else if (round === 0) {
+  function loadBoard(playerNameParam) {
+    setPlayerName(playerNameParam);
+    loadContestants(playerNameParam);
+    setImageUrl('');
+    round = 0;
+  }
+
+  function startRound() {
+    if (round === 0) {
       round = 1;
       displayClueByNumber(1);
     } else if (round === 1) {
@@ -638,12 +640,12 @@ const App = () => {
     return <h1 className='center-screen'>Welcome to JEOPARDY!</h1>;
   }
   return (
-    round === -1 ? <Name startRound={startRound}></Name> :
+    round === -1 ? <Name loadBoard={loadBoard}></Name> :
     <FullScreen handle={handle}>
       <main>
         <meta name='viewport' content='width=device-width, initial-scale=1' />
         <Podium contestants={scores} startTimer={response.countdown} playerName={playerName} />
-        <div id='monitor-container' onClick={() => startRound(playerName)}>
+        <div id='monitor-container' onClick={startRound}>
           <Monitor message={message} imageUrl={imageUrl} />
         </div>
         <table id='board'>
