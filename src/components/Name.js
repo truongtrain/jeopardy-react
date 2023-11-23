@@ -6,11 +6,11 @@ function Name({loadBoard}) {
     }
 
     return (
-        <form className='center-screen' onSubmit={() => {loadBoard(playerName)}}>    
+        <div className='center-screen'>    
             <b>Enter your name:</b>
             <input defaultValue={playerName} onChange={handleInputChange}></input>
-            <button type="submit">Submit</button>                   
-        </form>
+            <button onClick={() => {loadBoard(playerName)}}>Submit</button>                   
+        </div>
     );
 }
 
