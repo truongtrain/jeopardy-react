@@ -50,14 +50,14 @@ const App = () => {
       })
   }, []);
 
-  // determines how fast I click after the clue is read
+  // determines how fast the player clicks after the clue is read
   useEffect(() => {
     if (responseTimerIsActive) {
       response.interval = setInterval(() => response.seconds += 0.01, 10);
     } else {
       clearInterval(response.interval);
     }
-    return () => clearInterval(response.interval);
+    return () => clearInterval(response.interval); // cleanup
   }, [responseTimerIsActive]);
 
   function loadBoard(playerNameParam) {
@@ -417,7 +417,7 @@ const App = () => {
 
   function setBoardState(row, col, state) {
     const board_copy = [...board];
-    board_copy[col][row].visible = state;
+    board[col][row].visible = state;
     setBoard(board_copy);
   }
 
