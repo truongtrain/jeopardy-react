@@ -1,8 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import Timeout from '../resources/timeout.mp3';
+import { ScoreContext } from '../App';
 
 function Podium(props) {
-    const { contestants, startTimer, playerName } = props;
+    const scoreContext = useContext(ScoreContext);
+    const contestants = scoreContext;
+    const { startTimer, playerName } = props;
     const names = Object.keys(contestants);
     let [ticks, setTicks] = useState(new Array(9).fill(true));
     const ticksList = ticks.map((_tick, index) =>

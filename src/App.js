@@ -15,6 +15,8 @@ import { FullScreen, useFullScreenHandle } from 'react-full-screen';
 import Name from './components/Name';
 import sampleGame from './resources/sample_game.json';
 
+export const ScoreContext = React.createContext();
+
 let availableClueNumbers = new Array(30).fill(true);
 let showData = {};
 let stats = { numCorrect: 0, numClues: 0, coryatScore: 0, battingAverage: 0 };
@@ -33,10 +35,10 @@ const App = () => {
   const [disableAnswer, setDisableAnswer] = useState(false);
   const [disableClue, setDisableClue] = useState(false);
   const [imageUrl, setImageUrl] = useState('logo');
-  const handle = useFullScreenHandle();
+  const handle = useFullScreenHandle(); 
 
   useEffect(() => {
-    fetch('http://localhost:5000/game/1080')
+    fetch('http://localhost:5000/game/3766')
       .then((res) => res.json())
       .then((data) => {
         console.log(data);
@@ -57,7 +59,7 @@ const App = () => {
     } else {
       clearInterval(response.interval);
     }
-    return () => clearInterval(response.interval); // cleanup
+    return () => clearInterval(response.interval);
   }, [responseTimerIsActive]);
 
   function loadBoard(playerNameParam) {
@@ -642,9 +644,12 @@ const App = () => {
   return (
     round === -1 ? <Name loadBoard={loadBoard}></Name> :
     <FullScreen handle={handle}>
+      <ScoreContext.Provider
+          value={scores}
+        >
       <main>
         <meta name='viewport' content='width=device-width, initial-scale=1' />
-        <Podium contestants={scores} startTimer={response.countdown} playerName={playerName} />
+          <Podium startTimer={response.countdown} playerName={playerName} />
         <div id='monitor-container' onClick={startRound}>
           <Monitor message={message} imageUrl={imageUrl} />
         </div>
@@ -718,6 +723,7 @@ const App = () => {
           </tbody>
         </table>
       </main>
+      </ScoreContext.Provider>
     </FullScreen>
   );
 }
