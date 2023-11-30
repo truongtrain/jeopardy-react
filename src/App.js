@@ -16,6 +16,8 @@ import Name from './components/Name';
 import sampleGame from './resources/sample_game.json';
 
 export const ScoreContext = React.createContext();
+export const StartTimerContext = React.createContext();
+export const PlayerContext = React.createContext();
 
 let availableClueNumbers = new Array(30).fill(true);
 let showData = {};
@@ -644,12 +646,12 @@ const App = () => {
   return (
     round === -1 ? <Name loadBoard={loadBoard}></Name> :
     <FullScreen handle={handle}>
-      <ScoreContext.Provider
-          value={scores}
-        >
+      <ScoreContext.Provider value={scores}>
+        <StartTimerContext.Provider value={response.countdown}>
+          <PlayerContext.Provider value={playerName}>
       <main>
         <meta name='viewport' content='width=device-width, initial-scale=1' />
-          <Podium startTimer={response.countdown} playerName={playerName} />
+          <Podium />
         <div id='monitor-container' onClick={startRound}>
           <Monitor message={message} imageUrl={imageUrl} />
         </div>
@@ -723,6 +725,8 @@ const App = () => {
           </tbody>
         </table>
       </main>
+      </PlayerContext.Provider>
+      </StartTimerContext.Provider>
       </ScoreContext.Provider>
     </FullScreen>
   );
