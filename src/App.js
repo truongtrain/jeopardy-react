@@ -182,7 +182,6 @@ const App = () => {
   }
 
   function updateOpponentScores(row, col) {
-    console.log('updateOpponentScores');
     const clue = board[col][row];
     // don't update opponent score if this is the player's daily double
     if (isPlayerDailyDouble(row, col)) {
