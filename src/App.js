@@ -34,7 +34,7 @@ const App = () => {
   const handle = useFullScreenHandle(); 
 
   useEffect(() => {
-    fetch('http://localhost:5000/game/3766')
+    fetch('http://localhost:5000/game/3767')
       .then((res) => res.json())
       .then((data) => {
         console.log(data);
@@ -314,7 +314,7 @@ const App = () => {
     setDisableClue(true);
     stats.numClues += 1;
     let clue;
-    if (round === 1) {
+    if (round <= 1) {
       clue = showData.jeopardy_round[col][row];
     } else if (round === 2 || round === 1.5) {
       clue = showData.double_jeopardy_round[col][row];
