@@ -5,15 +5,17 @@ import { HiHandRaised } from 'react-icons/hi2';
 import { BsFillFlagFill } from 'react-icons/bs';
 import FinalMusic from '../resources/final_jeopardy.mp3';
 import { useContext } from 'react';
-import { ScoreContext } from '../App';
+import { ScoreContext, PlayerContext } from '../App';
 
 function Board(props) {
+    const scores = useContext(ScoreContext);
+    const playerName = useContext(PlayerContext);
     let { board, round, disableAnswer, disableClue, displayClueByNumber,
         setMessageLines, updateOpponentScores, enterFullScreen, updateAvailableClueNumbers,
         readClue, setBoardState, concede, readText, player, showData,
-        setImageUrl, setScores, playerName, stats, msg, response, setDisableAnswer,
-        setResponseTimerIsActive, setDisableClue, contestants } = props;
-    const scores = useContext(ScoreContext);
+        setImageUrl, setScores, stats, msg, response, setDisableAnswer,
+        setResponseTimerIsActive, setDisableClue, setRound, setLastCorrect,
+        answered, setAnswered, weakest } = props;
 
     function getCategory(column) {
         let i = 0;
@@ -34,15 +36,15 @@ function Board(props) {
     function displayClue(row, col) {
         enterFullScreen();
         if (round === 0) {
-          round = 1;
+          setRound(1);
         }
         if (round === 1.5) {
-          round = 2;
+          setRound(2);
         }
         player.conceded = false;
         setDisableAnswer(false);
-        contestants.answered = [];
-        contestants.lastCorrect = playerName;
+        setAnswered([]);
+        setLastCorrect(playerName);
         const clue = board[col][row];
         if (clue.daily_double_wager > 0) {
           player.wager = scores[playerName].score;
@@ -63,20 +65,20 @@ function Board(props) {
         setResponseTimerIsActive(false);
         let bonusProbability = 0;
         let incorrectContestants = board[col][row].response.incorrect_contestants
-          .filter(contestant => contestant !== contestants.weakest)
-          .filter(contestant => !contestants.answered.includes(contestant));
-        if (contestants.answered.length === 1) {
+          .filter(contestant => contestant !== weakest)
+          .filter(contestant => !answered.includes(contestant));
+        if (answered.length === 1) {
           bonusProbability = 0.166; // increase the probability of a successful buzz-in if a contestant has already answered this clue
         }
         const probability = getProbability(board[col][row].value, round, bonusProbability);
-        if (response.seconds < 3 && (contestants.answered.length === 2 || isFastestResponse(response.seconds, probability) || noAttempts(row, col) || noOpponentAttemptsRemaining(row, col))) {
+        if (response.seconds < 3 && (answered.length === 2 || isFastestResponse(response.seconds, probability) || noAttempts(row, col) || noOpponentAttemptsRemaining(row, col))) {
           readText(playerName);
           response.countdown = true;
           setBoardState(row, col, 'eye');
         } else {
           if (board[col][row].visible === 'closed') {
             setMessageLines(board[col][row].response.correct_response);
-          } else if (incorrectContestants.length === 0 && board[col][row].response.correct_contestant !== contestants.weakest) {
+          } else if (incorrectContestants.length === 0 && board[col][row].response.correct_contestant !== weakest) {
             readText(board[col][row].response.correct_contestant);
           } else if (incorrectContestants.length > 0) {
             readText(incorrectContestants[0]);
@@ -91,16 +93,16 @@ function Board(props) {
       }
     
       function noOpponentAttemptsRemaining(row, col) {
-        const incorrectContestants = board[col][row].response.incorrect_contestants.filter(contestant => contestant !== contestants.weakest);
-        return contestants.answered.length === incorrectContestants.length && isTripleStumper(row, col);
+        const incorrectContestants = board[col][row].response.incorrect_contestants.filter(contestant => contestant !== weakest);
+        return answered.length === incorrectContestants.length && isTripleStumper(row, col);
       }
 
       function isTripleStumper(row, col) {
-        return !board[col][row].response.correct_contestant || board[col][row].response.correct_contestant === contestants.weakest;
+        return !board[col][row].response.correct_contestant || board[col][row].response.correct_contestant === weakest;
       }
 
       function getProbability(value, round, bonusProbability) {
-        if (round === 1) {
+        if (round <= 1) {
           switch (value) {
             case 200:
               return 0.424 + bonusProbability;
@@ -169,7 +171,7 @@ function Board(props) {
     
       function incrementScore(row, col) {
         setDisableClue(false);
-        contestants.lastCorrect = playerName;
+        setLastCorrect(playerName);
         msg.text = 'Correct';
         window.speechSynthesis.speak(msg);
         if (board[col][row].daily_double_wager > 0) {
