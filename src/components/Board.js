@@ -14,7 +14,7 @@ function Board(props) {
     let { board, disableAnswer, disableClue, displayClueByNumber,
         setMessageLines, updateOpponentScores, enterFullScreen, updateAvailableClueNumbers,
         readClue, setBoardState, concede, readText, player, showData,
-        setImageUrl, setScores, stats, msg, response, setDisableAnswer,
+        setScores, stats, msg, response, setDisableAnswer,
         setResponseTimerIsActive, setDisableClue, setLastCorrect,
         answered, setAnswered, weakest } = props;
 
@@ -234,7 +234,7 @@ function Board(props) {
       function showFinalJeopardyClue() {
         let finalMusic = new Audio(FinalMusic);
         setBoardState(1, 3, 'final');
-        setImageUrl(showData.final_jeopardy.url);
+        gameInfoContext.dispatch({ type: 'update_image', imageUrl: showData.final_jeopardy.url});
         msg.text = showData.final_jeopardy.clue;
         window.speechSynthesis.speak(msg);
         msg.addEventListener('end', () => {
@@ -264,7 +264,7 @@ function Board(props) {
           });
         });
         setScores(scores);
-        setImageUrl('');
+        gameInfoContext.dispatch({ type: 'update_image', imageUrl: ''});
         setMessageLines(showData.final_jeopardy.correct_response);
       }
 

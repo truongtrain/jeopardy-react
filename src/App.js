@@ -25,15 +25,20 @@ function reducer(state, action) {
   switch (action.type) {
     case 'increment_round': {
       state.round = action.round;
+      state.imageUrl = '';
+      /* falls through */
     }
-    return state;
+    case 'update_image':
+      state.imageUrl = action.imageUrl;
+      /* falls through */
+    default:
   }
+  return state;
 }
 
 const App = () => {
   // game info
   const [gameInfo, dispatchGameInfo] = useReducer(reducer, initialGameInfo);
-  const [imageUrl, setImageUrl] = useState('logo');
   const [weakest, setWeakest] = useState('');
   const [lastCorrect, setLastCorrect] = useState('');
 
@@ -74,7 +79,6 @@ const App = () => {
   function loadBoard(playerNameParam) {
     player.name = playerNameParam;
     loadContestants(playerNameParam);
-    setImageUrl('');
     dispatchGameInfo({ type: 'increment_round', round: 0});
   }
 
@@ -106,7 +110,6 @@ const App = () => {
   }
 
   function setUpDoubleJeopardyBoard() {
-    setImageUrl('');
     dispatchGameInfo({ type: 'increment_round', round: 1.5});
     let thirdPlace = player.name;
     Object.keys(scores).forEach(contestant => {
@@ -245,17 +248,17 @@ const App = () => {
     if (nextClueNumber > 0) {
       displayClueByNumber(nextClueNumber);
     } else {
-      setImageUrl('logo');
+      dispatchGameInfo({ type: 'update_image', imageUrl: 'logo'});
     }
   }
 
   function displayClueImage(row, col) {
     const url = board[col][row].url;
     if (url) {
-      setImageUrl(url);
+      dispatchGameInfo({ type: 'update_image', imageUrl: url});
       setMessageLines('');
     } else {
-      setImageUrl('');
+      dispatchGameInfo({ type: 'update_image', imageUrl: ''});
     }
   }
 
@@ -336,7 +339,7 @@ const App = () => {
     msg.text = clue.text;
     window.speechSynthesis.speak(msg);
     msg.addEventListener('end', function clearClue() {
-      setImageUrl('');
+      dispatchGameInfo({ type: 'update_image', imageUrl: ''});
       response.seconds = 0;
       if (isPlayerDailyDouble(row, col) && board[col][row].daily_double_wager > 0) {
         setBoardState(row, col, 'eye');
@@ -402,14 +405,14 @@ const App = () => {
         <meta name='viewport' content='width=device-width, initial-scale=1' />
           <Podium />
         <div id='monitor-container' onClick={startRound}>
-          <Monitor message={message} imageUrl={imageUrl} />
+          <Monitor message={message} imageUrl={gameInfo.imageUrl} />
         </div>
         <Board board={board} displayClueByNumber={displayClueByNumber}
           disableAnswer={disableAnswer} disableClue={disableClue}
           setMessageLines={setMessageLines} updateOpponentScores={updateOpponentScores}
           enterFullScreen={enterFullScreen} updateAvailableClueNumbers={updateAvailableClueNumbers}
           readClue={readClue} setBoardState={setBoardState} concede={concede} readText={readText}
-          player={player} showData={showData} setImageUrl={setImageUrl} setScores={setScores}
+          player={player} showData={showData} setScores={setScores}
           stats={stats} msg={msg} response={response} setLastCorrect={setLastCorrect}
           setDisableAnswer={setDisableAnswer} setResponseTimerIsActive={setResponseTimerIsActive}
           setDisableClue={setDisableClue} weakest={weakest}
