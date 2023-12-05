@@ -1,13 +1,12 @@
 import './App.css';
 import './index.scss';
 import React, { useState, useEffect } from 'react';
-import Podium from './components/Podium';
-
-import Monitor from './components/Monitor';
 import { FullScreen, useFullScreenHandle } from 'react-full-screen';
+import Podium from './components/Podium';
+import Monitor from './components/Monitor';
 import Name from './components/Name';
-import sampleGame from './resources/sample_game.json';
 import Board from './components/Board';
+import sampleGame from './resources/sample_game.json';
 
 export const ScoreContext = React.createContext();
 export const StartTimerContext = React.createContext();
@@ -16,23 +15,24 @@ export const PlayerContext = React.createContext();
 let availableClueNumbers = new Array(30).fill(true);
 let showData = {};
 let stats = { numCorrect: 0, numClues: 0, coryatScore: 0, battingAverage: 0 };
-let player = { finalResponse: '', wager: 0, conceded: false};
+let player = { name: '', finalResponse: '', wager: 0, conceded: false};
 let response = { seconds: 0, interval: {}, countdown: false};
 let msg = new SpeechSynthesisUtterance();
 
 const App = () => {
+  // game info
   const [round, setRound] = useState(-1);
-  const [playerName, setPlayerName] = useState('');
-  const [lastCorrect, setLastCorrect] = useState('');
-  const [answered, setAnswered] = useState([]);
+  const [imageUrl, setImageUrl] = useState('logo');
   const [weakest, setWeakest] = useState('');
-  const [board, setBoard] = useState(null);
-  const [message, setMessage] = useState({ line1: '', line2: '' });
-  const [scores, setScores] = useState(null);
+  const [lastCorrect, setLastCorrect] = useState('');
+
   const [responseTimerIsActive, setResponseTimerIsActive] = useState(false);
   const [disableAnswer, setDisableAnswer] = useState(false);
   const [disableClue, setDisableClue] = useState(false);
-  const [imageUrl, setImageUrl] = useState('logo');
+  const [scores, setScores] = useState(null);
+  const [message, setMessage] = useState({ line1: '', line2: '' });
+  const [board, setBoard] = useState(null);
+  const [answered, setAnswered] = useState([]);
   const handle = useFullScreenHandle(); 
 
   useEffect(() => {
@@ -61,7 +61,7 @@ const App = () => {
   }, [responseTimerIsActive]);
 
   function loadBoard(playerNameParam) {
-    setPlayerName(playerNameParam);
+    player.name = playerNameParam;
     loadContestants(playerNameParam);
     setImageUrl('');
     setRound(0);
@@ -97,7 +97,7 @@ const App = () => {
   function setUpDoubleJeopardyBoard() {
     setImageUrl('');
     setRound(1.5);
-    let thirdPlace = playerName;
+    let thirdPlace = player.name;
     Object.keys(scores).forEach(contestant => {
       if (scores[contestant].score < scores[thirdPlace].score) {
         thirdPlace = contestant;
@@ -212,7 +212,7 @@ const App = () => {
         setMessageLines(clue.response.correct_response);
       }
       // go to next clue selected by opponent
-      if (nextClueNumber > 0 && lastCorrect !== playerName) {
+      if (nextClueNumber > 0 && lastCorrect !== player.name) {
         setTimeout(() => setMessageLines(message), 2500);
         setTimeout(() => displayNextClue(), 4500);
       }
@@ -264,7 +264,7 @@ const App = () => {
       for (let row = 0; row < 5; row++) {
         if (board[col][row].number === clueNumber) {
           if (!isPlayerDailyDouble(row, col) && board[col][row].daily_double_wager > 0) {
-            if (lastCorrect !== playerName) {
+            if (lastCorrect !== player.name) {
               setMessageLines('Daily Double', lastCorrect + ': I will wager $' + board[col][row].daily_double_wager);
             }
           }
@@ -346,7 +346,7 @@ const App = () => {
   }
 
   function isPlayerDailyDouble(row, col) {
-    return lastCorrect === playerName && board[col][row].daily_double_wager > 0;
+    return lastCorrect === player.name && board[col][row].daily_double_wager > 0;
   }
 
   function concede(row, col) {
@@ -354,7 +354,7 @@ const App = () => {
     setResponseTimerIsActive(false);
     player.conceded = true;
     updateOpponentScores(row, col);
-    if (lastCorrect === playerName) {
+    if (lastCorrect === player.name) {
       setDisableClue(false);
     }
   }
@@ -385,7 +385,7 @@ const App = () => {
     <FullScreen handle={handle}>
       <ScoreContext.Provider value={scores}>
         <StartTimerContext.Provider value={response.countdown}>
-          <PlayerContext.Provider value={playerName}>
+          <PlayerContext.Provider value={player.name}>
       <main>
         <meta name='viewport' content='width=device-width, initial-scale=1' />
           <Podium />
