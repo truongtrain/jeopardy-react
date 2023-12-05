@@ -1,6 +1,6 @@
 import './App.css';
 import './index.scss';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useReducer } from 'react';
 import { FullScreen, useFullScreenHandle } from 'react-full-screen';
 import Podium from './components/Podium';
 import Monitor from './components/Monitor';
@@ -11,6 +11,7 @@ import sampleGame from './resources/sample_game.json';
 export const ScoreContext = React.createContext();
 export const StartTimerContext = React.createContext();
 export const PlayerContext = React.createContext();
+export const GameInfoContext = React.createContext();
 
 let availableClueNumbers = new Array(30).fill(true);
 let showData = {};
@@ -18,10 +19,20 @@ let stats = { numCorrect: 0, numClues: 0, coryatScore: 0, battingAverage: 0 };
 let player = { name: '', finalResponse: '', wager: 0, conceded: false};
 let response = { seconds: 0, interval: {}, countdown: false};
 let msg = new SpeechSynthesisUtterance();
+const initialGameInfo = {round: -1, imageUrl: 'logo', weakest: '', lastCorrect: ''};
+
+function reducer(state, action) {
+  switch (action.type) {
+    case 'increment_round': {
+      state.round = action.round;
+    }
+    return state;
+  }
+}
 
 const App = () => {
   // game info
-  const [round, setRound] = useState(-1);
+  const [gameInfo, dispatchGameInfo] = useReducer(reducer, initialGameInfo);
   const [imageUrl, setImageUrl] = useState('logo');
   const [weakest, setWeakest] = useState('');
   const [lastCorrect, setLastCorrect] = useState('');
@@ -64,19 +75,19 @@ const App = () => {
     player.name = playerNameParam;
     loadContestants(playerNameParam);
     setImageUrl('');
-    setRound(0);
+    dispatchGameInfo({ type: 'increment_round', round: 0});
   }
 
   function startRound() {
-    if (round === 0) {
-      setRound(1);
+    if (gameInfo.round === 0) {
+      dispatchGameInfo({ type: 'increment_round', round: 1});
       displayClueByNumber(1);
-    } else if (round === 1) {
+    } else if (gameInfo.round === 1) {
       setUpDoubleJeopardyBoard();
-    } else if (round === 1.5) {
-      setRound(2);
+    } else if (gameInfo.round === 1.5) {
+      dispatchGameInfo({ type: 'increment_round', round: 2});
       displayClueByNumber(1);
-    } else if (round === 2) {
+    } else if (gameInfo.round === 2) {
       showFinalJeopardyCategory();
     }
   }
@@ -96,7 +107,7 @@ const App = () => {
 
   function setUpDoubleJeopardyBoard() {
     setImageUrl('');
-    setRound(1.5);
+    dispatchGameInfo({ type: 'increment_round', round: 1.5});
     let thirdPlace = player.name;
     Object.keys(scores).forEach(contestant => {
       if (scores[contestant].score < scores[thirdPlace].score) {
@@ -163,14 +174,14 @@ const App = () => {
       return 0;
     }
     const currentScore = scores[lastCorrect].score;
-    if (round === 1) {
+    if (gameInfo.round === 1) {
       if (clue.daily_double_wager > currentScore) {
         if (currentScore > 1000) {
           return currentScore;
         }
         return 1000;
       }
-    } else if (round === 2) {
+    } else if (gameInfo.round === 2) {
       if (clue.daily_double_wager > currentScore) {
         if (currentScore > 1000) {
           return currentScore;
@@ -316,9 +327,9 @@ const App = () => {
     setDisableClue(true);
     stats.numClues += 1;
     let clue;
-    if (round <= 1) {
+    if (gameInfo.round <= 1) {
       clue = showData.jeopardy_round[col][row];
-    } else if (round === 2 || round === 1.5) {
+    } else if (gameInfo.round === 2 || gameInfo.round === 1.5) {
       clue = showData.double_jeopardy_round[col][row];
     }
     displayClueImage(row, col);
@@ -370,7 +381,7 @@ const App = () => {
   }
 
   function showFinalJeopardyCategory() {
-    setRound(3);
+    dispatchGameInfo({ type: 'increment_round', round: 3});
     setDisableAnswer(false);
     setMessageLines('');
     msg.text = 'The final jeopardy category is ' + showData.final_jeopardy.category + '. How much will you wager';
@@ -381,18 +392,19 @@ const App = () => {
     return <h1 className='center-screen'>Welcome to JEOPARDY!</h1>;
   }
   return (
-    round === -1 ? <Name loadBoard={loadBoard} /> :
+    gameInfo.round === -1 ? <Name loadBoard={loadBoard} /> :
     <FullScreen handle={handle}>
       <ScoreContext.Provider value={scores}>
         <StartTimerContext.Provider value={response.countdown}>
           <PlayerContext.Provider value={player.name}>
+            <GameInfoContext.Provider value={{ state: gameInfo, dispatch: dispatchGameInfo}}>
       <main>
         <meta name='viewport' content='width=device-width, initial-scale=1' />
           <Podium />
         <div id='monitor-container' onClick={startRound}>
           <Monitor message={message} imageUrl={imageUrl} />
         </div>
-        <Board board={board} round={round} displayClueByNumber={displayClueByNumber}
+        <Board board={board} displayClueByNumber={displayClueByNumber}
           disableAnswer={disableAnswer} disableClue={disableClue}
           setMessageLines={setMessageLines} updateOpponentScores={updateOpponentScores}
           enterFullScreen={enterFullScreen} updateAvailableClueNumbers={updateAvailableClueNumbers}
@@ -400,9 +412,10 @@ const App = () => {
           player={player} showData={showData} setImageUrl={setImageUrl} setScores={setScores}
           stats={stats} msg={msg} response={response} setLastCorrect={setLastCorrect}
           setDisableAnswer={setDisableAnswer} setResponseTimerIsActive={setResponseTimerIsActive}
-          setDisableClue={setDisableClue} setRound={setRound} weakest={weakest}
+          setDisableClue={setDisableClue} weakest={weakest}
           answered={answered} setAnswered={setAnswered}/>
       </main>
+      </GameInfoContext.Provider>
       </PlayerContext.Provider>
       </StartTimerContext.Provider>
       </ScoreContext.Provider>

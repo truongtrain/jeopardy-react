@@ -5,16 +5,17 @@ import { HiHandRaised } from 'react-icons/hi2';
 import { BsFillFlagFill } from 'react-icons/bs';
 import FinalMusic from '../resources/final_jeopardy.mp3';
 import { useContext } from 'react';
-import { ScoreContext, PlayerContext } from '../App';
+import { ScoreContext, PlayerContext, GameInfoContext } from '../App';
 
 function Board(props) {
     const scores = useContext(ScoreContext);
     const playerName = useContext(PlayerContext);
-    let { board, round, disableAnswer, disableClue, displayClueByNumber,
+    const gameInfoContext = useContext(GameInfoContext);
+    let { board, disableAnswer, disableClue, displayClueByNumber,
         setMessageLines, updateOpponentScores, enterFullScreen, updateAvailableClueNumbers,
         readClue, setBoardState, concede, readText, player, showData,
         setImageUrl, setScores, stats, msg, response, setDisableAnswer,
-        setResponseTimerIsActive, setDisableClue, setRound, setLastCorrect,
+        setResponseTimerIsActive, setDisableClue, setLastCorrect,
         answered, setAnswered, weakest } = props;
 
     function getCategory(column) {
@@ -35,11 +36,11 @@ function Board(props) {
 
     function displayClue(row, col) {
         enterFullScreen();
-        if (round === 0) {
-          setRound(1);
+        if (gameInfoContext.state.round === 0) {
+            gameInfoContext.dispatch({ type: 'increment_round', round: 1 });
         }
-        if (round === 1.5) {
-          setRound(2);
+        if (gameInfoContext.state.round === 1.5) {
+            gameInfoContext.dispatch({ type: 'increment_round', round: 2 });
         }
         player.conceded = false;
         setDisableAnswer(false);
@@ -70,7 +71,7 @@ function Board(props) {
         if (answered.length === 1) {
           bonusProbability = 0.166; // increase the probability of a successful buzz-in if a contestant has already answered this clue
         }
-        const probability = getProbability(board[col][row].value, round, bonusProbability);
+        const probability = getProbability(board[col][row].value, gameInfoContext.state.round, bonusProbability);
         if (response.seconds < 3 && (answered.length === 2 || isFastestResponse(response.seconds, probability) || noAttempts(row, col) || noOpponentAttemptsRemaining(row, col))) {
           readText(playerName);
           response.countdown = true;
@@ -210,7 +211,7 @@ function Board(props) {
         setResponseTimerIsActive(false);
         response.countdown = false;
         setBoardState(row, col, 'judge');
-        if (round === 3) {
+        if (gameInfoContext.state.round === 3) {
           setMessageLines(showData.final_jeopardy.correct_response);
         } else {
           setMessageLines(board[col][row].response.correct_response);
@@ -218,7 +219,7 @@ function Board(props) {
       }
 
       function submit(row, col) {
-        if (round === 3) {
+        if (gameInfoContext.state.round === 3) {
           document.getElementById('final-input').value = null;
           setDisableAnswer(true);
           response.countdown = false;
@@ -281,7 +282,7 @@ function Board(props) {
             <thead>
                 <tr id='headers'>
                     {Array.from(Array(6), (_arrayElement, row) =>
-                        <th key={'header' + row}>{round !== 3 && getCategory(board[row])}
+                        <th key={'header' + row}>{gameInfoContext.state.round !== 3 && getCategory(board[row])}
                             {board[row][0].category_note && <span className='tooltip'>{board[row][0].category_note}</span>}
                         </th>
                     )}
@@ -320,7 +321,7 @@ function Board(props) {
                                         </div>
                                     </div>
                                 }
-                                {round === 3 && isFinalJeopardyCategoryCell(row, column) && category[row].visible !== 'final' &&
+                                {gameInfoContext.state.round === 3 && isFinalJeopardyCategoryCell(row, column) && category[row].visible !== 'final' &&
                                     <h3>
                                         {showData.final_jeopardy.category}
                                     </h3>
@@ -330,7 +331,7 @@ function Board(props) {
                                         {showData.final_jeopardy.clue.toUpperCase()}
                                     </div>
                                 }
-                                {round === 3 && isFinalJeopardyResponseCell(row, column) &&
+                                {gameInfoContext.state.round === 3 && isFinalJeopardyResponseCell(row, column) &&
                                     <div>
                                         {board[3][1].visible !== 'final' && <span>ENTER YOUR WAGER:</span>}
                                         {board[3][1].visible === 'final' && <span>ENTER YOUR RESPONSE:</span>}
