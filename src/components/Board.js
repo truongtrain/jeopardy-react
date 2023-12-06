@@ -15,7 +15,7 @@ function Board(props) {
         setMessageLines, updateOpponentScores, enterFullScreen, updateAvailableClueNumbers,
         readClue, setBoardState, concede, readText, player, showData,
         setScores, stats, msg, response, setDisableAnswer,
-        setResponseTimerIsActive, setDisableClue, setLastCorrect,
+        setResponseTimerIsActive, setDisableClue,
         answered, setAnswered } = props;
 
     function getCategory(column) {
@@ -38,14 +38,13 @@ function Board(props) {
         enterFullScreen();
         if (gameInfoContext.state.round === 0) {
             gameInfoContext.dispatch({ type: 'increment_round', round: 1 });
-        }
-        if (gameInfoContext.state.round === 1.5) {
+        } else if (gameInfoContext.state.round === 1.5) {
             gameInfoContext.dispatch({ type: 'increment_round', round: 2 });
         }
         player.conceded = false;
         setDisableAnswer(false);
         setAnswered([]);
-        setLastCorrect(playerName);
+        gameInfoContext.dispatch({ type: 'set_last_correct_contestant', lastCorrect: playerName });
         const clue = board[col][row];
         if (clue.daily_double_wager > 0) {
           player.wager = scores[playerName].score;
@@ -172,7 +171,7 @@ function Board(props) {
     
       function incrementScore(row, col) {
         setDisableClue(false);
-        setLastCorrect(playerName);
+        gameInfoContext.dispatch({ type: 'set_last_correct_contestant', lastCorrect: playerName });
         msg.text = 'Correct';
         window.speechSynthesis.speak(msg);
         if (board[col][row].daily_double_wager > 0) {

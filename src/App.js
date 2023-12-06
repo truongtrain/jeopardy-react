@@ -34,16 +34,16 @@ function reducer(state, action) {
     case 'set_weakest_contestant':
       state.weakest = action.weakest;
       return state;
+    case 'set_last_correct_contestant':
+      state.lastCorrect = action.lastCorrect;
+      return state;
     default:
       return state;
   }
 }
 
 const App = () => {
-  // game info
   const [gameInfo, dispatchGameInfo] = useReducer(reducer, initialGameInfo);
-  const [lastCorrect, setLastCorrect] = useState('');
-
   const [responseTimerIsActive, setResponseTimerIsActive] = useState(false);
   const [disableAnswer, setDisableAnswer] = useState(false);
   const [disableClue, setDisableClue] = useState(false);
@@ -99,7 +99,6 @@ const App = () => {
   }
 
   function loadContestants(playerNameParam) {
-    // setWeakest(showData.weakest_contestant);
     dispatchGameInfo({ type: 'set_weakest_contestant', weakest: showData.weakest_contestant});
     let filteredContestants = showData.contestants.filter(
       contestant => contestant !== showData.weakest_contestant
@@ -120,7 +119,7 @@ const App = () => {
         thirdPlace = contestant;
       }
     });
-    setLastCorrect(thirdPlace);
+    dispatchGameInfo({ type: 'set_last_correct_contestant', lastCorrect: thirdPlace});
     setBoard(showData.double_jeopardy_round);
     availableClueNumbers = new Array(30).fill(true);
     setMessageLines('');
@@ -159,7 +158,7 @@ const App = () => {
   }
 
   function handleCorrectResponse(correctContestant, scoreChange, clue, nextClueNumber, nextClue, row, col) {
-    setLastCorrect(correctContestant);
+    dispatchGameInfo({ type: 'set_last_correct_contestant', lastCorrect: correctContestant});
     scores[correctContestant].score += scoreChange;
     setScores(scores);
     setBoardState(row, col, 'closed');
@@ -176,10 +175,10 @@ const App = () => {
   function getOpponentDailyDoubleWager(clue) {
     // don't change opponent score if this is not the same opponent who answered
     // the daily double in the actual broadcast game 
-    if (clue.response.correct_contestant && clue.response.correct_contestant !== lastCorrect) {
+    if (clue.response.correct_contestant && clue.response.correct_contestant !== gameInfo.lastCorrect) {
       return 0;
     }
-    const currentScore = scores[lastCorrect].score;
+    const currentScore = scores[gameInfo.lastCorrect].score;
     if (gameInfo.round === 1) {
       if (clue.daily_double_wager > currentScore) {
         if (currentScore > 1000) {
@@ -211,7 +210,7 @@ const App = () => {
       nextClue = getClue(nextClueNumber);
     }
     if (nextClue) {
-      message = lastCorrect + ': ' + nextClue.category + ' for $' + nextClue.value;
+      message = gameInfo.lastCorrect + ': ' + nextClue.category + ' for $' + nextClue.value;
     }
     const incorrectContestants = clue.response.incorrect_contestants
       .filter(contestant => contestant !== gameInfo.weakest)
@@ -229,7 +228,7 @@ const App = () => {
         setMessageLines(clue.response.correct_response);
       }
       // go to next clue selected by opponent
-      if (nextClueNumber > 0 && lastCorrect !== player.name) {
+      if (nextClueNumber > 0 && gameInfo.lastCorrect !== player.name) {
         setTimeout(() => setMessageLines(message), 2500);
         setTimeout(() => displayNextClue(), 4500);
       }
@@ -281,8 +280,8 @@ const App = () => {
       for (let row = 0; row < 5; row++) {
         if (board[col][row].number === clueNumber) {
           if (!isPlayerDailyDouble(row, col) && board[col][row].daily_double_wager > 0) {
-            if (lastCorrect !== player.name) {
-              setMessageLines('Daily Double', lastCorrect + ': I will wager $' + board[col][row].daily_double_wager);
+            if (gameInfo.lastCorrect !== player.name) {
+              setMessageLines('Daily Double', gameInfo.lastCorrect + ': I will wager $' + board[col][row].daily_double_wager);
             }
           }
           setBoardState(row, col, 'clue');
@@ -301,7 +300,7 @@ const App = () => {
       if (availableClueNumbers[i - 1] === true) {
         const clue = getClue(i);
         // if this is a daily double that was not answered by the contestant in the televised game, skip this clue
-        if (clue && clue.daily_double_wager > 0 && !isContestantsDailyDouble(clue, lastCorrect)) {
+        if (clue && clue.daily_double_wager > 0 && !isContestantsDailyDouble(clue, gameInfo.lastCorrect)) {
           continue;
         }
         return i;
@@ -363,7 +362,7 @@ const App = () => {
   }
 
   function isPlayerDailyDouble(row, col) {
-    return lastCorrect === player.name && board[col][row].daily_double_wager > 0;
+    return gameInfo.lastCorrect === player.name && board[col][row].daily_double_wager > 0;
   }
 
   function concede(row, col) {
@@ -371,7 +370,7 @@ const App = () => {
     setResponseTimerIsActive(false);
     player.conceded = true;
     updateOpponentScores(row, col);
-    if (lastCorrect === player.name) {
+    if (gameInfo.lastCorrect === player.name) {
       setDisableClue(false);
     }
   }
@@ -416,7 +415,7 @@ const App = () => {
           enterFullScreen={enterFullScreen} updateAvailableClueNumbers={updateAvailableClueNumbers}
           readClue={readClue} setBoardState={setBoardState} concede={concede} readText={readText}
           player={player} showData={showData} setScores={setScores}
-          stats={stats} msg={msg} response={response} setLastCorrect={setLastCorrect}
+          stats={stats} msg={msg} response={response}
           setDisableAnswer={setDisableAnswer} setResponseTimerIsActive={setResponseTimerIsActive}
           setDisableClue={setDisableClue}
           answered={answered} setAnswered={setAnswered}/>
