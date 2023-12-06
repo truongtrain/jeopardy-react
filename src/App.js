@@ -26,20 +26,22 @@ function reducer(state, action) {
     case 'increment_round': {
       state.round = action.round;
       state.imageUrl = '';
-      /* falls through */
+      return state;
     }
     case 'update_image':
       state.imageUrl = action.imageUrl;
-      /* falls through */
+      return state;
+    case 'set_weakest_contestant':
+      state.weakest = action.weakest;
+      return state;
     default:
+      return state;
   }
-  return state;
 }
 
 const App = () => {
   // game info
   const [gameInfo, dispatchGameInfo] = useReducer(reducer, initialGameInfo);
-  const [weakest, setWeakest] = useState('');
   const [lastCorrect, setLastCorrect] = useState('');
 
   const [responseTimerIsActive, setResponseTimerIsActive] = useState(false);
@@ -97,7 +99,8 @@ const App = () => {
   }
 
   function loadContestants(playerNameParam) {
-    setWeakest(showData.weakest_contestant);
+    // setWeakest(showData.weakest_contestant);
+    dispatchGameInfo({ type: 'set_weakest_contestant', weakest: showData.weakest_contestant});
     let filteredContestants = showData.contestants.filter(
       contestant => contestant !== showData.weakest_contestant
     );
@@ -135,9 +138,9 @@ const App = () => {
   function handleIncorrectResponses(incorrectContestants, clue, scoreChange) {
     let incorrectMessage = '';
     clue.response.incorrect_responses = clue.response.incorrect_responses.filter(response =>
-      !response.includes(weakest + ':'));
+      !response.includes(gameInfo.weakest + ':'));
     for (let i = 0; i < incorrectContestants.length; i++) {
-      if (incorrectContestants[i] !== weakest && !answered.includes(incorrectContestants[i])) {
+      if (incorrectContestants[i] !== gameInfo.weakest && !answered.includes(incorrectContestants[i])) {
         incorrectMessage += clue.response.incorrect_responses[i];
         scores[incorrectContestants[i]].score -= scoreChange;
         answered.push(incorrectContestants[i]);
@@ -211,10 +214,10 @@ const App = () => {
       message = lastCorrect + ': ' + nextClue.category + ' for $' + nextClue.value;
     }
     const incorrectContestants = clue.response.incorrect_contestants
-      .filter(contestant => contestant !== weakest)
+      .filter(contestant => contestant !== gameInfo.weakest)
       .filter(contestant => !answered.includes(contestant));
     let correctContestant = clue.response.correct_contestant;
-    if (correctContestant === weakest) {
+    if (correctContestant === gameInfo.weakest) {
       correctContestant = '';
     }
     let scoreChange = clue.daily_double_wager > 0 ? getOpponentDailyDoubleWager(clue) : clue.value;
@@ -415,7 +418,7 @@ const App = () => {
           player={player} showData={showData} setScores={setScores}
           stats={stats} msg={msg} response={response} setLastCorrect={setLastCorrect}
           setDisableAnswer={setDisableAnswer} setResponseTimerIsActive={setResponseTimerIsActive}
-          setDisableClue={setDisableClue} weakest={weakest}
+          setDisableClue={setDisableClue}
           answered={answered} setAnswered={setAnswered}/>
       </main>
       </GameInfoContext.Provider>

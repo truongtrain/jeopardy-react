@@ -16,7 +16,7 @@ function Board(props) {
         readClue, setBoardState, concede, readText, player, showData,
         setScores, stats, msg, response, setDisableAnswer,
         setResponseTimerIsActive, setDisableClue, setLastCorrect,
-        answered, setAnswered, weakest } = props;
+        answered, setAnswered } = props;
 
     function getCategory(column) {
         let i = 0;
@@ -66,7 +66,7 @@ function Board(props) {
         setResponseTimerIsActive(false);
         let bonusProbability = 0;
         let incorrectContestants = board[col][row].response.incorrect_contestants
-          .filter(contestant => contestant !== weakest)
+          .filter(contestant => contestant !== gameInfoContext.state.weakest)
           .filter(contestant => !answered.includes(contestant));
         if (answered.length === 1) {
           bonusProbability = 0.166; // increase the probability of a successful buzz-in if a contestant has already answered this clue
@@ -79,7 +79,7 @@ function Board(props) {
         } else {
           if (board[col][row].visible === 'closed') {
             setMessageLines(board[col][row].response.correct_response);
-          } else if (incorrectContestants.length === 0 && board[col][row].response.correct_contestant !== weakest) {
+          } else if (incorrectContestants.length === 0 && board[col][row].response.correct_contestant !== gameInfoContext.state.weakest) {
             readText(board[col][row].response.correct_contestant);
           } else if (incorrectContestants.length > 0) {
             readText(incorrectContestants[0]);
@@ -94,12 +94,12 @@ function Board(props) {
       }
     
       function noOpponentAttemptsRemaining(row, col) {
-        const incorrectContestants = board[col][row].response.incorrect_contestants.filter(contestant => contestant !== weakest);
+        const incorrectContestants = board[col][row].response.incorrect_contestants.filter(contestant => contestant !== gameInfoContext.state.weakest);
         return answered.length === incorrectContestants.length && isTripleStumper(row, col);
       }
 
       function isTripleStumper(row, col) {
-        return !board[col][row].response.correct_contestant || board[col][row].response.correct_contestant === weakest;
+        return !board[col][row].response.correct_contestant || board[col][row].response.correct_contestant === gameInfoContext.state.weakest;
       }
 
       function getProbability(value, round, bonusProbability) {
