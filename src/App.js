@@ -19,12 +19,13 @@ let stats = { numCorrect: 0, numClues: 0, coryatScore: 0, battingAverage: 0 };
 let player = { name: '', finalResponse: '', wager: 0, conceded: false};
 let response = { seconds: 0, interval: {}, countdown: false};
 let msg = new SpeechSynthesisUtterance();
-const initialGameInfo = {round: -1, imageUrl: 'logo', weakest: '', lastCorrect: ''};
+const initialGameInfo = {round: -1, imageUrl: 'logo', weakest: '', lastCorrect: '', disableAnswer: false};
 
 function reducer(state, action) {
   switch (action.type) {
     case 'increment_round': {
       state.round = action.round;
+      state.disableAnswer = false;
       state.imageUrl = '';
       return state;
     }
@@ -36,6 +37,13 @@ function reducer(state, action) {
       return state;
     case 'set_last_correct_contestant':
       state.lastCorrect = action.lastCorrect;
+      state.disableAnswer = false;
+      return state;
+    case 'disable_player_answer':
+      state.disableAnswer = true;
+      return state;
+    case 'enable_player_answer':
+      state.disableAnswer = false;
       return state;
     default:
       return state;
@@ -45,7 +53,6 @@ function reducer(state, action) {
 const App = () => {
   const [gameInfo, dispatchGameInfo] = useReducer(reducer, initialGameInfo);
   const [responseTimerIsActive, setResponseTimerIsActive] = useState(false);
-  const [disableAnswer, setDisableAnswer] = useState(false);
   const [disableClue, setDisableClue] = useState(false);
   const [scores, setScores] = useState(null);
   const [message, setMessage] = useState({ line1: '', line2: '' });
@@ -124,7 +131,6 @@ const App = () => {
     availableClueNumbers = new Array(30).fill(true);
     setMessageLines('');
     setDisableClue(false);
-    setDisableAnswer(false);
   }
 
   function setMessageLines(text1, text2 = '') {
@@ -273,7 +279,7 @@ const App = () => {
   function displayClueByNumber(clueNumber) {
     enterFullScreen();
     player.conceded = false;
-    setDisableAnswer(false);
+    dispatchGameInfo({ type: 'enable_player_answer'});
     setAnswered([]);
     updateAvailableClueNumbers(clueNumber);
     for (let col = 0; col < 6; col++) {
@@ -380,14 +386,13 @@ const App = () => {
     window.speechSynthesis.speak(msg);
     // keep the buzzer disabled for 500ms
     setTimeout(() => {
-      setDisableAnswer(false);
+      dispatchGameInfo({ type: 'enable_player_answer'});
       setResponseTimerIsActive(true);
     }, 500);
   }
 
   function showFinalJeopardyCategory() {
     dispatchGameInfo({ type: 'increment_round', round: 3});
-    setDisableAnswer(false);
     setMessageLines('');
     msg.text = 'The final jeopardy category is ' + showData.final_jeopardy.category + '. How much will you wager';
     window.speechSynthesis.speak(msg);
@@ -410,13 +415,13 @@ const App = () => {
           <Monitor message={message} imageUrl={gameInfo.imageUrl} />
         </div>
         <Board board={board} displayClueByNumber={displayClueByNumber}
-          disableAnswer={disableAnswer} disableClue={disableClue}
+          disableClue={disableClue}
           setMessageLines={setMessageLines} updateOpponentScores={updateOpponentScores}
           enterFullScreen={enterFullScreen} updateAvailableClueNumbers={updateAvailableClueNumbers}
           readClue={readClue} setBoardState={setBoardState} concede={concede} readText={readText}
           player={player} showData={showData} setScores={setScores}
           stats={stats} msg={msg} response={response}
-          setDisableAnswer={setDisableAnswer} setResponseTimerIsActive={setResponseTimerIsActive}
+          setResponseTimerIsActive={setResponseTimerIsActive}
           setDisableClue={setDisableClue}
           answered={answered} setAnswered={setAnswered}/>
       </main>

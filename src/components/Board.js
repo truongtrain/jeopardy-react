@@ -11,10 +11,10 @@ function Board(props) {
     const scores = useContext(ScoreContext);
     const playerName = useContext(PlayerContext);
     const gameInfoContext = useContext(GameInfoContext);
-    let { board, disableAnswer, disableClue, displayClueByNumber,
+    let { board, disableClue, displayClueByNumber,
         setMessageLines, updateOpponentScores, enterFullScreen, updateAvailableClueNumbers,
         readClue, setBoardState, concede, readText, player, showData,
-        setScores, stats, msg, response, setDisableAnswer,
+        setScores, stats, msg, response,
         setResponseTimerIsActive, setDisableClue,
         answered, setAnswered } = props;
 
@@ -42,7 +42,6 @@ function Board(props) {
             gameInfoContext.dispatch({ type: 'increment_round', round: 2 });
         }
         player.conceded = false;
-        setDisableAnswer(false);
         setAnswered([]);
         gameInfoContext.dispatch({ type: 'set_last_correct_contestant', lastCorrect: playerName });
         const clue = board[col][row];
@@ -61,7 +60,7 @@ function Board(props) {
     }
 
     function answer(row, col) {
-        setDisableAnswer(true);
+        gameInfoContext.dispatch({ type: 'disable_player_answer' });
         setResponseTimerIsActive(false);
         let bonusProbability = 0;
         let incorrectContestants = board[col][row].response.incorrect_contestants
@@ -220,7 +219,7 @@ function Board(props) {
       function submit(row, col) {
         if (gameInfoContext.state.round === 3) {
           document.getElementById('final-input').value = null;
-          setDisableAnswer(true);
+          gameInfoContext.dispatch({ type: 'disable_player_answer' });
           response.countdown = false;
           setScores(scores);
           showFinalJeopardyClue();
@@ -296,7 +295,7 @@ function Board(props) {
                                 <span>{category[row] && category[row].visible === 'clue' && category[row].text}</span>
                                 {category[row].visible === 'buzzer' && category[row].daily_double_wager === 0 &&
                                     <div className='clue'>
-                                        <button className='answer-button buzzer-button' onClick={() => answer(row, column)} disabled={disableAnswer}><HiHandRaised /></button>
+                                        <button className='answer-button buzzer-button' onClick={() => answer(row, column)} disabled={gameInfoContext.state.disableAnswer}><HiHandRaised /></button>
                                         <button className='answer-button flag-button' onClick={() => concede(row, column)}><BsFillFlagFill /></button>
                                     </div>
                                 }
@@ -335,7 +334,7 @@ function Board(props) {
                                         {board[3][1].visible !== 'final' && <span>ENTER YOUR WAGER:</span>}
                                         {board[3][1].visible === 'final' && <span>ENTER YOUR RESPONSE:</span>}
                                         <div className='wager'>
-                                            {board[3][1].visible !== 'final' && <button id='final-submit-button' className='submit-button' disabled={disableAnswer} onClick={submit}>SUBMIT</button>}
+                                            {board[3][1].visible !== 'final' && <button id='final-submit-button' className='submit-button' onClick={submit}>SUBMIT</button>}
                                             <input id='final-input' defaultValue={player.wager} onChange={handleInputChange} />
                                         </div>
                                     </div>
