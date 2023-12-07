@@ -8,7 +8,7 @@ function Name({loadBoard}) {
     return (
         <div className='center-screen'>    
             <b>Enter your name:</b>
-            <input defaultValue={playerName} onChange={handleInputChange}></input>
+            <input defaultValue={playerName} onChange={handleInputChange} autoFocus></input>
             <button onClick={() => {loadBoard(playerName)}}>Submit</button>                   
         </div>
     );
