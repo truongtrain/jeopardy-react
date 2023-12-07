@@ -4,17 +4,21 @@ import { FcDisapprove } from 'react-icons/fc';
 import { HiHandRaised } from 'react-icons/hi2';
 import { BsFillFlagFill } from 'react-icons/bs';
 import FinalMusic from '../resources/final_jeopardy.mp3';
-import { useContext } from 'react';
+import { forwardRef, useContext, useImperativeHandle } from 'react';
 import { ScoreContext, PlayerContext, GameInfoContext } from '../App';
 
-function Board(props) {
+const Board = forwardRef((props, ref) => {
     const scores = useContext(ScoreContext);
     const playerName = useContext(PlayerContext);
     const gameInfoContext = useContext(GameInfoContext);
-    let { board, disableClue, displayClueByNumber, answered, setAnswered,
-        setMessageLines, updateOpponentScores, enterFullScreen, updateAvailableClueNumbers,
-        readClue, setBoardState, concede, readText, player, showData, setScores,
+    let { board, setBoard, disableClue, answered, setAnswered,
+        setMessageLines, enterFullScreen, availableClueNumbers,
+        player, showData, setScores,
         stats, msg, response, setResponseTimerIsActive, setDisableClue } = props;
+
+        useImperativeHandle(ref, () => ({
+            displayClueByNumber
+          }));
 
     function getCategory(column) {
         let i = 0;
@@ -23,6 +27,31 @@ function Board(props) {
         }
         return column[i].category;
     }
+
+    function displayClueByNumber(clueNumber) {
+        enterFullScreen();
+        player.conceded = false;
+        gameInfoContext.dispatch({ type: 'enable_player_answer'});
+        setAnswered([]);
+        updateAvailableClueNumbers(clueNumber);
+        for (let col = 0; col < 6; col++) {
+          for (let row = 0; row < 5; row++) {
+            if (board[col][row].number === clueNumber) {
+              if (!isPlayerDailyDouble(row, col) && board[col][row].daily_double_wager > 0) {
+                if (gameInfoContext.state.lastCorrect !== player.name) {
+                  setMessageLines('Daily Double', gameInfoContext.state.lastCorrect + ': I will wager $' + board[col][row].daily_double_wager);
+                }
+              }
+              setBoardState(row, col, 'clue');
+              if (isPlayerDailyDouble(row, col) && !board[col][row].url) {
+                setMessageLines(board[col][row].text);
+              }
+              readClue(row, col);
+              return;
+            }
+          }
+        }
+      }
 
     function isFinalJeopardyCategoryCell(row, col) {
         return row === 1 && col === 3;
@@ -57,6 +86,33 @@ function Board(props) {
         }
     }
 
+    
+     
+
+      function isPlayerDailyDouble(row, col) {
+        return gameInfoContext.state.lastCorrect === player.name && board[col][row].daily_double_wager > 0;
+      }
+
+      function concede(row, col) {
+        setBoardState(row, col, 'closed');
+        setResponseTimerIsActive(false);
+        player.conceded = true;
+        updateOpponentScores(row, col);
+        if (gameInfoContext.state.lastCorrect === player.name) {
+          setDisableClue(false);
+        }
+      }
+
+      function readText(text) {
+        msg.text = text;
+        window.speechSynthesis.speak(msg);
+        // keep the buzzer disabled for 500ms
+        setTimeout(() => {
+            gameInfoContext.dispatch({ type: 'enable_player_answer'});
+          setResponseTimerIsActive(true);
+        }, 500);
+      }
+
     function answer(row, col) {
         gameInfoContext.dispatch({ type: 'disable_player_answer' });
         setResponseTimerIsActive(false);
@@ -83,6 +139,202 @@ function Board(props) {
           updateOpponentScores(row, col);
         }
         clearInterval(response.interval);
+      }
+
+      function handleIncorrectResponses(incorrectContestants, clue, scoreChange) {
+        let incorrectMessage = '';
+        clue.response.incorrect_responses = clue.response.incorrect_responses.filter(response =>
+          !response.includes(gameInfoContext.state.weakest + ':'));
+        for (let i = 0; i < incorrectContestants.length; i++) {
+          if (incorrectContestants[i] !== gameInfoContext.state.weakest && !answered.includes(incorrectContestants[i])) {
+            incorrectMessage += clue.response.incorrect_responses[i];
+            scores[incorrectContestants[i]].score -= scoreChange;
+            answered.push(incorrectContestants[i]);
+            readText('No');
+            response.seconds = 0;
+          }
+          break;
+        }
+        if (clue.daily_double_wager > 0 || player.conceded) {
+          setMessageLines(incorrectMessage, clue.response.correct_response);
+        } else {
+          setMessageLines(incorrectMessage);
+        }
+        setScores(scores);
+    
+      }
+    
+      function handleCorrectResponse(correctContestant, scoreChange, clue, nextClueNumber, nextClue, row, col) {
+        gameInfoContext.dispatch({ type: 'set_last_correct_contestant', lastCorrect: correctContestant});
+        scores[correctContestant].score += scoreChange;
+        setScores(scores);
+        setBoardState(row, col, 'closed');
+        setMessageLines(correctContestant + ': What is ' + clue.response.correct_response + '?');
+        if (nextClueNumber > 0 && nextClue) {
+          setTimeout(() => {
+            setMessageLines(correctContestant + ': ' + nextClue.category + ' for $' + nextClue.value);
+          }, 2000);
+          response.seconds = 0;
+          setTimeout(() => displayNextClue(), 4000);
+        }
+      }
+    
+      function getOpponentDailyDoubleWager(clue) {
+        // don't change opponent score if this is not the same opponent who answered
+        // the daily double in the actual broadcast game 
+        if (clue.response.correct_contestant && clue.response.correct_contestant !== gameInfoContext.state.lastCorrect) {
+          return 0;
+        }
+        const currentScore = scores[gameInfoContext.state.lastCorrect].score;
+        if (gameInfoContext.state.round === 1) {
+          if (clue.daily_double_wager > currentScore) {
+            if (currentScore > 1000) {
+              return currentScore;
+            }
+            return 1000;
+          }
+        } else if (gameInfoContext.state.round === 2) {
+          if (clue.daily_double_wager > currentScore) {
+            if (currentScore > 1000) {
+              return currentScore;
+            }
+            return 2000;
+          }
+        }
+        return clue.daily_double_wager;
+      }
+    
+      function updateOpponentScores(row, col) {
+        const clue = board[col][row];
+        // don't update opponent score if this is the player's daily double
+        if (isPlayerDailyDouble(row, col)) {
+          return;
+        }
+        const nextClueNumber = getNextClueNumber();
+        let message;
+        let nextClue;
+        if (nextClueNumber > 0) {
+          nextClue = getClue(nextClueNumber);
+        }
+        if (nextClue) {
+          message = gameInfoContext.state.lastCorrect + ': ' + nextClue.category + ' for $' + nextClue.value;
+        }
+        const incorrectContestants = clue.response.incorrect_contestants
+          .filter(contestant => contestant !== gameInfoContext.state.weakest)
+          .filter(contestant => !answered.includes(contestant));
+        let correctContestant = clue.response.correct_contestant;
+        if (correctContestant === gameInfoContext.state.weakest) {
+          correctContestant = '';
+        }
+        let scoreChange = clue.daily_double_wager > 0 ? getOpponentDailyDoubleWager(clue) : clue.value;
+        // handle triple stumpers
+        if (!correctContestant) {
+          if (incorrectContestants.length > 0) {
+            handleIncorrectResponses(incorrectContestants, clue, scoreChange);
+          } else {
+            setMessageLines(clue.response.correct_response);
+          }
+          // go to next clue selected by opponent
+          if (nextClueNumber > 0 && gameInfoContext.state.lastCorrect !== player.name) {
+            setTimeout(() => setMessageLines(message), 2500);
+            setTimeout(() => displayNextClue(), 4500);
+          }
+        } else if (incorrectContestants.length > 0) {
+          handleIncorrectResponses(incorrectContestants, clue, scoreChange);
+          if (player.conceded) {
+            setTimeout(() => handleCorrectResponse(correctContestant, scoreChange, clue, nextClueNumber, nextClue, row, col), 3000);
+          }
+        } else { // no incorrect responses
+          handleCorrectResponse(correctContestant, scoreChange, clue, nextClueNumber, nextClue, row, col);
+        }
+      }
+    
+      function displayNextClue() {
+        setResponseTimerIsActive(false);
+        setAnswered([]);
+        setMessageLines('');
+        const nextClueNumber = getNextClueNumber();
+        if (nextClueNumber > 0) {
+          displayClueByNumber(nextClueNumber);
+        } else {
+            gameInfoContext.dispatch({ type: 'update_image', imageUrl: 'logo'});
+        }
+      }
+    
+      function displayClueImage(row, col) {
+        const url = board[col][row].url;
+        if (url) {
+            gameInfoContext.dispatch({ type: 'update_image', imageUrl: url});
+          setMessageLines('');
+        } else {
+            gameInfoContext.dispatch({ type: 'update_image', imageUrl: ''});
+        }
+      }
+
+      function getNextClueNumber() {
+        for (let i = 1; i <= 30; i++) {
+          if (availableClueNumbers[i - 1] === true) {
+            const clue = getClue(i);
+            // if this is a daily double that was not answered by the contestant in the televised game, skip this clue
+            if (clue && clue.daily_double_wager > 0 && !isContestantsDailyDouble(clue, gameInfoContext.state.lastCorrect)) {
+              continue;
+            }
+            return i;
+          }
+        }
+        return -1;
+      }
+
+      function updateAvailableClueNumbers(clueNumber) {
+        availableClueNumbers[clueNumber - 1] = false;
+      }
+    
+      function getClue(clueNumber) {
+        for (let col = 0; col < 6; col++) {
+          for (let row = 0; row < 5; row++) {
+            if (board && board[col][row].number === clueNumber) {
+              return board[col][row];
+            }
+          }
+        }
+        return null;
+      }
+    
+      function readClue(row, col) {
+        setDisableClue(true);
+        stats.numClues += 1;
+        let clue;
+        if (gameInfoContext.state.round <= 1) {
+          clue = showData.jeopardy_round[col][row];
+        } else if (gameInfoContext.state.round === 2 || gameInfoContext.state.round === 1.5) {
+          clue = showData.double_jeopardy_round[col][row];
+        }
+        displayClueImage(row, col);
+        msg.text = clue.text;
+        window.speechSynthesis.speak(msg);
+        msg.addEventListener('end', function clearClue() {
+            gameInfoContext.dispatch({ type: 'update_image', imageUrl: ''});
+          response.seconds = 0;
+          if (isPlayerDailyDouble(row, col) && board[col][row].daily_double_wager > 0) {
+            setBoardState(row, col, 'eye');
+          } else if (board[col][row].daily_double_wager > 0) {
+            concede(row, col);
+          } else if (board[col][row].visible === 'clue') {
+            setBoardState(row, col, 'buzzer');
+          }
+          setResponseTimerIsActive(true);
+          msg.removeEventListener('end', clearClue, true);
+        }, true);
+      }
+    
+      function setBoardState(row, col, state) {
+        const board_copy = [...board];
+        board[col][row].visible = state;
+        setBoard(board_copy);
+      }
+
+      function isContestantsDailyDouble(clue, contestant) {
+        return clue.response.correct_contestant === contestant || clue.response.incorrect_contestants.includes(contestant);
       }
 
       function noAttempts(row, col) {
@@ -343,7 +595,7 @@ function Board(props) {
                 )}
             </tbody>
         </table>
-    );
-}
+);
+})
 
 export default Board;
