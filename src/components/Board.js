@@ -5,17 +5,16 @@ import { HiHandRaised } from 'react-icons/hi2';
 import { BsFillFlagFill } from 'react-icons/bs';
 import FinalMusic from '../resources/final_jeopardy.mp3';
 import { useContext } from 'react';
-import { ScoreContext, PlayerContext } from '../App';
+import { ScoreContext, PlayerContext, GameInfoContext } from '../App';
 
 function Board(props) {
     const scores = useContext(ScoreContext);
     const playerName = useContext(PlayerContext);
-    let { board, round, disableAnswer, disableClue, displayClueByNumber,
+    const gameInfoContext = useContext(GameInfoContext);
+    let { board, disableClue, displayClueByNumber, answered, setAnswered,
         setMessageLines, updateOpponentScores, enterFullScreen, updateAvailableClueNumbers,
-        readClue, setBoardState, concede, readText, player, showData,
-        setImageUrl, setScores, stats, msg, response, setDisableAnswer,
-        setResponseTimerIsActive, setDisableClue, setRound, setLastCorrect,
-        answered, setAnswered, weakest } = props;
+        readClue, setBoardState, concede, readText, player, showData, setScores,
+        stats, msg, response, setResponseTimerIsActive, setDisableClue } = props;
 
     function getCategory(column) {
         let i = 0;
@@ -35,16 +34,14 @@ function Board(props) {
 
     function displayClue(row, col) {
         enterFullScreen();
-        if (round === 0) {
-          setRound(1);
-        }
-        if (round === 1.5) {
-          setRound(2);
+        if (gameInfoContext.state.round === 0) {
+            gameInfoContext.dispatch({ type: 'increment_round', round: 1 });
+        } else if (gameInfoContext.state.round === 1.5) {
+            gameInfoContext.dispatch({ type: 'increment_round', round: 2 });
         }
         player.conceded = false;
-        setDisableAnswer(false);
         setAnswered([]);
-        setLastCorrect(playerName);
+        gameInfoContext.dispatch({ type: 'set_last_correct_contestant', lastCorrect: playerName });
         const clue = board[col][row];
         if (clue.daily_double_wager > 0) {
           player.wager = scores[playerName].score;
@@ -61,16 +58,16 @@ function Board(props) {
     }
 
     function answer(row, col) {
-        setDisableAnswer(true);
+        gameInfoContext.dispatch({ type: 'disable_player_answer' });
         setResponseTimerIsActive(false);
         let bonusProbability = 0;
         let incorrectContestants = board[col][row].response.incorrect_contestants
-          .filter(contestant => contestant !== weakest)
+          .filter(contestant => contestant !== gameInfoContext.state.weakest)
           .filter(contestant => !answered.includes(contestant));
         if (answered.length === 1) {
           bonusProbability = 0.166; // increase the probability of a successful buzz-in if a contestant has already answered this clue
         }
-        const probability = getProbability(board[col][row].value, round, bonusProbability);
+        const probability = getProbability(board[col][row].value, gameInfoContext.state.round, bonusProbability);
         if (response.seconds < 3 && (answered.length === 2 || isFastestResponse(response.seconds, probability) || noAttempts(row, col) || noOpponentAttemptsRemaining(row, col))) {
           readText(playerName);
           response.countdown = true;
@@ -78,7 +75,7 @@ function Board(props) {
         } else {
           if (board[col][row].visible === 'closed') {
             setMessageLines(board[col][row].response.correct_response);
-          } else if (incorrectContestants.length === 0 && board[col][row].response.correct_contestant !== weakest) {
+          } else if (incorrectContestants.length === 0 && board[col][row].response.correct_contestant !== gameInfoContext.state.weakest) {
             readText(board[col][row].response.correct_contestant);
           } else if (incorrectContestants.length > 0) {
             readText(incorrectContestants[0]);
@@ -93,12 +90,12 @@ function Board(props) {
       }
     
       function noOpponentAttemptsRemaining(row, col) {
-        const incorrectContestants = board[col][row].response.incorrect_contestants.filter(contestant => contestant !== weakest);
+        const incorrectContestants = board[col][row].response.incorrect_contestants.filter(contestant => contestant !== gameInfoContext.state.weakest);
         return answered.length === incorrectContestants.length && isTripleStumper(row, col);
       }
 
       function isTripleStumper(row, col) {
-        return !board[col][row].response.correct_contestant || board[col][row].response.correct_contestant === weakest;
+        return !board[col][row].response.correct_contestant || board[col][row].response.correct_contestant === gameInfoContext.state.weakest;
       }
 
       function getProbability(value, round, bonusProbability) {
@@ -171,7 +168,7 @@ function Board(props) {
     
       function incrementScore(row, col) {
         setDisableClue(false);
-        setLastCorrect(playerName);
+        gameInfoContext.dispatch({ type: 'set_last_correct_contestant', lastCorrect: playerName });
         msg.text = 'Correct';
         window.speechSynthesis.speak(msg);
         if (board[col][row].daily_double_wager > 0) {
@@ -210,7 +207,7 @@ function Board(props) {
         setResponseTimerIsActive(false);
         response.countdown = false;
         setBoardState(row, col, 'judge');
-        if (round === 3) {
+        if (gameInfoContext.state.round === 3) {
           setMessageLines(showData.final_jeopardy.correct_response);
         } else {
           setMessageLines(board[col][row].response.correct_response);
@@ -218,9 +215,9 @@ function Board(props) {
       }
 
       function submit(row, col) {
-        if (round === 3) {
+        if (gameInfoContext.state.round === 3) {
           document.getElementById('final-input').value = null;
-          setDisableAnswer(true);
+          gameInfoContext.dispatch({ type: 'disable_player_answer' });
           response.countdown = false;
           setScores(scores);
           showFinalJeopardyClue();
@@ -233,7 +230,7 @@ function Board(props) {
       function showFinalJeopardyClue() {
         let finalMusic = new Audio(FinalMusic);
         setBoardState(1, 3, 'final');
-        setImageUrl(showData.final_jeopardy.url);
+        gameInfoContext.dispatch({ type: 'update_image', imageUrl: showData.final_jeopardy.url});
         msg.text = showData.final_jeopardy.clue;
         window.speechSynthesis.speak(msg);
         msg.addEventListener('end', () => {
@@ -263,7 +260,7 @@ function Board(props) {
           });
         });
         setScores(scores);
-        setImageUrl('');
+        gameInfoContext.dispatch({ type: 'update_image', imageUrl: ''});
         setMessageLines(showData.final_jeopardy.correct_response);
       }
 
@@ -281,7 +278,7 @@ function Board(props) {
             <thead>
                 <tr id='headers'>
                     {Array.from(Array(6), (_arrayElement, row) =>
-                        <th key={'header' + row}>{round !== 3 && getCategory(board[row])}
+                        <th key={'header' + row}>{gameInfoContext.state.round !== 3 && getCategory(board[row])}
                             {board[row][0].category_note && <span className='tooltip'>{board[row][0].category_note}</span>}
                         </th>
                     )}
@@ -296,7 +293,7 @@ function Board(props) {
                                 <span>{category[row] && category[row].visible === 'clue' && category[row].text}</span>
                                 {category[row].visible === 'buzzer' && category[row].daily_double_wager === 0 &&
                                     <div className='clue'>
-                                        <button className='answer-button buzzer-button' onClick={() => answer(row, column)} disabled={disableAnswer}><HiHandRaised /></button>
+                                        <button className='answer-button buzzer-button' onClick={() => answer(row, column)} disabled={gameInfoContext.state.disableAnswer}><HiHandRaised /></button>
                                         <button className='answer-button flag-button' onClick={() => concede(row, column)}><BsFillFlagFill /></button>
                                     </div>
                                 }
@@ -320,7 +317,7 @@ function Board(props) {
                                         </div>
                                     </div>
                                 }
-                                {round === 3 && isFinalJeopardyCategoryCell(row, column) && category[row].visible !== 'final' &&
+                                {gameInfoContext.state.round === 3 && isFinalJeopardyCategoryCell(row, column) && category[row].visible !== 'final' &&
                                     <h3>
                                         {showData.final_jeopardy.category}
                                     </h3>
@@ -330,12 +327,12 @@ function Board(props) {
                                         {showData.final_jeopardy.clue.toUpperCase()}
                                     </div>
                                 }
-                                {round === 3 && isFinalJeopardyResponseCell(row, column) &&
+                                {gameInfoContext.state.round === 3 && isFinalJeopardyResponseCell(row, column) &&
                                     <div>
                                         {board[3][1].visible !== 'final' && <span>ENTER YOUR WAGER:</span>}
                                         {board[3][1].visible === 'final' && <span>ENTER YOUR RESPONSE:</span>}
                                         <div className='wager'>
-                                            {board[3][1].visible !== 'final' && <button id='final-submit-button' className='submit-button' disabled={disableAnswer} onClick={submit}>SUBMIT</button>}
+                                            {board[3][1].visible !== 'final' && <button id='final-submit-button' className='submit-button' onClick={submit}>SUBMIT</button>}
                                             <input id='final-input' defaultValue={player.wager} onChange={handleInputChange} />
                                         </div>
                                     </div>
