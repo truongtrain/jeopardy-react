@@ -14,7 +14,6 @@ export const PlayerContext = React.createContext();
 export const GameInfoContext = React.createContext();
 
 let showData = {};
-let stats = { numCorrect: 0, numClues: 0, coryatScore: 0, battingAverage: 0 };
 let player = { name: '', finalResponse: '', wager: 0, conceded: false};
 let response = { seconds: 0, interval: {}, countdown: false};
 let msg = new SpeechSynthesisUtterance();
@@ -52,14 +51,13 @@ function reducer(state, action) {
 
 const App = () => {
   const boardRef = useRef();
+  const handle = useFullScreenHandle(); 
   const [gameInfo, dispatchGameInfo] = useReducer(reducer, initialGameInfo);
   const [responseTimerIsActive, setResponseTimerIsActive] = useState(false);
   const [disableClue, setDisableClue] = useState(false);
   const [scores, setScores] = useState(null);
   const [message, setMessage] = useState({ line1: '', line2: '' });
   const [board, setBoard] = useState(null);
-  const [answered, setAnswered] = useState([]);
-  const handle = useFullScreenHandle(); 
 
   useEffect(() => {
     fetch('http://localhost:5000/game/3396')
@@ -140,17 +138,17 @@ const App = () => {
     });
   }
 
-  function enterFullScreen() {
-    if (!handle.active && window.innerWidth > 1000) {
-      handle.enter();
-    }
-  }
-
   function showFinalJeopardyCategory() {
     dispatchGameInfo({ type: 'increment_round', round: 3});
     setMessageLines('');
     msg.text = 'The final jeopardy category is ' + showData.final_jeopardy.category + '. How much will you wager';
     window.speechSynthesis.speak(msg);
+  }
+
+  function enterFullScreen() {
+    if (!handle.active && window.innerWidth > 1000) {
+      handle.enter();
+    }
   }
 
   if (!board) {
@@ -172,11 +170,9 @@ const App = () => {
         <Board ref={boardRef} board={board} setBoard={setBoard}
           disableClue={disableClue} setDisableClue={setDisableClue}
           setMessageLines={setMessageLines} availableClueNumbers={availableClueNumbers}
-          enterFullScreen={enterFullScreen}
           player={player} showData={showData} setScores={setScores}
-          stats={stats} msg={msg} response={response}
-          setResponseTimerIsActive={setResponseTimerIsActive}
-          answered={answered} setAnswered={setAnswered}/>
+          msg={msg} response={response} enterFullScreen={enterFullScreen}
+          setResponseTimerIsActive={setResponseTimerIsActive}/>
       </main>
       </GameInfoContext.Provider>
       </PlayerContext.Provider>
