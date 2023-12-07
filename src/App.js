@@ -415,14 +415,13 @@ const App = () => {
           <Monitor message={message} imageUrl={gameInfo.imageUrl} />
         </div>
         <Board board={board} displayClueByNumber={displayClueByNumber}
-          disableClue={disableClue}
+          disableClue={disableClue} setDisableClue={setDisableClue}
           setMessageLines={setMessageLines} updateOpponentScores={updateOpponentScores}
           enterFullScreen={enterFullScreen} updateAvailableClueNumbers={updateAvailableClueNumbers}
           readClue={readClue} setBoardState={setBoardState} concede={concede} readText={readText}
           player={player} showData={showData} setScores={setScores}
           stats={stats} msg={msg} response={response}
           setResponseTimerIsActive={setResponseTimerIsActive}
-          setDisableClue={setDisableClue}
           answered={answered} setAnswered={setAnswered}/>
       </main>
       </GameInfoContext.Provider>

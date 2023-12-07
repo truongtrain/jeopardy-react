@@ -11,12 +11,10 @@ function Board(props) {
     const scores = useContext(ScoreContext);
     const playerName = useContext(PlayerContext);
     const gameInfoContext = useContext(GameInfoContext);
-    let { board, disableClue, displayClueByNumber,
+    let { board, disableClue, displayClueByNumber, answered, setAnswered,
         setMessageLines, updateOpponentScores, enterFullScreen, updateAvailableClueNumbers,
-        readClue, setBoardState, concede, readText, player, showData,
-        setScores, stats, msg, response,
-        setResponseTimerIsActive, setDisableClue,
-        answered, setAnswered } = props;
+        readClue, setBoardState, concede, readText, player, showData, setScores,
+        stats, msg, response, setResponseTimerIsActive, setDisableClue } = props;
 
     function getCategory(column) {
         let i = 0;
