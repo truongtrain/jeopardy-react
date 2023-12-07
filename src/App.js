@@ -61,10 +61,9 @@ const App = () => {
   const handle = useFullScreenHandle(); 
 
   useEffect(() => {
-    fetch('http://localhost:5000/game/3769')
+    fetch('http://localhost:5000/game/3396')
       .then((res) => res.json())
       .then((data) => {
-        console.log(data);
         showData = data;
         setBoard(showData.jeopardy_round);
       },
@@ -106,6 +105,7 @@ const App = () => {
   }
 
   function loadContestants(playerNameParam) {
+    showData.weakest_contestant = 'Vijay';
     dispatchGameInfo({ type: 'set_weakest_contestant', weakest: showData.weakest_contestant});
     let filteredContestants = showData.contestants.filter(
       contestant => contestant !== showData.weakest_contestant
