@@ -105,7 +105,6 @@ const App = () => {
   }
 
   function loadContestants(playerNameParam) {
-    showData.weakest_contestant = 'Vijay';
     dispatchGameInfo({ type: 'set_weakest_contestant', weakest: showData.weakest_contestant});
     let filteredContestants = showData.contestants.filter(
       contestant => contestant !== showData.weakest_contestant
