@@ -32,7 +32,6 @@ const Board = forwardRef((props, ref) => {
     }
 
     function displayClueByNumber(clueNumber) {
-        console.log(board);
         enterFullScreen();
         player.conceded = false;
         gameInfoContext.dispatch({ type: 'enable_player_answer' });
@@ -178,7 +177,6 @@ const Board = forwardRef((props, ref) => {
                 setMessageLines(correctContestant + ': ' + nextClue.category + ' for $' + nextClue.value);
             }, 2000);
             response.seconds = 0;
-            console.log('178')
             setTimeout(() => displayNextClue(), 4000);
         }
     }
@@ -246,7 +244,6 @@ const Board = forwardRef((props, ref) => {
             // go to next clue selected by opponent
             if (nextClueNumber > 0 && gameInfoContext.state.lastCorrect !== player.name) {
                 setTimeout(() => setMessageLines(message), 2500);
-                console.log('242')
                 setTimeout(() => displayNextClue(), 4500);
             }
         } else { // no incorrect responses
