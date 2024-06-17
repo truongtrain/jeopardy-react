@@ -32,6 +32,7 @@ const Board = forwardRef((props, ref) => {
     }
 
     function displayClueByNumber(clueNumber) {
+        console.log(board);
         enterFullScreen();
         player.conceded = false;
         gameInfoContext.dispatch({ type: 'enable_player_answer' });
@@ -42,7 +43,7 @@ const Board = forwardRef((props, ref) => {
                 if (board[col][row].number === clueNumber) {
                     if (!isPlayerDailyDouble(row, col) && board[col][row].daily_double_wager > 0) {
                         if (gameInfoContext.state.lastCorrect !== player.name) {
-                            setMessageLines('Daily Double', gameInfoContext.state.lastCorrect + ': I will wager $' + board[col][row].daily_double_wager);
+                            setMessageLines('Daily Double', gameInfoContext.state.lastCorrect + ': I will wager $' + getOpponentDailyDoubleWager(board[col][row]));
                         }
                     }
                     setBoardState(row, col, 'clue');
@@ -166,7 +167,9 @@ const Board = forwardRef((props, ref) => {
 
     function handleCorrectResponse(correctContestant, scoreChange, clue, nextClueNumber, nextClue, row, col) {
         gameInfoContext.dispatch({ type: 'set_last_correct_contestant', lastCorrect: correctContestant });
-        scores[correctContestant].score += scoreChange;
+        if (correctContestant) {
+            scores[correctContestant].score += scoreChange;
+        }
         setScores(scores);
         setBoardState(row, col, 'closed');
         setMessageLines(correctContestant + ': What is ' + clue.response.correct_response + '?');
@@ -175,6 +178,7 @@ const Board = forwardRef((props, ref) => {
                 setMessageLines(correctContestant + ': ' + nextClue.category + ' for $' + nextClue.value);
             }, 2000);
             response.seconds = 0;
+            console.log('178')
             setTimeout(() => displayNextClue(), 4000);
         }
     }
@@ -228,7 +232,12 @@ const Board = forwardRef((props, ref) => {
         }
         let scoreChange = clue.daily_double_wager > 0 ? getOpponentDailyDoubleWager(clue) : clue.value;
         // handle triple stumpers
-        if (!correctContestant) {
+        if (incorrectContestants.length > 0) {
+            handleIncorrectResponses(incorrectContestants, clue, scoreChange);
+            if (player.conceded) {
+                setTimeout(() => handleCorrectResponse(correctContestant, scoreChange, clue, nextClueNumber, nextClue, row, col), 3000);
+            }
+        } else if (!correctContestant) {
             if (incorrectContestants.length > 0) {
                 handleIncorrectResponses(incorrectContestants, clue, scoreChange);
             } else {
@@ -237,12 +246,8 @@ const Board = forwardRef((props, ref) => {
             // go to next clue selected by opponent
             if (nextClueNumber > 0 && gameInfoContext.state.lastCorrect !== player.name) {
                 setTimeout(() => setMessageLines(message), 2500);
+                console.log('242')
                 setTimeout(() => displayNextClue(), 4500);
-            }
-        } else if (incorrectContestants.length > 0) {
-            handleIncorrectResponses(incorrectContestants, clue, scoreChange);
-            if (player.conceded) {
-                setTimeout(() => handleCorrectResponse(correctContestant, scoreChange, clue, nextClueNumber, nextClue, row, col), 3000);
             }
         } else { // no incorrect responses
             handleCorrectResponse(correctContestant, scoreChange, clue, nextClueNumber, nextClue, row, col);
