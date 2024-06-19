@@ -165,8 +165,8 @@ const Board = forwardRef((props, ref) => {
     }
 
     function handleCorrectResponse(correctContestant, scoreChange, clue, nextClueNumber, nextClue, row, col) {
-        gameInfoContext.dispatch({ type: 'set_last_correct_contestant', lastCorrect: correctContestant });
         if (correctContestant) {
+            gameInfoContext.dispatch({ type: 'set_last_correct_contestant', lastCorrect: correctContestant });
             scores[correctContestant].score += scoreChange;
         }
         setScores(scores);
@@ -242,13 +242,17 @@ const Board = forwardRef((props, ref) => {
                 setMessageLines(clue.response.correct_response);
             }
             // go to next clue selected by opponent
-            if (nextClueNumber > 0 && gameInfoContext.state.lastCorrect !== player.name) {
+            if (nextClueNumber > 0 && opponentControlsBoard()) {
                 setTimeout(() => setMessageLines(message), 2500);
                 setTimeout(() => displayNextClue(), 4500);
             }
         } else { // no incorrect responses
             handleCorrectResponse(correctContestant, scoreChange, clue, nextClueNumber, nextClue, row, col);
         }
+    }
+
+    function opponentControlsBoard() {
+        return gameInfoContext.state.lastCorrect && gameInfoContext.state.lastCorrect !== player.name;
     }
 
     function displayNextClue() {
