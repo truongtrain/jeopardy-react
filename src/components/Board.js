@@ -184,7 +184,7 @@ const Board = forwardRef((props, ref) => {
     function getOpponentDailyDoubleWager(clue) {
         // don't change opponent score if this is not the same opponent who answered
         // the daily double in the actual broadcast game 
-        if (clue.response.correct_contestant && clue.response.correct_contestant !== gameInfoContext.state.lastCorrect) {
+        if (!gameInfoContext.state.lastCorrect || (clue.response.correct_contestant && clue.response.correct_contestant !== gameInfoContext.state.lastCorrect)) {
             return 0;
         }
         const currentScore = scores[gameInfoContext.state.lastCorrect].score;
@@ -232,7 +232,8 @@ const Board = forwardRef((props, ref) => {
         // handle triple stumpers
         if (incorrectContestants.length > 0) {
             handleIncorrectResponses(incorrectContestants, clue, scoreChange);
-            if (player.conceded && correctContestant && correctContestant != playerName) {
+            debugger
+            if (player.conceded && correctContestant != playerName) {
                 setTimeout(() => handleCorrectResponse(correctContestant, scoreChange, clue, nextClueNumber, nextClue, row, col), 3000);
             }
         } else if (!correctContestant) {
