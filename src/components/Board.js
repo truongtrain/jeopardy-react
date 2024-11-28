@@ -232,7 +232,7 @@ const Board = forwardRef((props, ref) => {
         // handle triple stumpers
         if (incorrectContestants.length > 0) {
             handleIncorrectResponses(incorrectContestants, clue, scoreChange);
-            if (player.conceded) {
+            if (player.conceded && correctContestant && correctContestant != playerName) {
                 setTimeout(() => handleCorrectResponse(correctContestant, scoreChange, clue, nextClueNumber, nextClue, row, col), 3000);
             }
         } else if (!correctContestant) {
@@ -252,7 +252,7 @@ const Board = forwardRef((props, ref) => {
     }
 
     function opponentControlsBoard() {
-        return gameInfoContext.state.lastCorrect && gameInfoContext.state.lastCorrect !== player.name;
+        return gameInfoContext.state.lastCorrect !== player.name;
     }
 
     function displayNextClue() {
