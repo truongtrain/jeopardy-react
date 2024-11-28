@@ -232,8 +232,7 @@ const Board = forwardRef((props, ref) => {
         // handle triple stumpers
         if (incorrectContestants.length > 0) {
             handleIncorrectResponses(incorrectContestants, clue, scoreChange);
-            debugger
-            if (player.conceded && correctContestant != playerName) {
+            if (player.conceded && correctContestant && correctContestant != playerName) {
                 setTimeout(() => handleCorrectResponse(correctContestant, scoreChange, clue, nextClueNumber, nextClue, row, col), 3000);
             }
         } else if (!correctContestant) {
