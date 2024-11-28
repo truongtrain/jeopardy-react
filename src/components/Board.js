@@ -165,7 +165,7 @@ const Board = forwardRef((props, ref) => {
     }
 
     function handleCorrectResponse(correctContestant, scoreChange, clue, nextClueNumber, nextClue, row, col) {
-        if (correctContestant) {
+        if (correctContestant && scores[correctContestant]) {
             gameInfoContext.dispatch({ type: 'set_last_correct_contestant', lastCorrect: correctContestant });
             scores[correctContestant].score += scoreChange;
         }
@@ -225,6 +225,9 @@ const Board = forwardRef((props, ref) => {
             .filter(contestant => contestant !== gameInfoContext.state.weakest)
             .filter(contestant => !answered.includes(contestant));
         let correctContestant = clue.response.correct_contestant;
+        if (correctContestant == gameInfoContext.state.weakest) {
+            correctContestant = '';
+        }
         let scoreChange = clue.daily_double_wager > 0 ? getOpponentDailyDoubleWager(clue) : clue.value;
         // handle triple stumpers
         if (incorrectContestants.length > 0) {
