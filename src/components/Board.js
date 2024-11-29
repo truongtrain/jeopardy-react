@@ -225,14 +225,14 @@ const Board = forwardRef((props, ref) => {
             .filter(contestant => contestant !== gameInfoContext.state.weakest)
             .filter(contestant => !answered.includes(contestant));
         let correctContestant = clue.response.correct_contestant;
-        if (correctContestant == gameInfoContext.state.weakest) {
+        if (correctContestant === gameInfoContext.state.weakest) {
             correctContestant = '';
         }
         let scoreChange = clue.daily_double_wager > 0 ? getOpponentDailyDoubleWager(clue) : clue.value;
         // handle triple stumpers
         if (incorrectContestants.length > 0) {
             handleIncorrectResponses(incorrectContestants, clue, scoreChange);
-            if (player.conceded && gameInfoContext.state.lastCorrect != playerName) {
+            if (player.conceded && gameInfoContext.state.lastCorrect !== playerName) {
                 setTimeout(() => handleCorrectResponse(correctContestant, scoreChange, clue, nextClueNumber, nextClue, row, col), 3000);
             }
         } else if (!correctContestant) {
