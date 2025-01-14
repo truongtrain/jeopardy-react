@@ -165,8 +165,8 @@ const Board = forwardRef((props, ref) => {
     }
 
     function handleCorrectResponse(correctContestant, scoreChange, clue, nextClueNumber, nextClue, row, col) {
-        gameInfoContext.dispatch({ type: 'set_last_correct_contestant', lastCorrect: correctContestant });
-        if (correctContestant) {
+        if (correctContestant && scores[correctContestant]) {
+            gameInfoContext.dispatch({ type: 'set_last_correct_contestant', lastCorrect: correctContestant });
             scores[correctContestant].score += scoreChange;
         }
         setScores(scores);
@@ -184,7 +184,7 @@ const Board = forwardRef((props, ref) => {
     function getOpponentDailyDoubleWager(clue) {
         // don't change opponent score if this is not the same opponent who answered
         // the daily double in the actual broadcast game 
-        if (clue.response.correct_contestant && clue.response.correct_contestant !== gameInfoContext.state.lastCorrect) {
+        if (!gameInfoContext.state.lastCorrect || (clue.response.correct_contestant && clue.response.correct_contestant !== gameInfoContext.state.lastCorrect)) {
             return 0;
         }
         const currentScore = scores[gameInfoContext.state.lastCorrect].score;
@@ -232,7 +232,7 @@ const Board = forwardRef((props, ref) => {
         // handle triple stumpers
         if (incorrectContestants.length > 0) {
             handleIncorrectResponses(incorrectContestants, clue, scoreChange);
-            if (player.conceded) {
+            if (player.conceded && gameInfoContext.state.lastCorrect !== playerName) {
                 setTimeout(() => handleCorrectResponse(correctContestant, scoreChange, clue, nextClueNumber, nextClue, row, col), 3000);
             }
         } else if (!correctContestant) {
@@ -242,13 +242,17 @@ const Board = forwardRef((props, ref) => {
                 setMessageLines(clue.response.correct_response);
             }
             // go to next clue selected by opponent
-            if (nextClueNumber > 0 && gameInfoContext.state.lastCorrect !== player.name) {
+            if (nextClueNumber > 0 && opponentControlsBoard()) {
                 setTimeout(() => setMessageLines(message), 2500);
                 setTimeout(() => displayNextClue(), 4500);
             }
         } else { // no incorrect responses
             handleCorrectResponse(correctContestant, scoreChange, clue, nextClueNumber, nextClue, row, col);
         }
+    }
+
+    function opponentControlsBoard() {
+        return gameInfoContext.state.lastCorrect !== player.name;
     }
 
     function displayNextClue() {
