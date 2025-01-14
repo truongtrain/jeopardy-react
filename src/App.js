@@ -60,7 +60,7 @@ const App = () => {
   const [board, setBoard] = useState(null);
 
   useEffect(() => {
-    fetch('http://localhost:5000/game/9027')
+    fetch('http://localhost:5000/game/9068')
       .then((res) => res.json())
       .then((data) => {
         showData = data;
@@ -152,7 +152,7 @@ const App = () => {
   }
 
   if (!board) {
-    return <h1 className='center-screen'>Welcome to JEOPARDY!</h1>;
+   return <h1 className='center-screen'>Welcome to JEOPARDY!</h1>;
   }
   return (
     gameInfo.round === -1 ? <Name loadBoard={loadBoard} /> :
